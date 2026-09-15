@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تطبيق الشركة</title>
+    <title>تطبيق الشركة - نظام الصلاحيات</title>
     <style>
         * {
             box-sizing: border-box;
@@ -30,7 +30,6 @@
             overflow-x: hidden;
         }
 
-        /* تنسيق الواجهة الأولى */
         .screen {
             padding: 20px;
             display: none;
@@ -101,12 +100,14 @@
         }
 
         .input-group input[type="text"],
-        .input-group input[type="password"] {
+        .input-group input[type="password"],
+        .input-group select {
             width: 100%;
             padding: 12px;
             border: 1px solid #ccc;
             border-radius: 5px;
             font-size: 14px;
+            background-color: #fff;
         }
 
         .remember-me {
@@ -121,7 +122,7 @@
             margin-left: 8px;
         }
 
-        /* تنسيق الواجهة الثانية */
+        /* تنسيق الواجهة الثانية والشريط العلوي */
         .top-bar-gray {
             background-color: #6c757d;
             padding: 10px 15px;
@@ -129,6 +130,7 @@
             align-items: center;
             justify-content: space-between;
             color: white;
+            position: relative;
         }
 
         .menu-icon {
@@ -141,6 +143,47 @@
             height: 40px;
             border-radius: 50%;
             object-fit: cover;
+        }
+
+        /* القائمة المنسدلة للـ 3 شرط */
+        .dropdown-menu {
+            position: absolute;
+            top: 60px;
+            right: 15px;
+            background: white;
+            color: #333;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+            width: 180px;
+            display: none;
+            z-index: 100;
+        }
+
+        .dropdown-menu.show {
+            display: block;
+        }
+
+        .dropdown-item {
+            padding: 12px 15px;
+            cursor: pointer;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+        }
+
+        .dropdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown-item:hover {
+            background-color: #f1f1f1;
+            color: #007bff;
+        }
+
+        .user-status-badge {
+            background: rgba(255,255,255,0.2);
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 12px;
         }
 
         .search-controls {
@@ -192,24 +235,25 @@
 
     <div class="container">
 
-        <!-- ================= الواجهة الأولى ================= -->
+        <!-- ================= الواجهة الأولى (تسجيل الدخول / زائر) ================= -->
         <div id="screen1" class="screen active">
             <div class="logo-container">
                 <img src="electricity.jpeg" alt="صورة الشركة" class="logo" onerror="this.src='https://via.placeholder.com/120?text=Logo'">
             </div>
 
-            <button class="btn-blue" onclick="goToScreen2()">الدخول كزائر (بدون تسجيل)</button>
+            <!-- الدخول كزائر -->
+            <button class="btn-blue" onclick="loginAs('visitor')">الدخول كزائر (بدون تسجيل)</button>
 
             <hr class="divider">
 
             <h2>تسجيل الدخول</h2>
             
             <div class="input-group">
-                <input type="text" placeholder="رقم الهاتف">
+                <input type="text" id="loginPhone" placeholder="رقم الهاتف">
             </div>
 
             <div class="input-group">
-                <input type="password" placeholder="رمز المرور">
+                <input type="password" id="loginPassword" placeholder="رمز المرور">
             </div>
 
             <div class="remember-me">
@@ -217,16 +261,28 @@
                 <label for="remember">تذكرنى</label>
             </div>
 
-            <button class="btn-blue" onclick="goToScreen2()">دخول</button>
+            <!-- زر الدخول: للتجربة السريعة، سنحدد الصلاحية بناءً على رقم الهاتف المدخل أو افتراضياً كمدير إذا ترك فارغاً -->
+            <button class="btn-blue" onclick="handleLogin()">دخول</button>
+            <p style="font-size: 11px; color: #666; text-align: center; margin-top: 5px;">
+                (ملاحظة تجريبية: اكتب phone مثل "010" لمدير، أو "011" لمندوب، أو اتركها لدخول مدير افتراضي)
+            </p>
         </div>
 
 
-        <!-- ================= الواجهة الثانية ================= -->
+        <!-- ================= الواجهة الثانية (الرئيسية) ================= -->
         <div id="screen2" class="screen">
             <!-- شريط علوي رمادي -->
             <div class="top-bar-gray">
-                <div class="menu-icon" onclick="alert('فتح القائمة الصغيرة')">☰</div>
+                <div class="menu-icon" onclick="toggleMenu()">☰</div>
+                <span id="userBadge" class="user-status-badge">زائر</span>
                 <img src="electricity.jpeg" alt="الشركة" class="top-logo" onerror="this.src='https://via.placeholder.com/40?text=Logo'">
+                
+                <!-- القائمة الصغيرة (الـ 3 شرط) -->
+                <div id="smallMenu" class="dropdown-menu">
+                    <!-- تظهر فقط للمدير والمندوب -->
+                    <div id="menuRegisterItem" class="dropdown-item" style="display: none;" onclick="goToRegisterScreen()">تسجيل مستخدم</div>
+                    <div class="dropdown-item" onclick="logout()">تسجيل الخروج</div>
+                </div>
             </div>
 
             <!-- أزرار البحث وخانة البحث -->
@@ -255,13 +311,133 @@
             </div>
         </div>
 
+
+        <!-- ================= واجهة تسجيل مستخدم جديدة ================= -->
+        <div id="screenRegister" class="screen">
+            <div style="display: flex; align-items: center; margin-bottom: 20px;">
+                <button class="btn-blue" style="width: auto; padding: 5px 10px; margin-bottom: 0;" onclick="goToScreen2()">رجوع</button>
+                <h2 style="margin: 0 auto; text-align: center;">تسجيل مستخدم جديد</h2>
+            </div>
+
+            <div class="input-group">
+                <label style="display: block; margin-bottom: 5px; font-size: 14px; color: #555;">نوع المستخدم:</label>
+                <select id="userTypeSelect">
+                    <!-- سيتم تعبئة الخيارات ديناميكياً حسب صلاحية المستخدم الحالي -->
+                </select>
+            </div>
+
+            <div class="input-group">
+                <input type="text" placeholder="رقم الهاتف الجديد">
+            </div>
+
+            <div class="input-group">
+                <input type="password" placeholder="رمز المرور">
+            </div>
+
+            <button class="btn-blue" onclick="alert('تم تسجيل المستخدم بنجاح'); goToScreen2();">إتمام التسجيل</button>
+        </div>
+
     </div>
 
     <script>
-        // دالة للانتقال بين الواجهتين للتجربة
+        // تخزين نوع المستخدم الحالي (افتراضياً زائر)
+        let currentUserRole = 'visitor';
+
+        // محاكاة تسجيل الدخول
+        function handleLogin() {
+            const phone = document.getElementById('loginPhone').value.trim();
+            
+            // للأغراض التجريبية:
+            // إذا أدخل رقم يبدأ بـ 011 اعتبره مندوب، وإلا اعتبره مدير (أو كود افتراضي)
+            if (phone === '011') {
+                loginAs('delegate');
+            } else {
+                loginAs('manager'); // المدير (الآدمن)
+            }
+        }
+
+        function loginAs(role) {
+            currentUserRole = role;
+            updateUIBasedOnRole();
+            goToScreen2();
+        }
+
+        function logout() {
+            currentUserRole = 'visitor';
+            document.getElementById('loginPhone').value = '';
+            document.getElementById('loginPassword').value = '';
+            hideAllScreens();
+            document.getElementById('screen1').classList.add('active');
+            document.getElementById('smallMenu').classList.remove('show');
+        }
+
+        // تحديث الواجهة بناءً على صلاحيات المستخدم
+        function updateUIBasedOnRole() {
+            const registerItem = document.getElementById('menuRegisterItem');
+            const userBadge = document.getElementById('userBadge');
+            
+            // تعيين نص الشارة العلوية
+            const roleNames = {
+                'visitor': 'زائر',
+                'technician': 'فنى',
+                'merchant': 'تاجر',
+                'delegate': 'مندوب',
+                'manager': 'مدير / أدمن'
+            };
+            userBadge.innerText = roleNames[currentUserRole] || 'مستخدم';
+
+            // إظهار أو إخفاء خيار "تسجيل مستخدم" من القائمة بناءً على الصلاحية
+            if (currentUserRole === 'manager' || currentUserRole === 'delegate') {
+                registerItem.style.display = 'block';
+            } else {
+                registerItem.style.display = 'none';
+            }
+        }
+
+        // الانتقال لواجهة تسجيل مستخدم وتعبئة القائمة المنسدلة بصلاحياته
+        function goToRegisterScreen() {
+            hideAllScreens();
+            document.getElementById('screenRegister').classList.add('active');
+            document.getElementById('smallMenu').classList.remove('show');
+
+            const select = document.getElementById('userTypeSelect');
+            select.innerHTML = ''; // تفريغ القائمة القديمة
+
+            if (currentUserRole === 'manager') {
+                // المدير يمكنه تسجيل: مدير، مندوب، تاجر، فنى
+                select.innerHTML = `
+                    <option value="manager">مدير</option>
+                    <option value="delegate">مندوب</option>
+                    <option value="merchant">تاجر</option>
+                    <option value="technician">فنى</option>
+                `;
+            } else if (currentUserRole === 'delegate') {
+                // المندوب يمكنه تسجيل: مندوب، تاجر، فنى (فقط)
+                select.innerHTML = `
+                    <option value="delegate">مندوب</option>
+                    <option value="merchant">تاجر</option>
+                    <option value="technician">فنى</option>
+                `;
+            }
+        }
+
+        // الانتقال للواجهة الثانية
         function goToScreen2() {
-            document.getElementById('screen1').classList.remove('active');
+            hideAllScreens();
             document.getElementById('screen2').classList.add('active');
+            document.getElementById('smallMenu').classList.remove('show');
+        }
+
+        // إظهار وإخفاء القائمة الصغيرة (الـ 3 شرط)
+        function toggleMenu() {
+            const menu = document.getElementById('smallMenu');
+            menu.classList.toggle('show');
+        }
+
+        // دالة مساعدة لإخفاء جميع الشاشات
+        function hideAllScreens() {
+            const screens = document.querySelectorAll('.screen');
+            screens.forEach(screen => screen.classList.remove('active'));
         }
     </script>
 
