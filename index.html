@@ -3,443 +3,445 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تطبيق الشركة - نظام الصلاحيات</title>
+    <title>Electricity</title>
     <style>
+        :root {
+            --primary-color: #007bff;
+            --secondary-color: #f8f9fa;
+            --border-color: #ccc;
+            --text-color: #333;
+        }
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: Arial, sans-serif;
+            font-family: Tahoma, sans-serif;
         }
-
         body {
-            background-color: #f4f7f6;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
-
-        .container {
-            width: 100%;
-            max-width: 400px;
-            background: #fff;
-            min-height: 100vh;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            position: relative;
-            overflow-x: hidden;
-        }
-
-        .screen {
+            background-color: #f4f6f9;
+            color: var(--text-color);
             padding: 20px;
-            display: none;
         }
-
-        .screen.active {
-            display: block;
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
-
-        .logo-container {
+        h2 {
             text-align: center;
-            margin: 30px 0 20px 0;
+            margin-bottom: 20px;
+            color: #0056b3;
         }
-
-        .logo {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 3px solid #007bff;
-        }
-
-        .btn-blue {
-            background-color: #007bff;
-            color: white;
-            border: none;
-            padding: 12px;
-            width: 100%;
-            border-radius: 5px;
-            font-size: 16px;
-            cursor: pointer;
-            text-align: center;
+        .form-group {
             margin-bottom: 15px;
         }
-
-        .btn-blue:hover {
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+        }
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .checkbox-group input {
+            width: auto;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+        button:hover {
             background-color: #0056b3;
         }
-
-        .btn-green {
-            background-color: #28a745;
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 5px;
-            font-size: 14px;
-            cursor: pointer;
-        }
-
-        .btn-green:hover {
-            background-color: #218838;
-        }
-
-        .divider {
-            border: none;
-            border-top: 1px solid #ddd;
-            margin: 20px 0;
-        }
-
-        h2 {
-            margin-bottom: 15px;
-            color: #333;
-            font-size: 18px;
-        }
-
-        .input-group {
-            margin-bottom: 15px;
-        }
-
-        .input-group input[type="text"],
-        .input-group input[type="password"],
-        .input-group select {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 14px;
-            background-color: #fff;
-        }
-
-        .remember-me {
-            display: flex;
-            align-items: center;
-            margin-bottom: 20px;
-            font-size: 14px;
-            color: #555;
-        }
-
-        .remember-me input {
-            margin-left: 8px;
-        }
-
-        /* تنسيق الواجهة الثانية والشريط العلوي */
-        .top-bar-gray {
+        .btn-secondary {
             background-color: #6c757d;
-            padding: 10px 15px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            color: white;
-            position: relative;
         }
-
-        .menu-icon {
-            font-size: 24px;
-            cursor: pointer;
+        .btn-secondary:hover {
+            background-color: #5a6268;
         }
-
-        .top-logo {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            object-fit: cover;
-        }
-
-        /* القائمة المنسدلة للـ 3 شرط */
-        .dropdown-menu {
-            position: absolute;
-            top: 60px;
-            right: 15px;
-            background: white;
-            color: #333;
-            border-radius: 5px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-            width: 180px;
+        
+        /* App Layout Styles */
+        #app-screen {
             display: none;
-            z-index: 100;
         }
-
-        .dropdown-menu.show {
-            display: block;
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #0056b3;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 4px;
+            margin-bottom: 15px;
         }
-
-        .dropdown-item {
-            padding: 12px 15px;
+        .menu-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 22px;
             cursor: pointer;
-            border-bottom: 1px solid #eee;
+            width: auto;
+            margin: 0;
+            padding: 0;
+        }
+        .user-info {
             font-size: 14px;
         }
-
-        .dropdown-item:last-child {
-            border-bottom: none;
-        }
-
-        .dropdown-item:hover {
-            background-color: #f1f1f1;
-            color: #007bff;
-        }
-
-        .user-status-badge {
-            background: rgba(255,255,255,0.2);
-            padding: 3px 8px;
-            border-radius: 4px;
-            font-size: 12px;
-        }
-
-        .search-controls {
-            padding: 15px;
-            background: #fff;
-            border-bottom: 1px solid #ddd;
-        }
-
-        .search-actions {
+        .search-box {
             display: flex;
             gap: 10px;
-            margin-bottom: 10px;
+            margin-bottom: 20px;
         }
-
-        .search-actions .btn-blue {
-            margin-bottom: 0;
-            font-size: 14px;
-            padding: 8px;
+        .search-box button {
+            margin-top: 0;
+            flex: 1;
         }
-
         .brands-grid {
-            padding: 15px;
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: repeat(2, 1fr);
             gap: 15px;
         }
-
-        .brand-box {
-            background: #f8f9fa;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 25px 10px;
+        .brand-card {
+            background: var(--secondary-color);
+            border: 1px solid var(--border-color);
+            padding: 20px;
             text-align: center;
+            border-radius: 6px;
             font-weight: bold;
-            color: #333;
-            cursor: pointer;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            transition: 0.2s;
         }
-
-        .brand-box:hover {
-            background: #e9ecef;
-            border-color: #007bff;
-            color: #007bff;
+        
+        /* Sidebar Menu */
+        .sidebar {
+            height: 100%;
+            width: 0;
+            position: fixed;
+            z-index: 1;
+            top: 0;
+            right: 0;
+            background-color: #111;
+            overflow-x: hidden;
+            transition: 0.3s;
+            padding-top: 60px;
+        }
+        .sidebar a, .sidebar button {
+            padding: 8px 8px 8px 32px;
+            text-decoration: none;
+            font-size: 18px;
+            color: #818181;
+            display: block;
+            transition: 0.3s;
+            background: none;
+            border: none;
+            text-align: right;
+            width: 100%;
+            cursor: pointer;
+        }
+        .sidebar a:hover, .sidebar button:hover {
+            color: #f1f1f1;
+        }
+        .sidebar .close-btn {
+            position: absolute;
+            top: 0;
+            left: 25px;
+            font-size: 36px;
+            margin-right: 50px;
+        }
+        
+        /* Modal for adding user */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            width: 100%;
+            max-width: 400px;
+        }
+        .error-msg {
+            color: red;
+            font-size: 14px;
+            margin-bottom: 10px;
+            text-align: center;
         }
     </style>
 </head>
 <body>
 
     <div class="container">
-
-        <!-- ================= الواجهة الأولى (تسجيل الدخول / زائر) ================= -->
-        <div id="screen1" class="screen active">
-            <div class="logo-container">
-                <img src="electricity.jpeg" alt="صورة الشركة" class="logo" onerror="this.src='https://via.placeholder.com/120?text=Logo'">
+        <!-- واجهة تسجيل الدخول -->
+        <div id="login-screen">
+            <h2>Electricity - تسجيل الدخول</h2>
+            <div id="login-error" class="error-msg"></div>
+            <div class="form-group">
+                <label>رقم الهاتف</label>
+                <input type="text" id="login-phone" placeholder="أدخل رقم الهاتف">
             </div>
-
-            <!-- الدخول كزائر -->
-            <button class="btn-blue" onclick="loginAs('visitor')">الدخول كزائر (بدون تسجيل)</button>
-
-            <hr class="divider">
-
-            <h2>تسجيل الدخول</h2>
-            
-            <div class="input-group">
-                <input type="text" id="loginPhone" placeholder="رقم الهاتف">
+            <div class="form-group">
+                <label>رمز المرور</label>
+                <input type="password" id="login-password" placeholder="أدخل رمز المرور">
             </div>
-
-            <div class="input-group">
-                <input type="password" id="loginPassword" placeholder="رمز المرور">
+            <div class="form-group checkbox-group">
+                <input type="checkbox" id="remember-me">
+                <label for="remember-me" style="margin-bottom:0;">تذكرنى</label>
             </div>
-
-            <div class="remember-me">
-                <input type="checkbox" id="remember">
-                <label for="remember">تذكرنى</label>
-            </div>
-
-            <!-- زر الدخول: للتجربة السريعة، سنحدد الصلاحية بناءً على رقم الهاتف المدخل أو افتراضياً كمدير إذا ترك فارغاً -->
-            <button class="btn-blue" onclick="handleLogin()">دخول</button>
-            <p style="font-size: 11px; color: #666; text-align: center; margin-top: 5px;">
-                (ملاحظة تجريبية: اكتب phone مثل "010" لمدير، أو "011" لمندوب، أو اتركها لدخول مدير افتراضي)
-            </p>
+            <button onclick="login()">تسجيل الدخول</button>
+            <button class="btn-secondary" onclick="loginAsVisitor()">تسجيل الدخول كزائر</button>
         </div>
 
-
-        <!-- ================= الواجهة الثانية (الرئيسية) ================= -->
-        <div id="screen2" class="screen">
-            <!-- شريط علوي رمادي -->
-            <div class="top-bar-gray">
-                <div class="menu-icon" onclick="toggleMenu()">☰</div>
-                <span id="userBadge" class="user-status-badge">زائر</span>
-                <img src="electricity.jpeg" alt="الشركة" class="top-logo" onerror="this.src='https://via.placeholder.com/40?text=Logo'">
-                
-                <!-- القائمة الصغيرة (الـ 3 شرط) -->
-                <div id="smallMenu" class="dropdown-menu">
-                    <!-- تظهر فقط للمدير والمندوب -->
-                    <div id="menuRegisterItem" class="dropdown-item" style="display: none;" onclick="goToRegisterScreen()">تسجيل مستخدم</div>
-                    <div class="dropdown-item" onclick="logout()">تسجيل الخروج</div>
-                </div>
+        <!-- واجهة التطبيق الرئيسية -->
+        <div id="app-screen">
+            <div class="navbar">
+                <button id="menu-toggle-btn" class="menu-btn" onclick="toggleSidebar()">☰</button>
+                <div class="user-info" id="nav-user-info">المستخدم: زائر</div>
             </div>
 
-            <!-- أزرار البحث وخانة البحث -->
-            <div class="search-controls">
-                <div class="search-actions">
-                    <button class="btn-blue" onclick="alert('فتح كاميرا البحث')">البحث عن نوع الهاتف بالكاميرا</button>
-                    <button class="btn-green" onclick="alert('بدء البحث الصوتي')">البحث بالصوت</button>
-                </div>
-                <div class="input-group" style="margin-bottom: 0;">
-                    <input type="text" placeholder="البحث بالكتابة...">
-                </div>
+            <div class="search-box">
+                <button onclick="searchByCamera()">بحث بالكاميرا 📷</button>
+                <button onclick="searchByVoice()">بحث بالصوت 🎤</button>
             </div>
 
-            <!-- قائمة ماركات الهواتف (مربعات ثنائية) -->
             <div class="brands-grid">
-                <div class="brand-box">Apple</div>
-                <div class="brand-box">Samsung</div>
-                <div class="brand-box">Xiaomi</div>
-                <div class="brand-box">Infinix</div>
-                <div class="brand-box">Oppo</div>
-                <div class="brand-box">Huawei</div>
-                <div class="brand-box">Vivo</div>
-                <div class="brand-box">Honor</div>
-                <div class="brand-box">htc</div>
-                <div class="brand-box">Nokia</div>
+                <div class="brand-card">Apple</div>
+                <div class="brand-card">Samsung</div>
+                <div class="brand-card">Xiaomi</div>
+                <div class="brand-card">Infinix</div>
+                <div class="brand-card">Oppo</div>
+                <div class="brand-card">Huawei</div>
+                <div class="brand-card">Vivo</div>
+                <div class="brand-card">Honor</div>
+                <div class="brand-card">htc</div>
+                <div class="brand-card">Nokia</div>
             </div>
         </div>
+    </div>
 
+    <!-- القائمة الجانبية -->
+    <div id="mySidebar" class="sidebar">
+        <a href="javascript:void(0)" class="close-btn" onclick="toggleSidebar()">&times;</a>
+        <a id="menu-add-user" href="javascript:void(0)" onclick="openAddUserModal()" style="display:none;">إضافة مستخدم</a>
+        <a href="javascript:void(0)" onclick="logout()">تسجيل الخروج</a>
+    </div>
 
-        <!-- ================= واجهة تسجيل مستخدم جديدة ================= -->
-        <div id="screenRegister" class="screen">
-            <div style="display: flex; align-items: center; margin-bottom: 20px;">
-                <button class="btn-blue" style="width: auto; padding: 5px 10px; margin-bottom: 0;" onclick="goToScreen2()">رجوع</button>
-                <h2 style="margin: 0 auto; text-align: center;">تسجيل مستخدم جديد</h2>
-            </div>
-
-            <div class="input-group">
-                <label style="display: block; margin-bottom: 5px; font-size: 14px; color: #555;">نوع المستخدم:</label>
-                <select id="userTypeSelect">
-                    <!-- سيتم تعبئة الخيارات ديناميكياً حسب صلاحية المستخدم الحالي -->
+    <!-- نافذة إضافة مستخدم -->
+    <div id="addUserModal" class="modal">
+        <div class="modal-content">
+            <h2>إضافة مستخدم جديد</h2>
+            <div id="add-error" class="error-msg"></div>
+            <div class="form-group">
+                <label>نوع المستخدم</label>
+                <select id="new-user-type">
+                    <option value="فنى">فنى</option>
+                    <option value="تاجر">تاجر</option>
+                    <option value="مندوب">مندوب</option>
+                    <option value="مدير">مدير</option>
+                    <option value="ادمن">ادمن</option>
                 </select>
             </div>
-
-            <div class="input-group">
-                <input type="text" placeholder="رقم الهاتف الجديد">
+            <div class="form-group">
+                <label>اسم المستخدم</label>
+                <input type="text" id="new-user-name" placeholder="الاسم">
             </div>
-
-            <div class="input-group">
-                <input type="password" placeholder="رمز المرور">
+            <div class="form-group">
+                <label>رقم الهاتف</label>
+                <input type="text" id="new-user-phone" placeholder="رقم الهاتف">
             </div>
-
-            <button class="btn-blue" onclick="alert('تم تسجيل المستخدم بنجاح'); goToScreen2();">إتمام التسجيل</button>
+            <div class="form-group">
+                <label>رمز المرور</label>
+                <input type="password" id="new-user-password" placeholder="رمز المرور">
+            </div>
+            <button onclick="saveNewUser()">حفظ المستخدم</button>
+            <button class="btn-secondary" onclick="closeAddUserModal()">إلغاء</button>
         </div>
-
     </div>
 
     <script>
-        // تخزين نوع المستخدم الحالي (افتراضياً زائر)
-        let currentUserRole = 'visitor';
+        // تهيئة المستخدمين الأساسيين والتخزين المحلى
+        const defaultUsers = [
+            { name: "الأساسي", phone: "01155445215", password: "0000", type: "ادمن" }
+        ];
 
-        // محاكاة تسجيل الدخول
-        function handleLogin() {
-            const phone = document.getElementById('loginPhone').value.trim();
-            
-            // للأغراض التجريبية:
-            // إذا أدخل رقم يبدأ بـ 011 اعتبره مندوب، وإلا اعتبره مدير (أو كود افتراضي)
-            if (phone === '011') {
-                loginAs('delegate');
+        function getUsers() {
+            let users = localStorage.getItem('electricity_users');
+            if (!users) {
+                localStorage.setItem('electricity_users', JSON.stringify(defaultUsers));
+                return defaultUsers;
+            }
+            return JSON.parse(users);
+        }
+
+        let currentUser = null;
+
+        // التحقق من تذكرني عند تحميل الصفحة
+        window.onload = function() {
+            const savedUser = localStorage.getItem('electricity_current_user');
+            if (savedUser) {
+                currentUser = JSON.parse(savedUser);
+                enterApp();
+            }
+        };
+
+        function login() {
+            let phone = document.getElementById('login-phone').value.trim();
+            let password = document.getElementById('login-password').value.trim();
+            let rememberMe = document.getElementById('remember-me').checked;
+            let errorDiv = document.getElementById('login-error');
+
+            let users = getUsers();
+            let found = users.find(u => u.phone === phone && u.password === password);
+
+            if (found) {
+                currentUser = found;
+                if (rememberMe) {
+                    localStorage.setItem('electricity_current_user', JSON.stringify(currentUser));
+                }
+                errorDiv.innerText = "";
+                enterApp();
             } else {
-                loginAs('manager'); // المدير (الآدمن)
+                errorDiv.innerText = "رقم الهاتف أو رمز المرور غير صحيح.";
             }
         }
 
-        function loginAs(role) {
-            currentUserRole = role;
-            updateUIBasedOnRole();
-            goToScreen2();
+        function loginAsVisitor() {
+            currentUser = { type: "زائر", phone: "", name: "زائر" };
+            enterApp();
+        }
+
+        function enterApp() {
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('app-screen').style.display = 'block';
+
+            // إعداد الشريط العلوي والقائمة
+            let userInfoText = "";
+            let menuBtn = document.getElementById('menu-toggle-btn');
+            let addUserMenuLink = document.getElementById('menu-add-user');
+
+            if (currentUser.type === "زائر") {
+                userInfoText = "زائر (بدون رقم)";
+                menuBtn.style.display = 'none'; // الزائر لا تظهر له القائمة
+            } else {
+                userInfoText = `${currentUser.type} - ${currentUser.phone}`;
+                menuBtn.style.display = 'block';
+
+                // تحديد صلاحيات إظهار "إضافة مستخدم"
+                if (["ادمن", "مدير", "مندوب"].includes(currentUser.type)) {
+                    addUserMenuLink.style.display = 'block';
+                } else {
+                    addUserMenuLink.style.display = 'none';
+                }
+            }
+            document.getElementById('nav-user-info').innerText = userInfoText;
         }
 
         function logout() {
-            currentUserRole = 'visitor';
-            document.getElementById('loginPhone').value = '';
-            document.getElementById('loginPassword').value = '';
-            hideAllScreens();
-            document.getElementById('screen1').classList.add('active');
-            document.getElementById('smallMenu').classList.remove('show');
+            localStorage.removeItem('electricity_current_user');
+            currentUser = null;
+            document.getElementById('app-screen').style.display = 'none';
+            document.getElementById('login-screen').style.display = 'block';
+            document.getElementById('login-phone').value = '';
+            document.getElementById('login-password').value = '';
+            toggleSidebar();
         }
 
-        // تحديث الواجهة بناءً على صلاحيات المستخدم
-        function updateUIBasedOnRole() {
-            const registerItem = document.getElementById('menuRegisterItem');
-            const userBadge = document.getElementById('userBadge');
-            
-            // تعيين نص الشارة العلوية
-            const roleNames = {
-                'visitor': 'زائر',
-                'technician': 'فنى',
-                'merchant': 'تاجر',
-                'delegate': 'مندوب',
-                'manager': 'مدير / أدمن'
-            };
-            userBadge.innerText = roleNames[currentUserRole] || 'مستخدم';
-
-            // إظهار أو إخفاء خيار "تسجيل مستخدم" من القائمة بناءً على الصلاحية
-            if (currentUserRole === 'manager' || currentUserRole === 'delegate') {
-                registerItem.style.display = 'block';
+        function toggleSidebar() {
+            let sidebar = document.getElementById('mySidebar');
+            if (sidebar.style.width === '250px') {
+                sidebar.style.width = '0';
             } else {
-                registerItem.style.display = 'none';
+                sidebar.style.width = '250px';
             }
         }
 
-        // الانتقال لواجهة تسجيل مستخدم وتعبئة القائمة المنسدلة بصلاحياته
-        function goToRegisterScreen() {
-            hideAllScreens();
-            document.getElementById('screenRegister').classList.add('active');
-            document.getElementById('smallMenu').classList.remove('show');
+        function openAddUserModal() {
+            toggleSidebar();
+            // ضبط خيارات القائمة المنسدلة لأنواع المستخدمين المسموح إضافتهم حسب صلاحيات المستخدم الحالي
+            let select = document.getElementById('new-user-type');
+            select.innerHTML = '';
 
-            const select = document.getElementById('userTypeSelect');
-            select.innerHTML = ''; // تفريغ القائمة القديمة
-
-            if (currentUserRole === 'manager') {
-                // المدير يمكنه تسجيل: مدير، مندوب، تاجر، فنى
-                select.innerHTML = `
-                    <option value="manager">مدير</option>
-                    <option value="delegate">مندوب</option>
-                    <option value="merchant">تاجر</option>
-                    <option value="technician">فنى</option>
-                `;
-            } else if (currentUserRole === 'delegate') {
-                // المندوب يمكنه تسجيل: مندوب، تاجر، فنى (فقط)
-                select.innerHTML = `
-                    <option value="delegate">مندوب</option>
-                    <option value="merchant">تاجر</option>
-                    <option value="technician">فنى</option>
-                `;
+            let allowedTypes = [];
+            if (currentUser.type === 'ادمن') {
+                allowedTypes = ['فنى', 'تاجر', 'مندوب', 'مدير', 'ادمن'];
+            } else if (currentUser.type === 'مدير') {
+                allowedTypes = ['فنى', 'تاجر', 'مندوب', 'مدير']; // المدير لا يضيف أدمن
+            } else if (currentUser.type === 'مندوب') {
+                allowedTypes = ['فنى', 'تاجر']; // المندوب يضيف فني وتاجر فقط (عدا أدمن ومدير)
             }
+
+            allowedTypes.forEach(t => {
+                let opt = document.createElement('option');
+                opt.value = t;
+                opt.innerText = t;
+                select.appendChild(opt);
+            });
+
+            document.getElementById('add-error').innerText = '';
+            document.getElementById('new-user-name').value = '';
+            document.getElementById('new-user-phone').value = '';
+            document.getElementById('new-user-password').value = '';
+            document.getElementById('addUserModal').style.display = 'flex';
         }
 
-        // الانتقال للواجهة الثانية
-        function goToScreen2() {
-            hideAllScreens();
-            document.getElementById('screen2').classList.add('active');
-            document.getElementById('smallMenu').classList.remove('show');
+        function closeAddUserModal() {
+            document.getElementById('addUserModal').style.display = 'none';
         }
 
-        // إظهار وإخفاء القائمة الصغيرة (الـ 3 شرط)
-        function toggleMenu() {
-            const menu = document.getElementById('smallMenu');
-            menu.classList.toggle('show');
+        function saveNewUser() {
+            let type = document.getElementById('new-user-type').value;
+            let name = document.getElementById('new-user-name').value.trim();
+            let phone = document.getElementById('new-user-phone').value.trim();
+            let password = document.getElementById('new-user-password').value.trim();
+            let errorDiv = document.getElementById('add-error');
+
+            if (!name || !phone || !password) {
+                errorDiv.innerText = "الرجاء ملء جميع الحقول.";
+                return;
+            }
+
+            let users = getUsers();
+            if (users.some(u => u.phone === phone)) {
+                errorDiv.innerText = "رقم الهاتف موجود مسبقاً.";
+                return;
+            }
+
+            users.push({ name, phone, password, type });
+            localStorage.setItem('electricity_users', JSON.stringify(users));
+            alert("تم إضافة المستخدم بنجاح!");
+            closeAddUserModal();
         }
 
-        // دالة مساعدة لإخفاء جميع الشاشات
-        function hideAllScreens() {
-            const screens = document.querySelectorAll('.screen');
-            screens.forEach(screen => screen.classList.remove('active'));
+        function searchByCamera() {
+            alert("جاري فتح الكاميرا للبحث... (خاصية تجريبية)");
+        }
+
+        function searchByVoice() {
+            alert("جاري تفعيل البحث الصوتي... (خاصية تجريبية)");
         }
     </script>
-
 </body>
 </html>
