@@ -3,18 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Electricity</title>
+    <title>Electricity App</title>
     <style>
         :root {
-            --primary: #4f46e5;
-            --primary-hover: #4338ca;
-            --bg-color: #f3f4f6;
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --bg-color: #f8fafc;
             --card-bg: #ffffff;
-            --text-main: #1f2937;
-            --text-muted: #6b7280;
-            --border: #e5e7eb;
-            --radius: 16px;
-            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --radius: 20px;
+            --shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.05);
         }
 
         * {
@@ -25,36 +25,52 @@
         }
 
         body {
-            background-color: var(--bg-color);
+            background-color: #e2e8f0;
             color: var(--text-main);
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            padding: 10px;
+            padding: 15px;
         }
 
-        /* حاوية تشبه شاشة الموبايل */
+        /* حاوية التطبيق المركزية */
         .app-container {
             width: 100%;
-            max-width: 420px;
+            max-width: 410px;
             background: var(--card-bg);
             border-radius: var(--radius);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            min-height: 85vh;
+            height: 85vh;
+            max-height: 850px;
             position: relative;
         }
 
         /* شاشة تسجيل الدخول */
         #login-screen {
-            padding: 30px 24px;
+            padding: 40px 24px;
             display: flex;
             flex-direction: column;
             justify-content: center;
-            flex: 1;
+            height: 100%;
+            overflow-y: auto;
+        }
+
+        .login-logo {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #2563eb, #3b82f6);
+            color: white;
+            font-size: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 20px;
+            margin: 0 auto 20px auto;
+            box-shadow: 0 10px 20px rgba(37, 99, 235, 0.2);
         }
 
         .login-header {
@@ -63,10 +79,10 @@
         }
 
         .login-header h1 {
-            font-size: 28px;
-            color: var(--primary);
-            font-weight: 800;
-            margin-bottom: 8px;
+            font-size: 24px;
+            color: var(--text-main);
+            font-weight: 700;
+            margin-bottom: 6px;
         }
 
         .login-header p {
@@ -75,12 +91,12 @@
         }
 
         .form-group {
-            margin-bottom: 18px;
+            margin-bottom: 16px;
         }
 
         label {
             display: block;
-            margin-bottom: 6px;
+            margin-bottom: 8px;
             font-size: 13px;
             font-weight: 600;
             color: var(--text-main);
@@ -88,39 +104,41 @@
 
         input, select {
             width: 100%;
-            padding: 12px 16px;
-            border: 1px solid var(--border);
-            border-radius: 12px;
+            padding: 14px 16px;
+            border: 1.5px solid var(--border);
+            border-radius: 14px;
             font-size: 15px;
             outline: none;
             transition: all 0.2s ease;
-            background-color: #f9fafb;
+            background-color: #f8fafc;
+            color: var(--text-main);
         }
 
         input:focus, select:focus {
             border-color: var(--primary);
             background-color: #fff;
-            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
         }
 
         .checkbox-group {
             display: flex;
             align-items: center;
             gap: 10px;
-            margin-bottom: 20px;
+            margin: 10px 0 20px 0;
         }
 
         .checkbox-group input {
-            width: 18px;
-            height: 18px;
+            width: 20px;
+            height: 20px;
             accent-color: var(--primary);
             cursor: pointer;
+            border-radius: 4px;
         }
 
         .checkbox-group label {
             margin-bottom: 0;
             cursor: pointer;
-            font-weight: normal;
+            font-weight: 500;
         }
 
         button {
@@ -129,7 +147,7 @@
             background-color: var(--primary);
             color: white;
             border: none;
-            border-radius: 12px;
+            border-radius: 14px;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
@@ -145,21 +163,21 @@
         }
 
         .btn-secondary {
-            background-color: #f3f4f6;
+            background-color: #f1f5f9;
             color: var(--text-main);
             margin-top: 10px;
         }
 
         .btn-secondary:hover {
-            background-color: #e5e7eb;
+            background-color: #e2e8f0;
         }
 
         /* شاشة التطبيق الرئيسية */
         #app-screen {
             display: none;
             flex-direction: column;
-            flex: 1;
-            background-color: #fafafa;
+            height: 100%;
+            background-color: var(--bg-color);
         }
 
         .navbar {
@@ -175,19 +193,30 @@
             background: none;
             border: none;
             color: var(--text-main);
-            font-size: 24px;
+            font-size: 22px;
             cursor: pointer;
-            width: auto;
-            padding: 0;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            background-color: #f8fafc;
+            transition: background 0.2s;
+        }
+
+        .menu-btn:hover {
+            background-color: #f1f5f9;
         }
 
         .user-info {
             font-size: 13px;
             font-weight: 600;
-            background: #eef2ff;
+            background: #eff6ff;
             color: var(--primary);
-            padding: 6px 12px;
+            padding: 8px 14px;
             border-radius: 20px;
+            border: 1px solid #dbeafe;
         }
 
         .app-body {
@@ -198,7 +227,7 @@
 
         .search-box {
             display: flex;
-            gap: 10px;
+            gap: 12px;
             margin-bottom: 24px;
         }
 
@@ -208,51 +237,65 @@
             padding: 12px;
             background: #ffffff;
             color: var(--text-main);
-            border: 1px solid var(--border);
+            border: 1.5px solid var(--border);
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 6px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            gap: 8px;
+            border-radius: 14px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.01);
         }
 
         .search-box button:hover {
-            background: #f9fafb;
+            background: #f8fafc;
             border-color: var(--primary);
             color: var(--primary);
         }
 
         .section-title {
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 700;
             margin-bottom: 14px;
             color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
         .brands-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 12px;
+            padding-bottom: 20px;
         }
 
         .brand-card {
             background: #ffffff;
-            border: 1px solid var(--border);
-            padding: 20px 15px;
+            border: 1.5px solid var(--border);
+            padding: 18px 12px;
             text-align: center;
-            border-radius: 12px;
+            border-radius: 16px;
             font-weight: 600;
-            font-size: 15px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+            font-size: 14px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.01);
             transition: all 0.2s ease;
             cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .brand-icon {
+            font-size: 22px;
         }
 
         .brand-card:hover {
             border-color: var(--primary);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(79, 70, 229, 0.08);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(37, 99, 235, 0.08);
             color: var(--primary);
+            background-color: #f8fafc;
         }
 
         /* القائمة الجانبية (Drawer Sidebar) */
@@ -266,7 +309,7 @@
             background-color: #ffffff;
             overflow-x: hidden;
             transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: -5px 0 25px rgba(0,0,0,0.1);
+            box-shadow: -10px 0 30px rgba(0,0,0,0.1);
             padding-top: 60px;
         }
 
@@ -274,8 +317,9 @@
             padding: 0 20px 20px 20px;
             border-bottom: 1px solid var(--border);
             margin-bottom: 15px;
-            font-weight: bold;
+            font-weight: 700;
             color: var(--primary);
+            font-size: 16px;
         }
 
         .sidebar button, .sidebar a {
@@ -294,7 +338,7 @@
         }
 
         .sidebar button:hover, .sidebar a:hover {
-            background-color: #f3f4f6;
+            background-color: #f8fafc;
             color: var(--primary);
         }
 
@@ -302,12 +346,17 @@
             position: absolute;
             top: 15px;
             left: 15px;
-            font-size: 28px;
-            background: none;
+            font-size: 26px;
+            background: #f1f5f9;
             border: none;
             cursor: pointer;
             color: var(--text-muted);
-            width: auto;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             padding: 0;
         }
 
@@ -319,8 +368,8 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.4);
-            backdrop-filter: blur(4px);
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(5px);
             z-index: 200;
             justify-content: center;
             align-items: center;
@@ -333,12 +382,14 @@
             border-radius: var(--radius);
             width: 100%;
             max-width: 380px;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
             animation: modalPop 0.25s ease;
+            max-height: 90vh;
+            overflow-y: auto;
         }
 
         @keyframes modalPop {
-            0% { transform: scale(0.9); opacity: 0; }
+            0% { transform: scale(0.95); opacity: 0; }
             100% { transform: scale(1); opacity: 1; }
         }
 
@@ -346,10 +397,11 @@
             font-size: 18px;
             margin-bottom: 16px;
             color: var(--text-main);
+            font-weight: 700;
         }
 
         .error-msg {
-            color: #dc2626;
+            color: #ef4444;
             font-size: 13px;
             margin-bottom: 12px;
             text-align: center;
@@ -362,8 +414,9 @@
     <div class="app-container">
         <!-- واجهة تسجيل الدخول -->
         <div id="login-screen">
+            <div class="login-logo">⚡</div>
             <div class="login-header">
-                <h1>⚡ Electricity</h1>
+                <h1>Electricity</h1>
                 <p>مرحباً بك، يرجى تسجيل الدخول للمتابعة</p>
             </div>
             
@@ -371,15 +424,15 @@
             
             <div class="form-group">
                 <label>رقم الهاتف</label>
-                <input type="text" id="login-phone" placeholder="01xxxxxxxxx">
+                <input type="text" id="login-phone" placeholder="أدخل رقم الهاتف">
             </div>
             
             <div class="form-group">
                 <label>رمز المرور</label>
-                <input type="password" id="login-password" placeholder="••••">
+                <input type="password" id="login-password" placeholder="أدخل رمز المرور">
             </div>
             
-            <div class="form-group checkbox-group">
+            <div class="checkbox-group">
                 <input type="checkbox" id="remember-me">
                 <label for="remember-me">تذكرنى</label>
             </div>
@@ -401,18 +454,18 @@
                     <button onclick="searchByVoice()">🎤 بحث بالصوت</button>
                 </div>
 
-                <div class="section-title">الماركات المتوفرة</div>
+                <div class="section-title">📦 الماركات المتوفرة</div>
                 <div class="brands-grid">
-                    <div class="brand-card">Apple</div>
-                    <div class="brand-card">Samsung</div>
-                    <div class="brand-card">Xiaomi</div>
-                    <div class="brand-card">Infinix</div>
-                    <div class="brand-card">Oppo</div>
-                    <div class="brand-card">Huawei</div>
-                    <div class="brand-card">Vivo</div>
-                    <div class="brand-card">Honor</div>
-                    <div class="brand-card">htc</div>
-                    <div class="brand-card">Nokia</div>
+                    <div class="brand-card"><span class="brand-icon">🍏</span>Apple</div>
+                    <div class="brand-card"><span class="brand-icon">📱</span>Samsung</div>
+                    <div class="brand-card"><span class="brand-icon">📲</span>Xiaomi</div>
+                    <div class="brand-card"><span class="brand-icon">⚡</span>Infinix</div>
+                    <div class="brand-card"><span class="brand-icon">🔮</span>Oppo</div>
+                    <div class="brand-card"><span class="brand-icon">🌟</span>Huawei</div>
+                    <div class="brand-card"><span class="brand-icon">💎</span>Vivo</div>
+                    <div class="brand-card"><span class="brand-icon">🛡️</span>Honor</div>
+                    <div class="brand-card"><span class="brand-icon">⚙️</span>htc</div>
+                    <div class="brand-card"><span class="brand-icon">📞</span>Nokia</div>
                 </div>
             </div>
         </div>
@@ -422,8 +475,8 @@
     <div id="mySidebar" class="sidebar">
         <button class="close-btn" onclick="toggleSidebar()">&times;</button>
         <div class="sidebar-header">قائمة الخيارات</div>
-        <button id="menu-add-user" onclick="openAddUserModal()" style="display:none;">➕ إضافة مستخدم</button>
-        <button onclick="logout()" style="color: #dc2626;">🚪 تسجيل الخروج</button>
+        <button id="menu-add-user" onclick="openAddUserModal()" style="display:none;">➕ إضافة مستخدم جديد</button>
+        <button onclick="logout()" style="color: #ef4444;">🚪 تسجيل الخروج</button>
     </div>
 
     <!-- نافذة إضافة مستخدم -->
@@ -450,7 +503,7 @@
             
             <div class="form-group">
                 <label>رقم الهاتف</label>
-                <input type="text" id="new-user-phone" placeholder="01xxxxxxxxx">
+                <input type="text" id="new-user-phone" placeholder="رقم الهاتف">
             </div>
             
             <div class="form-group">
@@ -526,7 +579,7 @@
                 menuBtn.style.display = 'none';
             } else {
                 userInfoText = `${currentUser.type} (${currentUser.phone})`;
-                menuBtn.style.display = 'block';
+                menuBtn.style.display = 'flex';
 
                 if (["ادمن", "مدير", "مندوب"].includes(currentUser.type)) {
                     addUserMenuLink.style.display = 'block';
