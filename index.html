@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تطبيق الشركة</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f4f7f6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 400px;
+            background: #fff;
+            min-height: 100vh;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* تنسيق الواجهة الأولى */
+        .screen {
+            padding: 20px;
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        .logo-container {
+            text-align: center;
+            margin: 30px 0 20px 0;
+        }
+
+        .logo {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #007bff;
+        }
+
+        .btn-blue {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 12px;
+            width: 100%;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .btn-blue:hover {
+            background-color: #0056b3;
+        }
+
+        .btn-green {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .btn-green:hover {
+            background-color: #218838;
+        }
+
+        .divider {
+            border: none;
+            border-top: 1px solid #ddd;
+            margin: 20px 0;
+        }
+
+        h2 {
+            margin-bottom: 15px;
+            color: #333;
+            font-size: 18px;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group input[type="text"],
+        .input-group input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            font-size: 14px;
+            color: #555;
+        }
+
+        .remember-me input {
+            margin-left: 8px;
+        }
+
+        /* تنسيق الواجهة الثانية */
+        .top-bar-gray {
+            background-color: #6c757d;
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: white;
+        }
+
+        .menu-icon {
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .top-logo {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .search-controls {
+            padding: 15px;
+            background: #fff;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .search-actions {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .search-actions .btn-blue {
+            margin-bottom: 0;
+            font-size: 14px;
+            padding: 8px;
+        }
+
+        .brands-grid {
+            padding: 15px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .brand-box {
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 25px 10px;
+            text-align: center;
+            font-weight: bold;
+            color: #333;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            transition: 0.2s;
+        }
+
+        .brand-box:hover {
+            background: #e9ecef;
+            border-color: #007bff;
+            color: #007bff;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+
+        <!-- ================= الواجهة الأولى ================= -->
+        <div id="screen1" class="screen active">
+            <div class="logo-container">
+                <img src="electricity.jpeg" alt="صورة الشركة" class="logo" onerror="this.src='https://via.placeholder.com/120?text=Logo'">
+            </div>
+
+            <button class="btn-blue" onclick="goToScreen2()">الدخول كزائر (بدون تسجيل)</button>
+
+            <hr class="divider">
+
+            <h2>تسجيل الدخول</h2>
+            
+            <div class="input-group">
+                <input type="text" placeholder="رقم الهاتف">
+            </div>
+
+            <div class="input-group">
+                <input type="password" placeholder="رمز المرور">
+            </div>
+
+            <div class="remember-me">
+                <input type="checkbox" id="remember">
+                <label for="remember">تذكرنى</label>
+            </div>
+
+            <button class="btn-blue" onclick="goToScreen2()">دخول</button>
+        </div>
+
+
+        <!-- ================= الواجهة الثانية ================= -->
+        <div id="screen2" class="screen">
+            <!-- شريط علوي رمادي -->
+            <div class="top-bar-gray">
+                <div class="menu-icon" onclick="alert('فتح القائمة الصغيرة')">☰</div>
+                <img src="electricity.jpeg" alt="الشركة" class="top-logo" onerror="this.src='https://via.placeholder.com/40?text=Logo'">
+            </div>
+
+            <!-- أزرار البحث وخانة البحث -->
+            <div class="search-controls">
+                <div class="search-actions">
+                    <button class="btn-blue" onclick="alert('فتح كاميرا البحث')">البحث عن نوع الهاتف بالكاميرا</button>
+                    <button class="btn-green" onclick="alert('بدء البحث الصوتي')">البحث بالصوت</button>
+                </div>
+                <div class="input-group" style="margin-bottom: 0;">
+                    <input type="text" placeholder="البحث بالكتابة...">
+                </div>
+            </div>
+
+            <!-- قائمة ماركات الهواتف (مربعات ثنائية) -->
+            <div class="brands-grid">
+                <div class="brand-box">Apple</div>
+                <div class="brand-box">Samsung</div>
+                <div class="brand-box">Xiaomi</div>
+                <div class="brand-box">Infinix</div>
+                <div class="brand-box">Oppo</div>
+                <div class="brand-box">Huawei</div>
+                <div class="brand-box">Vivo</div>
+                <div class="brand-box">Honor</div>
+                <div class="brand-box">htc</div>
+                <div class="brand-box">Nokia</div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // دالة للانتقال بين الواجهتين للتجربة
+        function goToScreen2() {
+            document.getElementById('screen1').classList.remove('active');
+            document.getElementById('screen2').classList.add('active');
+        }
+    </script>
+
+</body>
+</html>
