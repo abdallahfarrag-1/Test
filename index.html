@@ -3,18 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Electricity App</title>
+    <title>Electricity</title>
     <style>
         :root {
-            --primary: #2563eb;
-            --primary-hover: #1d4ed8;
-            --bg-color: #f8fafc;
+            --primary-color: #176b75;
+            --primary-hover: #12555d;
+            --bg-color: #f4f7f6;
             --card-bg: #ffffff;
-            --text-main: #0f172a;
+            --text-main: #1e293b;
             --text-muted: #64748b;
-            --border: #e2e8f0;
-            --radius: 20px;
-            --shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.05);
+            --border-color: #e2e8f0;
+            --input-bg: #ffffff;
         }
 
         * {
@@ -25,7 +24,7 @@
         }
 
         body {
-            background-color: #e2e8f0;
+            background-color: var(--bg-color);
             color: var(--text-main);
             display: flex;
             justify-content: center;
@@ -34,64 +33,85 @@
             padding: 15px;
         }
 
-        /* حاوية التطبيق المركزية */
+        /* حاوية التطبيق */
         .app-container {
             width: 100%;
             max-width: 410px;
             background: var(--card-bg);
-            border-radius: var(--radius);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+            border-radius: 24px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            height: 85vh;
-            max-height: 850px;
+            min-height: 85vh;
             position: relative;
         }
 
         /* شاشة تسجيل الدخول */
         #login-screen {
-            padding: 40px 24px;
+            padding: 30px 24px;
             display: flex;
             flex-direction: column;
             justify-content: center;
-            height: 100%;
-            overflow-y: auto;
+            flex: 1;
         }
 
-        .login-logo {
-            width: 70px;
-            height: 70px;
-            background: linear-gradient(135deg, #2563eb, #3b82f6);
-            color: white;
-            font-size: 32px;
+        /* الهيدر العلوي في شاشة الدخول */
+        .login-top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .visitor-link {
+            color: var(--text-main);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+        }
+
+        .app-logo-badge {
+            width: 48px;
+            height: 48px;
+            background: #fef08a;
+            border-radius: 14px;
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: 20px;
-            margin: 0 auto 20px auto;
-            box-shadow: 0 10px 20px rgba(37, 99, 235, 0.2);
+            font-size: 22px;
+            box-shadow: 0 4px 10px rgba(254, 240, 138, 0.4);
         }
 
-        .login-header {
-            text-align: center;
-            margin-bottom: 30px;
+        .header-title-box {
+            margin-bottom: 24px;
         }
 
-        .login-header h1 {
-            font-size: 24px;
+        .team-badge {
+            font-size: 13px;
+            color: var(--primary-color);
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .header-title-box h1 {
+            font-size: 26px;
+            font-weight: 800;
             color: var(--text-main);
-            font-weight: 700;
             margin-bottom: 6px;
         }
 
-        .login-header p {
+        .header-title-box p {
             color: var(--text-muted);
-            font-size: 14px;
+            font-size: 13px;
         }
 
         .form-group {
-            margin-bottom: 16px;
+            margin-bottom: 18px;
         }
 
         label {
@@ -102,82 +122,141 @@
             color: var(--text-main);
         }
 
-        input, select {
-            width: 100%;
-            padding: 14px 16px;
-            border: 1.5px solid var(--border);
-            border-radius: 14px;
-            font-size: 15px;
-            outline: none;
-            transition: all 0.2s ease;
-            background-color: #f8fafc;
-            color: var(--text-main);
-        }
-
-        input:focus, select:focus {
-            border-color: var(--primary);
-            background-color: #fff;
-            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
-        }
-
-        .checkbox-group {
+        /* حاوية حقل الإدخال مع الأيقونة بداخله */
+        .input-wrapper {
+            position: relative;
             display: flex;
             align-items: center;
-            gap: 10px;
-            margin: 10px 0 20px 0;
         }
 
-        .checkbox-group input {
-            width: 20px;
-            height: 20px;
-            accent-color: var(--primary);
+        .input-wrapper input, .input-wrapper select {
+            width: 100%;
+            padding: 14px 16px;
+            padding-left: 45px; /* مساحة لأيقونة اليسار إن وجدت */
+            padding-right: 45px; /* مساحة لأيقونة اليمين */
+            border: 1.5px solid var(--border-color);
+            border-radius: 16px;
+            font-size: 15px;
+            outline: none;
+            background-color: var(--input-bg);
+            color: var(--text-main);
+            transition: all 0.2s;
+        }
+
+        .input-wrapper input:focus, .input-wrapper select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(23, 107, 117, 0.08);
+        }
+
+        .input-icon-right {
+            position: absolute;
+            right: 15px;
+            color: var(--text-muted);
+            font-size: 18px;
+            pointer-events: none;
+        }
+
+        .input-icon-left {
+            position: absolute;
+            left: 15px;
+            color: var(--text-muted);
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 8px;
+            margin: 10px 0 24px 0;
+        }
+
+        .checkbox-container input {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary-color);
             cursor: pointer;
             border-radius: 4px;
         }
 
-        .checkbox-group label {
+        .checkbox-container label {
             margin-bottom: 0;
+            font-weight: normal;
+            color: var(--text-main);
             cursor: pointer;
-            font-weight: 500;
+            font-size: 13px;
         }
 
-        button {
+        /* الأزرار الرئيسية */
+        .btn-primary {
             width: 100%;
             padding: 14px;
-            background-color: var(--primary);
+            background-color: var(--primary-color);
             color: white;
             border: none;
-            border-radius: 14px;
-            font-size: 16px;
+            border-radius: 16px;
+            font-size: 15px;
             font-weight: 600;
             cursor: pointer;
-            transition: background-color 0.2s, transform 0.1s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: background 0.2s, transform 0.1s;
+            box-shadow: 0 4px 12px rgba(23, 107, 117, 0.2);
         }
 
-        button:active {
+        .btn-primary:active {
             transform: scale(0.98);
         }
 
-        button:hover {
+        .btn-primary:hover {
             background-color: var(--primary-hover);
         }
 
-        .btn-secondary {
-            background-color: #f1f5f9;
-            color: var(--text-main);
-            margin-top: 10px;
+        .divider {
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+            line-height: 0.1em;
+            margin: 25px 0;
         }
 
-        .btn-secondary:hover {
-            background-color: #e2e8f0;
+        .divider span {
+            background: var(--card-bg);
+            padding: 0 15px;
+            color: var(--text-muted);
+            font-size: 12px;
+        }
+
+        .btn-outline {
+            width: 100%;
+            padding: 14px;
+            background-color: transparent;
+            color: var(--text-main);
+            border: 1.5px solid var(--border-color);
+            border-radius: 16px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .btn-outline:hover {
+            background-color: #f8fafc;
+            border-color: var(--text-muted);
         }
 
         /* شاشة التطبيق الرئيسية */
         #app-screen {
             display: none;
             flex-direction: column;
-            height: 100%;
-            background-color: var(--bg-color);
+            flex: 1;
+            background-color: #f8fafc;
         }
 
         .navbar {
@@ -186,37 +265,30 @@
             align-items: center;
             background: #ffffff;
             padding: 16px 20px;
-            border-bottom: 1px solid var(--border);
+            border-bottom: 1px solid var(--border-color);
         }
 
         .menu-btn {
-            background: none;
+            background: #f1f5f9;
             border: none;
             color: var(--text-main);
-            font-size: 22px;
+            font-size: 20px;
             cursor: pointer;
             width: 40px;
             height: 40px;
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: 10px;
-            background-color: #f8fafc;
-            transition: background 0.2s;
-        }
-
-        .menu-btn:hover {
-            background-color: #f1f5f9;
+            border-radius: 12px;
         }
 
         .user-info {
             font-size: 13px;
             font-weight: 600;
-            background: #eff6ff;
-            color: var(--primary);
-            padding: 8px 14px;
+            background: #e6f4f5;
+            color: var(--primary-color);
+            padding: 6px 14px;
             border-radius: 20px;
-            border: 1px solid #dbeafe;
         }
 
         .app-body {
@@ -232,24 +304,25 @@
         }
 
         .search-box button {
-            margin-top: 0;
-            font-size: 14px;
+            flex: 1;
             padding: 12px;
             background: #ffffff;
             color: var(--text-main);
-            border: 1.5px solid var(--border);
+            border: 1.5px solid var(--border-color);
+            border-radius: 14px;
+            font-weight: 600;
+            font-size: 14px;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
-            border-radius: 14px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.01);
+            gap: 6px;
+            cursor: pointer;
+            transition: 0.2s;
         }
 
         .search-box button:hover {
-            background: #f8fafc;
-            border-color: var(--primary);
-            color: var(--primary);
+            border-color: var(--primary-color);
+            color: var(--primary-color);
         }
 
         .section-title {
@@ -257,48 +330,38 @@
             font-weight: 700;
             margin-bottom: 14px;
             color: var(--text-main);
-            display: flex;
-            align-items: center;
-            gap: 6px;
         }
 
         .brands-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 12px;
-            padding-bottom: 20px;
         }
 
         .brand-card {
             background: #ffffff;
-            border: 1.5px solid var(--border);
-            padding: 18px 12px;
+            border: 1.5px solid var(--border-color);
+            padding: 18px;
             text-align: center;
             border-radius: 16px;
             font-weight: 600;
             font-size: 14px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.01);
-            transition: all 0.2s ease;
             cursor: pointer;
+            transition: 0.2s;
             display: flex;
-            flex-direction: column;
             align-items: center;
+            justify-content: center;
             gap: 8px;
         }
 
-        .brand-icon {
-            font-size: 22px;
-        }
-
         .brand-card:hover {
-            border-color: var(--primary);
-            transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(37, 99, 235, 0.08);
-            color: var(--primary);
-            background-color: #f8fafc;
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
         }
 
-        /* القائمة الجانبية (Drawer Sidebar) */
+        /* القائمة الجانبية */
         .sidebar {
             height: 100%;
             width: 0;
@@ -315,41 +378,38 @@
 
         .sidebar-header {
             padding: 0 20px 20px 20px;
-            border-bottom: 1px solid var(--border);
+            border-bottom: 1px solid var(--border-color);
             margin-bottom: 15px;
             font-weight: 700;
-            color: var(--primary);
+            color: var(--primary-color);
             font-size: 16px;
         }
 
-        .sidebar button, .sidebar a {
+        .sidebar button {
             padding: 14px 24px;
-            text-decoration: none;
             font-size: 15px;
             font-weight: 600;
             color: var(--text-main);
             display: block;
-            transition: 0.2s;
             background: none;
             border: none;
             text-align: right;
             width: 100%;
             cursor: pointer;
+            transition: 0.2s;
         }
 
-        .sidebar button:hover, .sidebar a:hover {
+        .sidebar button:hover {
             background-color: #f8fafc;
-            color: var(--primary);
+            color: var(--primary-color);
         }
 
         .sidebar .close-btn {
             position: absolute;
             top: 15px;
             left: 15px;
-            font-size: 26px;
+            font-size: 22px;
             background: #f1f5f9;
-            border: none;
-            cursor: pointer;
             color: var(--text-muted);
             width: 36px;
             height: 36px;
@@ -357,10 +417,11 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 0;
+            cursor: pointer;
+            border: none;
         }
 
-        /* نافذة منبثقة (Modal) */
+        /* النوافذ المنبثقة */
         .modal {
             display: none;
             position: fixed;
@@ -368,8 +429,8 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(15, 23, 42, 0.6);
-            backdrop-filter: blur(5px);
+            background: rgba(15, 23, 42, 0.5);
+            backdrop-filter: blur(4px);
             z-index: 200;
             justify-content: center;
             align-items: center;
@@ -379,18 +440,12 @@
         .modal-content {
             background: white;
             padding: 24px;
-            border-radius: var(--radius);
+            border-radius: 24px;
             width: 100%;
             max-width: 380px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-            animation: modalPop 0.25s ease;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
             max-height: 90vh;
             overflow-y: auto;
-        }
-
-        @keyframes modalPop {
-            0% { transform: scale(0.95); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
         }
 
         .modal-content h2 {
@@ -414,31 +469,52 @@
     <div class="app-container">
         <!-- واجهة تسجيل الدخول -->
         <div id="login-screen">
-            <div class="login-logo">⚡</div>
-            <div class="login-header">
-                <h1>Electricity</h1>
-                <p>مرحباً بك، يرجى تسجيل الدخول للمتابعة</p>
+            <div class="login-top-bar">
+                <a class="visitor-link" onclick="loginAsVisitor()">
+                    <span>دخول كزائر</span> ←
+                </a>
+                <div class="app-logo-badge">⚡</div>
+            </div>
+
+            <div class="header-title-box">
+                <div class="team-badge">مساحة الفريق</div>
+                <h1>مرحباً بعودتك</h1>
+                <p>سجل الدخول لإدارة الأجهزة وفريق الخدمة.</p>
             </div>
             
             <div id="login-error" class="error-msg"></div>
             
             <div class="form-group">
                 <label>رقم الهاتف</label>
-                <input type="text" id="login-phone" placeholder="أدخل رقم الهاتف">
+                <div class="input-wrapper">
+                    <input type="text" id="login-phone" placeholder="05X XXX XXXX">
+                    <span class="input-icon-right">📞</span>
+                </div>
             </div>
             
             <div class="form-group">
-                <label>رمز المرور</label>
-                <input type="password" id="login-password" placeholder="أدخل رمز المرور">
+                <label>كلمة المرور</label>
+                <div class="input-wrapper">
+                    <input type="password" id="login-password" placeholder="أدخل كلمة المرور">
+                    <span class="input-icon-right">🔒</span>
+                    <span class="input-icon-left" onclick="togglePasswordVisibility()">👁️</span>
+                </div>
             </div>
             
-            <div class="checkbox-group">
-                <input type="checkbox" id="remember-me">
-                <label for="remember-me">تذكرنى</label>
+            <div class="checkbox-container">
+                <label for="remember-me">تذكر هذا الجهاز</label>
+                <input type="checkbox" id="remember-me" checked>
             </div>
             
-            <button onclick="login()">تسجيل الدخول</button>
-            <button class="btn-secondary" onclick="loginAsVisitor()">الدخول كزائر</button>
+            <button class="btn-primary" onclick="login()">
+                <span>تسجيل الدخول</span> ←
+            </button>
+            
+            <div class="divider"><span>أو</span></div>
+            
+            <button class="btn-outline" onclick="loginAsVisitor()">
+                <span>تصفّح كزائر</span> 👤
+            </button>
         </div>
 
         <!-- واجهة التطبيق الرئيسية -->
@@ -454,18 +530,18 @@
                     <button onclick="searchByVoice()">🎤 بحث بالصوت</button>
                 </div>
 
-                <div class="section-title">📦 الماركات المتوفرة</div>
+                <div class="section-title">الماركات المتوفرة</div>
                 <div class="brands-grid">
-                    <div class="brand-card"><span class="brand-icon">🍏</span>Apple</div>
-                    <div class="brand-card"><span class="brand-icon">📱</span>Samsung</div>
-                    <div class="brand-card"><span class="brand-icon">📲</span>Xiaomi</div>
-                    <div class="brand-card"><span class="brand-icon">⚡</span>Infinix</div>
-                    <div class="brand-card"><span class="brand-icon">🔮</span>Oppo</div>
-                    <div class="brand-card"><span class="brand-icon">🌟</span>Huawei</div>
-                    <div class="brand-card"><span class="brand-icon">💎</span>Vivo</div>
-                    <div class="brand-card"><span class="brand-icon">🛡️</span>Honor</div>
-                    <div class="brand-card"><span class="brand-icon">⚙️</span>htc</div>
-                    <div class="brand-card"><span class="brand-icon">📞</span>Nokia</div>
+                    <div class="brand-card">🍏 Apple</div>
+                    <div class="brand-card">📱 Samsung</div>
+                    <div class="brand-card">📲 Xiaomi</div>
+                    <div class="brand-card">⚡ Infinix</div>
+                    <div class="brand-card">🔮 Oppo</div>
+                    <div class="brand-card">🌟 Huawei</div>
+                    <div class="brand-card">💎 Vivo</div>
+                    <div class="brand-card">🛡️ Honor</div>
+                    <div class="brand-card">⚙️ htc</div>
+                    <div class="brand-card">📞 Nokia</div>
                 </div>
             </div>
         </div>
@@ -487,32 +563,40 @@
             
             <div class="form-group">
                 <label>نوع المستخدم</label>
-                <select id="new-user-type">
-                    <option value="فنى">فنى</option>
-                    <option value="تاجر">تاجر</option>
-                    <option value="مندوب">مندوب</option>
-                    <option value="مدير">مدير</option>
-                    <option value="ادمن">ادمن</option>
-                </select>
+                <div class="input-wrapper">
+                    <select id="new-user-type">
+                        <option value="فنى">فنى</option>
+                        <option value="تاجر">تاجر</option>
+                        <option value="مندوب">مندوب</option>
+                        <option value="مدير">مدير</option>
+                        <option value="ادمن">ادمن</option>
+                    </select>
+                </div>
             </div>
             
             <div class="form-group">
                 <label>اسم المستخدم</label>
-                <input type="text" id="new-user-name" placeholder="الاسم الكامل">
+                <div class="input-wrapper">
+                    <input type="text" id="new-user-name" placeholder="الاسم الكامل">
+                </div>
             </div>
             
             <div class="form-group">
                 <label>رقم الهاتف</label>
-                <input type="text" id="new-user-phone" placeholder="رقم الهاتف">
+                <div class="input-wrapper">
+                    <input type="text" id="new-user-phone" placeholder="رقم الهاتف">
+                </div>
             </div>
             
             <div class="form-group">
                 <label>رمز المرور</label>
-                <input type="password" id="new-user-password" placeholder="رمز المرور">
+                <div class="input-wrapper">
+                    <input type="password" id="new-user-password" placeholder="رمز المرور">
+                </div>
             </div>
             
-            <button onclick="saveNewUser()">حفظ المستخدم</button>
-            <button class="btn-secondary" onclick="closeAddUserModal()">إلغاء</button>
+            <button class="btn-primary" onclick="saveNewUser()" style="margin-top: 10px;">حفظ المستخدم</button>
+            <button class="btn-outline" onclick="closeAddUserModal()" style="margin-top: 10px;">إلغاء</button>
         </div>
     </div>
 
@@ -540,6 +624,15 @@
             }
         };
 
+        function togglePasswordVisibility() {
+            let passwordInput = document.getElementById('login-password');
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+            } else {
+                passwordInput.type = 'password';
+            }
+        }
+
         function login() {
             let phone = document.getElementById('login-phone').value.trim();
             let password = document.getElementById('login-password').value.trim();
@@ -552,12 +645,13 @@
             if (found) {
                 currentUser = found;
                 if (rememberMe) {
+                    localStorage.getItem('electricity_current_user', JSON.stringify(currentUser));
                     localStorage.setItem('electricity_current_user', JSON.stringify(currentUser));
                 }
                 errorDiv.innerText = "";
                 enterApp();
             } else {
-                errorDiv.innerText = "رقم الهاتف أو رمز المرور غير صحيح.";
+                errorDiv.innerText = "رقم الهاتف أو كلمة المرور غير صحيح.";
             }
         }
 
@@ -630,6 +724,7 @@
                 select.appendChild(opt);
             });
 
+            document.buildAddError = ''; // placeholder
             document.getElementById('add-error').innerText = '';
             document.getElementById('new-user-name').value = '';
             document.getElementById('new-user-phone').value = '';
