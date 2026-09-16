@@ -3,669 +3,184 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Electricity</title>
+    <title>Electricity - تسجيل الدخول</title>
+    <!-- استيراد خط عربي جميل من جوجل -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary: #2563eb;
-            --primary-hover: #1d4ed8;
-            --bg-color: #f8fafc;
-            --card-bg: #ffffff;
-            --text-main: #0f172a;
-            --text-muted: #64748b;
-            --border: #e2e8f0;
-            --radius: 20px;
-        }
-
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-family: 'Cairo', sans-serif;
         }
 
         body {
-            background-color: #e2e8f0;
-            color: var(--text-main);
+            background: linear-gradient(135deg, #0052D4, #4364F7, #6FB1FC);
+            height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
-            padding: 15px;
         }
 
-        .app-container {
+        .login-container {
+            background-color: #ffffff;
+            padding: 40px 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
             width: 100%;
-            max-width: 410px;
-            background: var(--card-bg);
-            border-radius: var(--radius);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            height: 85vh;
-            max-height: 850px;
-            position: relative;
-        }
-
-        #login-screen {
-            padding: 40px 24px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            height: 100%;
-            overflow-y: auto;
-        }
-
-        .login-logo {
-            width: 70px;
-            height: 70px;
-            background: linear-gradient(135deg, #2563eb, #3b82f6);
-            color: white;
-            font-size: 32px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 20px;
-            margin: 0 auto 20px auto;
-            box-shadow: 0 10px 20px rgba(37, 99, 235, 0.2);
-        }
-
-        .login-header {
+            max-width: 400px;
             text-align: center;
+        }
+
+        .logo-area h1 {
+            color: #0052D4;
+            font-size: 32px;
+            margin-bottom: 5px;
+            font-weight: 700;
+        }
+
+        .logo-area p {
+            color: #666;
+            font-size: 14px;
             margin-bottom: 30px;
         }
 
-        .login-header h1 {
-            font-size: 24px;
-            color: var(--text-main);
-            font-weight: 700;
-            margin-bottom: 6px;
+        .input-group {
+            margin-bottom: 20px;
+            text-align: right;
         }
 
-        .login-header p {
-            color: var(--text-muted);
-            font-size: 14px;
-        }
-
-        .form-group {
-            margin-bottom: 16px;
-        }
-
-        label {
+        .input-group label {
             display: block;
             margin-bottom: 8px;
-            font-size: 13px;
+            color: #333;
+            font-size: 14px;
             font-weight: 600;
-            color: var(--text-main);
         }
 
-        input, select {
+        .input-group input {
             width: 100%;
-            padding: 14px 16px;
-            border: 1.5px solid var(--border);
-            border-radius: 14px;
-            font-size: 15px;
+            padding: 12px 15px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 14px;
             outline: none;
-            transition: all 0.2s ease;
-            background-color: #f8fafc;
-            color: var(--text-main);
+            transition: border-color 0.3s;
         }
 
-        input:focus, select:focus {
-            border-color: var(--primary);
-            background-color: #fff;
-            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+        .input-group input:focus {
+            border-color: #0052D4;
+            box-shadow: 0 0 5px rgba(0, 82, 212, 0.2);
         }
 
-        .checkbox-group {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin: 10px 0 20px 0;
-        }
-
-        .checkbox-group input {
-            width: 20px;
-            height: 20px;
-            accent-color: var(--primary);
-            cursor: pointer;
-            border-radius: 4px;
-        }
-
-        .checkbox-group label {
-            margin-bottom: 0;
-            cursor: pointer;
-            font-weight: 500;
-        }
-
-        button {
-            width: 100%;
-            padding: 14px;
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 14px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.2s, transform 0.1s;
-        }
-
-        button:active {
-            transform: scale(0.98);
-        }
-
-        button:hover {
-            background-color: var(--primary-hover);
-        }
-
-        .btn-secondary {
-            background-color: #f1f5f9;
-            color: var(--text-main);
-            margin-top: 10px;
-        }
-
-        .btn-secondary:hover {
-            background-color: #e2e8f0;
-        }
-
-        #app-screen {
-            display: none;
-            flex-direction: column;
-            height: 100%;
-            background-color: var(--bg-color);
-        }
-
-        .navbar {
+        .options-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: #ffffff;
-            padding: 16px 20px;
-            border-bottom: 1px solid var(--border);
+            margin-bottom: 25px;
+            font-size: 13px;
+            color: #555;
         }
 
-        .menu-btn {
-            background: none;
-            border: none;
-            color: var(--text-main);
-            font-size: 22px;
-            cursor: pointer;
-            width: 40px;
-            height: 40px;
+        .options-row label {
             display: flex;
             align-items: center;
-            justify-content: center;
-            border-radius: 10px;
-            background-color: #f8fafc;
-            transition: background 0.2s;
+            gap: 5px;
+            cursor: pointer;
         }
 
-        .menu-btn:hover {
-            background-color: #f1f5f9;
-        }
-
-        .user-info {
-            font-size: 13px;
-            font-weight: 600;
-            background: #eff6ff;
-            color: var(--primary);
-            padding: 8px 14px;
-            border-radius: 20px;
-            border: 1px solid #dbeafe;
-        }
-
-        .app-body {
-            padding: 20px;
-            overflow-y: auto;
-            flex: 1;
-        }
-
-        .search-box {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 24px;
-        }
-
-        .search-box button {
-            margin-top: 0;
-            font-size: 14px;
+        .btn-login {
+            background-color: #0052D4;
+            color: white;
+            border: none;
+            width: 100%;
             padding: 12px;
-            background: #ffffff;
-            color: var(--text-main);
-            border: 1.5px solid var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            border-radius: 14px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.01);
-        }
-
-        .search-box button:hover {
-            background: #f8fafc;
-            border-color: var(--primary);
-            color: var(--primary);
-        }
-
-        .section-title {
-            font-size: 15px;
-            font-weight: 700;
-            margin-bottom: 14px;
-            color: var(--text-main);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .brands-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            padding-bottom: 20px;
-        }
-
-        .brand-card {
-            background: #ffffff;
-            border: 1.5px solid var(--border);
-            padding: 18px 12px;
-            text-align: center;
-            border-radius: 16px;
-            font-weight: 600;
-            font-size: 14px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.01);
-            transition: all 0.2s ease;
-            cursor: pointer;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .brand-icon {
-            font-size: 22px;
-        }
-
-        .brand-card:hover {
-            border-color: var(--primary);
-            transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(37, 99, 235, 0.08);
-            color: var(--primary);
-            background-color: #f8fafc;
-        }
-
-        .sidebar {
-            height: 100%;
-            width: 0;
-            position: fixed;
-            z-index: 100;
-            top: 0;
-            right: 0;
-            background-color: #ffffff;
-            overflow-x: hidden;
-            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: -10px 0 30px rgba(0,0,0,0.1);
-            padding-top: 60px;
-        }
-
-        .sidebar-header {
-            padding: 0 20px 20px 20px;
-            border-bottom: 1px solid var(--border);
-            margin-bottom: 15px;
-            font-weight: 700;
-            color: var(--primary);
+            border-radius: 8px;
             font-size: 16px;
-        }
-
-        .sidebar button, .sidebar a {
-            padding: 14px 24px;
-            text-decoration: none;
-            font-size: 15px;
             font-weight: 600;
-            color: var(--text-main);
-            display: block;
-            transition: 0.2s;
-            background: none;
-            border: none;
-            text-align: right;
-            width: 100%;
             cursor: pointer;
+            transition: background-color 0.3s;
         }
 
-        .sidebar button:hover, .sidebar a:hover {
-            background-color: #f8fafc;
-            color: var(--primary);
+        .btn-login:hover {
+            background-color: #003fa7;
         }
 
-        .sidebar .close-btn {
-            position: absolute;
-            top: 15px;
-            left: 15px;
-            font-size: 26px;
-            background: #f1f5f9;
-            border: none;
-            cursor: pointer;
-            color: var(--text-muted);
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
+        .divider {
             display: flex;
             align-items: center;
-            justify-content: center;
-            padding: 0;
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(15, 23, 42, 0.6);
-            backdrop-filter: blur(5px);
-            z-index: 200;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-
-        .modal-content {
-            background: white;
-            padding: 24px;
-            border-radius: var(--radius);
-            width: 100%;
-            max-width: 380px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-            animation: modalPop 0.25s ease;
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-
-        @keyframes modalPop {
-            0% { transform: scale(0.95); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-
-        .modal-content h2 {
-            font-size: 18px;
-            margin-bottom: 16px;
-            color: var(--text-main);
-            font-weight: 700;
-        }
-
-        .error-msg {
-            color: #ef4444;
-            font-size: 13px;
-            margin-bottom: 12px;
             text-align: center;
-            font-weight: 500;
+            margin: 20px 0;
+            color: #888;
+            font-size: 13px;
+        }
+
+        .divider::before, .divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .divider::before {
+            margin-left: 10px;
+        }
+
+        .divider::after {
+            margin-right: 10px;
+        }
+
+        .btn-guest {
+            background-color: #f3f4f6;
+            color: #0052D4;
+            border: 1px solid #0052D4;
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s;
+        }
+
+        .btn-guest:hover {
+            background-color: #ebf5ff;
         }
     </style>
 </head>
 <body>
 
-    <div class="app-container">
-        <!-- واجهة تسجيل الدخول -->
-        <div id="login-screen">
-            <div class="login-logo">⚡</div>
-            <div class="login-header">
-                <h1>Electricity</h1>
-                <p>مرحباً بك، يرجى تسجيل الدخول للمتابعة</p>
-            </div>
-            
-            <div id="login-error" class="error-msg"></div>
-            
-            <div class="form-group">
-                <label>رقم الهاتف</label>
-                <input type="text" id="login-phone" placeholder="أدخل رقم الهاتف">
-            </div>
-            
-            <div class="form-group">
-                <label>رمز المرور</label>
-                <input type="password" id="login-password" placeholder="أدخل رمز المرور">
-            </div>
-            
-            <div class="checkbox-group">
-                <input type="checkbox" id="remember-me">
-                <label for="remember-me">تذكرنى</label>
-            </div>
-            
-            <button onclick="login()">تسجيل الدخول</button>
-            <button class="btn-secondary" onclick="loginAsVisitor()">تسجيل الدخول كزائر</button>
+    <div class="login-container">
+        <div class="logo-area">
+            <h1>Electricity</h1>
+            <p>مرحباً بك، يرجى تسجيل الدخول للمتابعة</p>
         </div>
 
-        <!-- واجهة التطبيق الرئيسية -->
-        <div id="app-screen">
-            <div class="navbar">
-                <button id="menu-toggle-btn" class="menu-btn" onclick="toggleSidebar()">☰</button>
-                <div class="user-info" id="nav-user-info">زائر</div>
+        <form action="#" method="POST">
+            <div class="input-group">
+                <label for="phone">رقم الهاتف</label>
+                <input type="tel" id="phone" name="phone" placeholder="أدخل رقم الهاتف" required>
             </div>
 
-            <div class="app-body">
-                <div class="search-box">
-                    <button onclick="searchByCamera()">📷 بحث بالكاميرا</button>
-                    <button onclick="searchByVoice()">🎤 بحث بالصوت</button>
-                </div>
-
-                <div class="section-title">📦 الماركات المتوفرة</div>
-                <div class="brands-grid">
-                    <div class="brand-card"><span class="brand-icon">🍏</span>Apple</div>
-                    <div class="brand-card"><span class="brand-icon">📱</span>Samsung</div>
-                    <div class="brand-card"><span class="brand-icon">📲</span>Xiaomi</div>
-                    <div class="brand-card"><span class="brand-icon">⚡</span>Infinix</div>
-                    <div class="brand-card"><span class="brand-icon">🔮</span>Oppo</div>
-                    <div class="brand-card"><span class="brand-icon">🌟</span>Huawei</div>
-                    <div class="brand-card"><span class="brand-icon">💎</span>Vivo</div>
-                    <div class="brand-card"><span class="brand-icon">🛡️</span>Honor</div>
-                    <div class="brand-card"><span class="brand-icon">⚙️</span>htc</div>
-                    <div class="brand-card"><span class="brand-icon">📞</span>Nokia</div>
-                </div>
+            <div class="input-group">
+                <label for="password">رمز المرور</label>
+                <input type="password" id="password" name="password" placeholder="أدخل رمز المرور" required>
             </div>
-        </div>
+
+            <div class="options-row">
+                <label>
+                    <input type="checkbox" name="remember"> تذكرني
+                </label>
+            </div>
+
+            <button type="submit" class="btn-login">تسجيل الدخول</button>
+        </form>
+
+        <div class="divider">أو</div>
+
+        <a href="#" class="btn-guest">الدخول كزائر</a>
     </div>
 
-    <!-- القائمة الجانبية -->
-    <div id="mySidebar" class="sidebar">
-        <button class="close-btn" onclick="toggleSidebar()">&times;</button>
-        <div class="sidebar-header">قائمة الخيارات</div>
-        <button id="menu-add-user" onclick="openAddUserModal()" style="display:none;">➕ إضافة مستخدم جديد</button>
-        <button onclick="logout()" style="color: #ef4444;">🚪 تسجيل الخروج</button>
-    </div>
-
-    <!-- نافذة إضافة مستخدم -->
-    <div id="addUserModal" class="modal">
-        <div class="modal-content">
-            <h2>إضافة مستخدم جديد</h2>
-            <div id="add-error" class="error-msg"></div>
-            
-            <div class="form-group">
-                <label>نوع المستخدم</label>
-                <select id="new-user-type">
-                    <option value="فنى">فنى</option>
-                    <option value="تاجر">تاجر</option>
-                    <option value="مندوب">مندوب</option>
-                    <option value="مدير">مدير</option>
-                    <option value="ادمن">ادمن</option>
-                </select>
-            </div>
-            
-            <div class="form-group">
-                <label>اسم المستخدم</label>
-                <input type="text" id="new-user-name" placeholder="الاسم الكامل">
-            </div>
-            
-            <div class="form-group">
-                <label>رقم الهاتف</label>
-                <input type="text" id="new-user-phone" placeholder="رقم الهاتف">
-            </div>
-            
-            <div class="form-group">
-                <label>رمز المرور</label>
-                <input type="password" id="new-user-password" placeholder="رمز المرور">
-            </div>
-            
-            <button onclick="saveNewUser()">حفظ المستخدم</button>
-            <button class="btn-secondary" onclick="closeAddUserModal()">إلغاء</button>
-        </div>
-    </div>
-
-    <script>
-        const defaultUsers = [
-            { name: "الأساسي", phone: "01155445215", password: "0000", type: "ادمن" }
-        ];
-
-        function getUsers() {
-            let users = localStorage.getItem('electricity_users');
-            if (!users) {
-                localStorage.setItem('electricity_users', JSON.stringify(defaultUsers));
-                return defaultUsers;
-            }
-            return JSON.parse(users);
-        }
-
-        let currentUser = null;
-
-        window.onload = function() {
-            const savedUser = localStorage.getItem('electricity_current_user');
-            if (savedUser) {
-                currentUser = JSON.parse(savedUser);
-                enterApp();
-            }
-        };
-
-        function login() {
-            let phone = document.getElementById('login-phone').value.trim();
-            let password = document.getElementById('login-password').value.trim();
-            let rememberMe = document.getElementById('remember-me').checked;
-            let errorDiv = document.getElementById('login-error');
-
-            let users = getUsers();
-            let found = users.find(u => u.phone === phone && u.password === password);
-
-            if (found) {
-                currentUser = found;
-                if (rememberMe) {
-                    localStorage.setItem('electricity_current_user', JSON.stringify(currentUser));
-                }
-                errorDiv.innerText = "";
-                enterApp();
-            } else {
-                errorDiv.innerText = "رقم الهاتف أو رمز المرور غير صحيح.";
-            }
-        }
-
-        function loginAsVisitor() {
-            currentUser = { type: "زائر", phone: "", name: "زائر" };
-            enterApp();
-        }
-
-        function enterApp() {
-            document.getElementById('login-screen').style.display = 'none';
-            document.getElementById('app-screen').style.display = 'flex';
-
-            let userInfoText = "";
-            let menuBtn = document.getElementById('menu-toggle-btn');
-            let addUserMenuLink = document.getElementById('menu-add-user');
-
-            if (currentUser.type === "زائر") {
-                userInfoText = "زائر";
-                menuBtn.style.display = 'none';
-            } else {
-                userInfoText = `${currentUser.type} (${currentUser.phone})`;
-                menuBtn.style.display = 'flex';
-
-                if (["ادمن", "مدير", "مندوب"].includes(currentUser.type)) {
-                    addUserMenuLink.style.display = 'block';
-                } else {
-                    addUserMenuLink.style.display = 'none';
-                }
-            }
-            document.getElementById('nav-user-info').innerText = userInfoText;
-        }
-
-        function logout() {
-            localStorage.removeItem('electricity_current_user');
-            currentUser = null;
-            document.getElementById('app-screen').style.display = 'none';
-            document.getElementById('login-screen').style.display = 'flex';
-            document.getElementById('login-phone').value = '';
-            document.getElementById('login-password').value = '';
-            toggleSidebar();
-        }
-
-        function toggleSidebar() {
-            let sidebar = document.getElementById('mySidebar');
-            if (sidebar.style.width === '260px') {
-                sidebar.style.width = '0';
-            } else {
-                sidebar.style.width = '260px';
-            }
-        }
-
-        function openAddUserModal() {
-            toggleSidebar();
-            let select = document.getElementById('new-user-type');
-            select.innerHTML = '';
-
-            let allowedTypes = [];
-            if (currentUser.type === 'ادمن') {
-                allowedTypes = ['فنى', 'تاجر', 'مندوب', 'مدير', 'ادمن'];
-            } else if (currentUser.type === 'مدير') {
-                allowedTypes = ['فنى', 'تاجر', 'مندوب', 'مدير'];
-            } else if (currentUser.type === 'مندوب') {
-                allowedTypes = ['فنى', 'تاجر'];
-            }
-
-            allowedTypes.forEach(t => {
-                let opt = document.createElement('option');
-                opt.value = t;
-                opt.innerText = t;
-                select.appendChild(opt);
-            });
-
-            document.getElementById('add-error').innerText = '';
-            document.getElementById('new-user-name').value = '';
-            document.getElementById('new-user-phone').value = '';
-            document.getElementById('new-user-password').value = '';
-            document.getElementById('addUserModal').style.display = 'flex';
-        }
-
-        function closeAddUserModal() {
-            document.getElementById('addUserModal').style.display = 'none';
-        }
-
-        function saveNewUser() {
-            let type = document.getElementById('new-user-type').value;
-            let name = document.getElementById('new-user-name').value.trim();
-            let phone = document.getElementById('new-user-phone').value.trim();
-            let password = document.getElementById('new-user-password').value.trim();
-            let errorDiv = document.getElementById('add-error');
-
-            if (!name || !phone || !password) {
-                errorDiv.innerText = "الرجاء ملء جميع الحقول.";
-                return;
-            }
-
-            let users = getUsers();
-            if (users.some(u => u.phone === phone)) {
-                errorDiv.innerText = "رقم الهاتف موجود مسبقاً.";
-                return;
-            }
-
-            users.push({ name, phone, password, type });
-            localStorage.setItem('electricity_users', JSON.stringify(users));
-            alert("تم إضافة المستخدم بنجاح!");
-            closeAddUserModal();
-        }
-
-        function searchByCamera() {
-            alert("جاري فتح الكاميرا للبحث...");
-        }
-
-        function searchByVoice() {
-            alert("جاري تفعيل البحث الصوتي...");
-        }
-    </script>
 </body>
 </html>
