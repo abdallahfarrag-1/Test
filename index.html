@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Electricity - تسجيل الدخول</title>
-    <!-- استيراد خط عربي جميل من جوجل -->
+    <title>Electricity</title>
+    <!-- استيراد خط كاييرو وأيقونات FontAwesome -->
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             box-sizing: border-box;
@@ -15,6 +16,12 @@
         }
 
         body {
+            background-color: #f4f7fc;
+            color: #333;
+        }
+
+        /* --- واجهة تسجيل الدخول --- */
+        #login-page {
             background: linear-gradient(135deg, #0052D4, #4364F7, #6FB1FC);
             height: 100vh;
             display: flex;
@@ -121,13 +128,8 @@
             border-bottom: 1px solid #e5e7eb;
         }
 
-        .divider::before {
-            margin-left: 10px;
-        }
-
-        .divider::after {
-            margin-right: 10px;
-        }
+        .divider::before { margin-left: 10px; }
+        .divider::after { margin-right: 10px; }
 
         .btn-guest {
             background-color: #f3f4f6;
@@ -147,40 +149,324 @@
         .btn-guest:hover {
             background-color: #ebf5ff;
         }
+
+        /* --- الصفحة التالية (الرئيسية) --- */
+        #main-page {
+            display: none;
+            min-height: 100vh;
+            flex-direction: column;
+        }
+
+        /* شريط العلوي (Header) */
+        .navbar {
+            background-color: #0052D4;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            position: relative;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .nav-right, .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .menu-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .brand-title {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .user-id {
+            font-size: 15px;
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.15);
+            padding: 4px 10px;
+            border-radius: 6px;
+        }
+
+        /* قائمة منسدلة لزر الـ 3 شرط */
+        .dropdown-menu {
+            position: absolute;
+            top: 60px;
+            right: 20px;
+            background-color: white;
+            color: #333;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            display: none;
+            width: 160px;
+            z-index: 100;
+        }
+
+        .dropdown-menu button {
+            width: 100%;
+            padding: 12px;
+            background: none;
+            border: none;
+            text-align: right;
+            font-size: 14px;
+            color: #d32f2f;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-radius: 8px;
+            transition: background 0.2s;
+        }
+
+        .dropdown-menu button:hover {
+            background-color: #ffebee;
+        }
+
+        /* محتوى الصفحة الرئيسية */
+        .content-container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 0 20px;
+            width: 100%;
+            flex: 1;
+        }
+
+        /* أشرطة البحث */
+        .search-section {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .search-bar {
+            display: flex;
+            align-items: center;
+            background: white;
+            border: 1px solid #d1d5db;
+            border-radius: 10px;
+            padding: 10px 15px;
+            gap: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+
+        .search-bar input {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-size: 14px;
+            background: transparent;
+        }
+
+        .search-bar i {
+            color: #0052D4;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        .search-bar button {
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        /* المربعات الثنائية للماركات */
+        .brands-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #0052D4;
+            margin-bottom: 15px;
+            text-align: right;
+        }
+
+        .brands-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            padding-bottom: 30px;
+        }
+
+        .brand-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            font-size: 16px;
+            font-weight: 600;
+            color: #0052D4;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .brand-card:hover {
+            background-color: #0052D4;
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 82, 212, 0.2);
+        }
     </style>
 </head>
 <body>
 
-    <div class="login-container">
-        <div class="logo-area">
-            <h1>Electricity</h1>
-            <p>مرحباً بك، يرجى تسجيل الدخول للمتابعة</p>
+    <!-- ================= واجهة تسجيل الدخول ================= -->
+    <div id="login-page">
+        <div class="login-container">
+            <div class="logo-area">
+                <h1>Electricity</h1>
+                <p>مرحباً بك، يرجى تسجيل الدخول للمتابعة</p>
+            </div>
+
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="input-group">
+                    <label for="phone">رقم الهاتف</label>
+                    <input type="tel" id="phone" name="phone" placeholder="أدخل رقم الهاتف" required>
+                </div>
+
+                <div class="input-group">
+                    <label for="password">رمز المرور</label>
+                    <input type="password" id="password" name="password" placeholder="أدخل رمز المرور" required>
+                </div>
+
+                <div class="options-row">
+                    <label>
+                        <input type="checkbox" name="remember"> تذكرني
+                    </label>
+                </div>
+
+                <button type="submit" class="btn-login">تسجيل الدخول</button>
+            </form>
+
+            <div class="divider">أو</div>
+
+            <button type="button" class="btn-guest" onclick="handleGuest()">الدخول كزائر</button>
         </div>
-
-        <form action="#" method="POST">
-            <div class="input-group">
-                <label for="phone">رقم الهاتف</label>
-                <input type="tel" id="phone" name="phone" placeholder="أدخل رقم الهاتف" required>
-            </div>
-
-            <div class="input-group">
-                <label for="password">رمز المرور</label>
-                <input type="password" id="password" name="password" placeholder="أدخل رمز المرور" required>
-            </div>
-
-            <div class="options-row">
-                <label>
-                    <input type="checkbox" name="remember"> تذكرني
-                </label>
-            </div>
-
-            <button type="submit" class="btn-login">تسجيل الدخول</button>
-        </form>
-
-        <div class="divider">أو</div>
-
-        <a href="#" class="btn-guest">الدخول كزائر</a>
     </div>
 
+
+    <!-- ================= الصفحة التالية (الرئيسية) ================= -->
+    <div id="main-page">
+        <!-- الشريط العلوى -->
+        <header class="navbar">
+            <div class="nav-right">
+                <button class="menu-btn" id="menuBtn" onclick="toggleMenu()">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <span class="brand-title">Electricity</span>
+            </div>
+            <div class="nav-left">
+                <span class="user-id" id="userDisplayId">102938</span>
+            </div>
+
+            <!-- قائمة منسدلة صغيرة -->
+            <div class="dropdown-menu" id="dropdownMenu">
+                <button onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> تسجيل الخروج</button>
+            </div>
+        </header>
+
+        <!-- المحتوى -->
+        <div class="content-container">
+            <!-- أشرطة البحث الثلاثة -->
+            <div class="search-section">
+                <!-- البحث بالكتابة -->
+                <div class="search-bar">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" placeholder="البحث بالكتابة...">
+                </div>
+
+                <!-- البحث بالكاميرا -->
+                <div class="search-bar" onclick="alert('جارِ فتح الكاميرا للبحث...')">
+                    <i class="fa-solid fa-camera"></i>
+                    <input type="text" placeholder="البحث باستخدام الكاميرا" readonly style="cursor: pointer;">
+                </div>
+
+                <!-- البحث بالصوت -->
+                <div class="search-bar" onclick="alert('جارِ الاستماع لصوتك...')">
+                    <i class="fa-solid fa-microphone"></i>
+                    <input type="text" placeholder="البحث باستخدام الصوت" readonly style="cursor: pointer;">
+                </div>
+            </div>
+
+            <!-- المربعات الثنائية للماركات -->
+            <div class="brands-title">الماركات المتوفرة</div>
+            <div class="brands-grid">
+                <div class="brand-card">Apple</div>
+                <div class="brand-card">Samsung</div>
+                <div class="brand-card">Xiaomi</div>
+                <div class="brand-card">Infinix</div>
+                <div class="brand-card">Oppo</div>
+                <div class="brand-card">Huawei</div>
+                <div class="brand-card">Vivo</div>
+                <div class="brand-card">Honor</div>
+                <div class="brand-card">htc</div>
+                <div class="brand-card">Nokia</div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ================= البرمجة التفاعلية (JavaScript) ================= -->
+    <script>
+        function handleLogin(event) {
+            event.preventDefault();
+            // جلب رقم الهاتف لاستخدامه كرقم للمستخدم
+            let phoneInput = document.getElementById('phone').value;
+            // استخلاص أول 6 أرقام أو الرقم المدخل كـ ID للمستخدم
+            document.getElementById('userDisplayId').innerText = phoneInput;
+            
+            // إظهار زر القائمة العلوية للمستخدم المسجل
+            document.getElementById('menuBtn').style.display = 'block';
+
+            // الانتقال للصفحة الرئيسية
+            document.getElementById('login-page').style.display = 'none';
+            document.getElementById('main-page').style.display = 'flex';
+        }
+
+        function handleGuest() {
+            // عرض نص زائر في خانة رقم المستخدم
+            document.getElementById('userDisplayId').innerText = "زائر";
+            
+            // إخفاء زر القائمة للزائر نهائياً بناءً على طلبك
+            document.getElementById('menuBtn').style.display = 'none';
+
+            // الانتقال للصفحة الرئيسية
+            document.getElementById('login-page').style.display = 'none';
+            document.getElementById('main-page').style.display = 'flex';
+        }
+
+        function toggleMenu() {
+            let menu = document.getElementById('dropdownMenu');
+            menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
+        }
+
+        function logout() {
+            // العودة لصفحة تسجيل الدخول وإخفاء القائمة المنسدلة
+            document.getElementById('dropdownMenu').style.display = 'none';
+            document.getElementById('main-page').style.display = 'none';
+            document.getElementById('login-page').style.display = 'flex';
+            // تفريغ الحقول
+            document.getElementById('loginForm').reset();
+        }
+
+        // إغلاق القائمة لو تم الضغط خارجها
+        window.onclick = function(event) {
+            if (!event.target.matches('.fa-bars') && !event.target.closest('.menu-btn')) {
+                let menu = document.getElementById('dropdownMenu');
+                if (menu && menu.style.display === 'block') {
+                    menu.style.display = 'none';
+                }
+            }
+        }
+    </script>
 </body>
 </html>
