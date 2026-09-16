@@ -226,7 +226,7 @@
         }
 
 
-        /* --- 2. الصفحة التالية (الرئيسية للماركات) --- */
+        /* --- 2. الصفحة الرئيسية (الماركات) --- */
         #main-page {
             display: none;
             min-height: 100vh;
@@ -241,7 +241,7 @@
             flex: 1;
         }
 
-        /* أشرطة البحث (حسب الترتيب المطلوب: كاميرا فوق، صوت وسط، كتابة تحت) */
+        /* أشرطة البحث (كاميرا فوق، صوت وسط، كتابة تحت) */
         .search-section {
             display: flex;
             flex-direction: column;
@@ -361,37 +361,30 @@
         }
 
 
-        /* --- 4. صفحة الخانات الفرعية (10 خانات فرعية وكل خانة مقسمة 4 أجزاء) --- */
+        /* --- 4. صفحة الخانات الفرعية (10 خانات أفقية فرعية بالأسماء المطلوبة) --- */
         #sub-models-page {
             display: none;
             min-height: 100vh;
             flex-direction: column;
         }
 
-        .sub-box {
+        .sub-horizontal-box {
             background: white;
             border: 1px solid #d1d5db;
             border-radius: 8px;
-            padding: 12px 15px;
-            margin-bottom: 10px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
-        }
-
-        .sub-grid-4 {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 8px;
-            text-align: center;
-        }
-
-        .quad-part {
-            background-color: #f8fafc;
-            border: 1px solid #e2e8f0;
-            padding: 8px 4px;
-            border-radius: 6px;
-            font-size: 13px;
-            color: #0052D4;
+            padding: 14px 18px;
+            font-size: 15px;
             font-weight: 600;
+            color: #0052D4;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.2s;
+        }
+
+        .sub-horizontal-box:hover {
+            background-color: #f8fafc;
         }
     </style>
 </head>
@@ -450,7 +443,7 @@
         </header>
 
         <div class="content-container">
-            <!-- أشرطة البحث بالترتيب المطلوب (الكاميرا بالأعلى، الصوت بالوسط، الكتابة بالأسفل) -->
+            <!-- أشرطة البحث (كاميرا فوق، صوت وسط، كتابة تحت) -->
             <div class="search-section">
                 <div class="search-bar" onclick="alert('جارِ فتح الكاميرا للبحث...')">
                     <i class="fa-solid fa-camera"></i>
@@ -506,13 +499,13 @@
             <button class="back-btn" onclick="goToMain()"><i class="fa-solid fa-arrow-right"></i> العودة للماركات</button>
             <div class="brands-title" id="selectedBrandTitle">موديلات الماركة</div>
             <div class="list-container" id="modelsListContainer">
-                <!-- سيتم تعبئة 100 خانة تلقائياً عبر البرمجة أدناه -->
+                <!-- 100 خانة أفقية -->
             </div>
         </div>
     </div>
 
 
-    <!-- ================= صفحة الخانات الفرعية (10 خانات فرعية مقسمة 4 أجزاء) ================= -->
+    <!-- ================= صفحة الخانات الفرعية (10 خانات فرعية بالأسماء الدقيقة) ================= -->
     <div id="sub-models-page">
         <header class="navbar">
             <div class="nav-right">
@@ -533,7 +526,7 @@
             <button class="back-btn" onclick="goBackToModels()"><i class="fa-solid fa-arrow-right"></i> العودة للموديلات</button>
             <div class="brands-title" id="selectedModelTitle">تفاصيل الموديل</div>
             <div class="list-container" id="subModelsContainer">
-                <!-- سيتم تعبئة 10 خانات فرعية وكل خانة بداخلها 4 خانات فرعية دقيقة -->
+                <!-- الخانات الـ 10 الفرعية الدقيقة -->
             </div>
         </div>
     </div>
@@ -553,7 +546,6 @@
             
             updateUserInterface();
             
-            // الانتقال للصفحة الرئيسية
             document.getElementById('login-page').style.display = 'none';
             document.getElementById('main-page').style.display = 'flex';
         }
@@ -564,18 +556,15 @@
             
             updateUserInterface();
 
-            // الانتقال للصفحة الرئيسية
             document.getElementById('login-page').style.display = 'none';
             document.getElementById('main-page').style.display = 'flex';
         }
 
         function updateUserInterface() {
-            // تحديث الرقم في كل الأشرطة العلوية
             document.getElementById('userDisplayId').innerText = currentUserId;
             document.getElementById('userDisplayIdModels').innerText = currentUserId;
             document.getElementById('userDisplayIdSub').innerText = currentUserId;
 
-            // إذا كان زائر، إخفاء أزرار القائمة الثلاث شرط تماماً
             let menuButtons = [document.getElementById('menuBtn'), document.getElementById('menuBtnModels'), document.getElementById('menuBtnSub')];
             menuButtons.forEach(btn => {
                 if (btn) btn.style.display = isGuestUser ? 'none' : 'block';
@@ -584,7 +573,6 @@
 
         function toggleMenu() {
             if (isGuestUser) return;
-            // تبديل ظهور القائمة المنسدلة في الصفحة النشطة حالياً
             let menus = [
                 document.getElementById('dropdownMenu'),
                 document.getElementById('dropdownMenuModels'),
@@ -608,7 +596,6 @@
             activeBrandName = brandName;
             document.getElementById('selectedBrandTitle').innerText = `موديلات ماركة: ${brandName}`;
             
-            // بناء الـ 100 خانة الأفقية للموديلات
             let container = document.getElementById('modelsListContainer');
             container.innerHTML = '';
             for (let i = 1; i <= 100; i++) {
@@ -627,22 +614,32 @@
         function openSubModels(modelName) {
             document.getElementById('selectedModelTitle').innerText = modelName;
 
-            // بناء الـ 10 خانات الفرعية الأفقية، وكل خانة مقسمة 4 خانات فرعية بجانب بعضها
+            // القائمة الفرعية المكونة من 10 خانات أفقية بالأسماء المطلوبة بالتمام
+            let subCategories = [
+                "شاشة",
+                "بطارية",
+                "ظهرية",
+                "فلاتة ربط",
+                "فلاتة باور",
+                "فلاتة شحن",
+                "مدل",
+                "فريم",
+                "سماعة داخلية مكالمات",
+                "سماعة خارجية"
+            ];
+
             let container = document.getElementById('subModelsContainer');
             container.innerHTML = '';
-            for (let i = 1; i <= 10; i++) {
+            
+            subCategories.forEach((catName, index) => {
                 let subBox = document.createElement('div');
-                subBox.className = 'sub-box';
-                
-                let gridHTML = `<div class="sub-grid-4">`;
-                for (let j = 1; j <= 4; j++) {
-                    gridHTML += `<div class="quad-part">فئة ${i}-${j}</div>`;
-                }
-                gridHTML += `</div>`;
-                
-                subBox.innerHTML = `<div style="font-size: 13px; font-weight:700; color:#0052D4; margin-bottom:8px;">التصنيف الفرعي رقم (${i})</div>` + gridHTML;
+                subBox.className = 'sub-horizontal-box';
+                subBox.innerHTML = `<span>${catName}</span> <span style="font-size: 12px; color: #666;">خانة فرعية (${index + 1})</span>`;
+                subBox.onclick = function() {
+                    alert(`تم اختيار قسم: ${catName} لـ ${modelName}`);
+                };
                 container.appendChild(subBox);
-            }
+            });
 
             document.getElementById('models-page').style.display = 'none';
             document.getElementById('sub-models-page').style.display = 'flex';
@@ -673,7 +670,6 @@
             menus.forEach(m => { if(m) m.style.display = 'none'; });
         }
 
-        // إغلاق القوائم عند النقر خارجها
         window.onclick = function(event) {
             if (!event.target.matches('.fa-bars') && !event.target.closest('.menu-btn')) {
                 closeAllMenus();
