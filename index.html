@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Electricity</title>
-    <!-- استيراد خط كاييرو وأيقونات FontAwesome -->
+    <!-- خط كاييرو وأيقونات FontAwesome -->
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -20,7 +20,7 @@
             color: #333;
         }
 
-        /* --- واجهة تسجيل الدخول --- */
+        /* --- 1. واجهة تسجيل الدخول --- */
         #login-page {
             background: linear-gradient(135deg, #0052D4, #4364F7, #6FB1FC);
             height: 100vh;
@@ -127,7 +127,6 @@
             flex: 1;
             border-bottom: 1px solid #e5e7eb;
         }
-
         .divider::before { margin-left: 10px; }
         .divider::after { margin-right: 10px; }
 
@@ -150,14 +149,8 @@
             background-color: #ebf5ff;
         }
 
-        /* --- الصفحة التالية (الرئيسية) --- */
-        #main-page {
-            display: none;
-            min-height: 100vh;
-            flex-direction: column;
-        }
 
-        /* شريط العلوي (Header) */
+        /* --- الشريط العلوي المشترك (Navbar) --- */
         .navbar {
             background-color: #0052D4;
             color: white;
@@ -186,6 +179,7 @@
         .brand-title {
             font-size: 20px;
             font-weight: 700;
+            cursor: pointer;
         }
 
         .user-id {
@@ -231,7 +225,14 @@
             background-color: #ffebee;
         }
 
-        /* محتوى الصفحة الرئيسية */
+
+        /* --- 2. الصفحة التالية (الرئيسية للماركات) --- */
+        #main-page {
+            display: none;
+            min-height: 100vh;
+            flex-direction: column;
+        }
+
         .content-container {
             max-width: 600px;
             margin: 20px auto;
@@ -240,7 +241,7 @@
             flex: 1;
         }
 
-        /* أشرطة البحث */
+        /* أشرطة البحث (حسب الترتيب المطلوب: كاميرا فوق، صوت وسط، كتابة تحت) */
         .search-section {
             display: flex;
             flex-direction: column;
@@ -273,13 +274,6 @@
             cursor: pointer;
         }
 
-        .search-bar button {
-            background: none;
-            border: none;
-            cursor: pointer;
-        }
-
-        /* المربعات الثنائية للماركات */
         .brands-title {
             font-size: 18px;
             font-weight: 700;
@@ -314,6 +308,90 @@
             color: white;
             transform: translateY(-3px);
             box-shadow: 0 6px 12px rgba(0, 82, 212, 0.2);
+        }
+
+
+        /* --- 3. صفحة الموديلات (100 خانة أفقية) --- */
+        #models-page {
+            display: none;
+            min-height: 100vh;
+            flex-direction: column;
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            color: #0052D4;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .list-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding-bottom: 30px;
+        }
+
+        .horizontal-box {
+            background: white;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            padding: 14px 18px;
+            font-size: 15px;
+            font-weight: 600;
+            color: #333;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+            transition: all 0.2s;
+        }
+
+        .horizontal-box:hover {
+            background-color: #ebf5ff;
+            border-color: #0052D4;
+            color: #0052D4;
+        }
+
+
+        /* --- 4. صفحة الخانات الفرعية (10 خانات فرعية وكل خانة مقسمة 4 أجزاء) --- */
+        #sub-models-page {
+            display: none;
+            min-height: 100vh;
+            flex-direction: column;
+        }
+
+        .sub-box {
+            background: white;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+        }
+
+        .sub-grid-4 {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            text-align: center;
+        }
+
+        .quad-part {
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            padding: 8px 4px;
+            border-radius: 6px;
+            font-size: 13px;
+            color: #0052D4;
+            font-weight: 600;
         }
     </style>
 </head>
@@ -354,62 +432,108 @@
     </div>
 
 
-    <!-- ================= الصفحة التالية (الرئيسية) ================= -->
+    <!-- ================= الصفحة الرئيسية (الماركات) ================= -->
     <div id="main-page">
-        <!-- الشريط العلوى -->
         <header class="navbar">
             <div class="nav-right">
                 <button class="menu-btn" id="menuBtn" onclick="toggleMenu()">
                     <i class="fa-solid fa-bars"></i>
                 </button>
-                <span class="brand-title">Electricity</span>
+                <span class="brand-title" onclick="goToMain()">Electricity</span>
             </div>
             <div class="nav-left">
                 <span class="user-id" id="userDisplayId">102938</span>
             </div>
-
-            <!-- قائمة منسدلة صغيرة -->
             <div class="dropdown-menu" id="dropdownMenu">
                 <button onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> تسجيل الخروج</button>
             </div>
         </header>
 
-        <!-- المحتوى -->
         <div class="content-container">
-            <!-- أشرطة البحث الثلاثة -->
+            <!-- أشرطة البحث بالترتيب المطلوب (الكاميرا بالأعلى، الصوت بالوسط، الكتابة بالأسفل) -->
             <div class="search-section">
-                <!-- البحث بالكتابة -->
-                <div class="search-bar">
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                    <input type="text" placeholder="البحث بالكتابة...">
-                </div>
-
-                <!-- البحث بالكاميرا -->
                 <div class="search-bar" onclick="alert('جارِ فتح الكاميرا للبحث...')">
                     <i class="fa-solid fa-camera"></i>
                     <input type="text" placeholder="البحث باستخدام الكاميرا" readonly style="cursor: pointer;">
                 </div>
 
-                <!-- البحث بالصوت -->
                 <div class="search-bar" onclick="alert('جارِ الاستماع لصوتك...')">
                     <i class="fa-solid fa-microphone"></i>
                     <input type="text" placeholder="البحث باستخدام الصوت" readonly style="cursor: pointer;">
                 </div>
+
+                <div class="search-bar">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" placeholder="البحث بالكتابة...">
+                </div>
             </div>
 
-            <!-- المربعات الثنائية للماركات -->
             <div class="brands-title">الماركات المتوفرة</div>
             <div class="brands-grid">
-                <div class="brand-card">Apple</div>
-                <div class="brand-card">Samsung</div>
-                <div class="brand-card">Xiaomi</div>
-                <div class="brand-card">Infinix</div>
-                <div class="brand-card">Oppo</div>
-                <div class="brand-card">Huawei</div>
-                <div class="brand-card">Vivo</div>
-                <div class="brand-card">Honor</div>
-                <div class="brand-card">htc</div>
-                <div class="brand-card">Nokia</div>
+                <div class="brand-card" onclick="openModels('Apple')">Apple</div>
+                <div class="brand-card" onclick="openModels('Samsung')">Samsung</div>
+                <div class="brand-card" onclick="openModels('Xiaomi')">Xiaomi</div>
+                <div class="brand-card" onclick="openModels('Infinix')">Infinix</div>
+                <div class="brand-card" onclick="openModels('Oppo')">Oppo</div>
+                <div class="brand-card" onclick="openModels('Huawei')">Huawei</div>
+                <div class="brand-card" onclick="openModels('Vivo')">Vivo</div>
+                <div class="brand-card" onclick="openModels('Honor')">Honor</div>
+                <div class="brand-card" onclick="openModels('htc')">htc</div>
+                <div class="brand-card" onclick="openModels('Nokia')">Nokia</div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ================= صفحة الموديلات (100 خانة) ================= -->
+    <div id="models-page">
+        <header class="navbar">
+            <div class="nav-right">
+                <button class="menu-btn" id="menuBtnModels" onclick="toggleMenu()">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <span class="brand-title" onclick="goToMain()">Electricity</span>
+            </div>
+            <div class="nav-left">
+                <span class="user-id" id="userDisplayIdModels">102938</span>
+            </div>
+            <div class="dropdown-menu" id="dropdownMenuModels">
+                <button onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> تسجيل الخروج</button>
+            </div>
+        </header>
+
+        <div class="content-container">
+            <button class="back-btn" onclick="goToMain()"><i class="fa-solid fa-arrow-right"></i> العودة للماركات</button>
+            <div class="brands-title" id="selectedBrandTitle">موديلات الماركة</div>
+            <div class="list-container" id="modelsListContainer">
+                <!-- سيتم تعبئة 100 خانة تلقائياً عبر البرمجة أدناه -->
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ================= صفحة الخانات الفرعية (10 خانات فرعية مقسمة 4 أجزاء) ================= -->
+    <div id="sub-models-page">
+        <header class="navbar">
+            <div class="nav-right">
+                <button class="menu-btn" id="menuBtnSub" onclick="toggleMenu()">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <span class="brand-title" onclick="goToMain()">Electricity</span>
+            </div>
+            <div class="nav-left">
+                <span class="user-id" id="userDisplayIdSub">102938</span>
+            </div>
+            <div class="dropdown-menu" id="dropdownMenuSub">
+                <button onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> تسجيل الخروج</button>
+            </div>
+        </header>
+
+        <div class="content-container">
+            <button class="back-btn" onclick="goBackToModels()"><i class="fa-solid fa-arrow-right"></i> العودة للموديلات</button>
+            <div class="brands-title" id="selectedModelTitle">تفاصيل الموديل</div>
+            <div class="list-container" id="subModelsContainer">
+                <!-- سيتم تعبئة 10 خانات فرعية وكل خانة بداخلها 4 خانات فرعية دقيقة -->
             </div>
         </div>
     </div>
@@ -417,54 +541,142 @@
 
     <!-- ================= البرمجة التفاعلية (JavaScript) ================= -->
     <script>
+        let currentUserId = "102938";
+        let isGuestUser = false;
+        let activeBrandName = "";
+
         function handleLogin(event) {
             event.preventDefault();
-            // جلب رقم الهاتف لاستخدامه كرقم للمستخدم
             let phoneInput = document.getElementById('phone').value;
-            // استخلاص أول 6 أرقام أو الرقم المدخل كـ ID للمستخدم
-            document.getElementById('userDisplayId').innerText = phoneInput;
+            currentUserId = phoneInput;
+            isGuestUser = false;
             
-            // إظهار زر القائمة العلوية للمستخدم المسجل
-            document.getElementById('menuBtn').style.display = 'block';
-
+            updateUserInterface();
+            
             // الانتقال للصفحة الرئيسية
             document.getElementById('login-page').style.display = 'none';
             document.getElementById('main-page').style.display = 'flex';
         }
 
         function handleGuest() {
-            // عرض نص زائر في خانة رقم المستخدم
-            document.getElementById('userDisplayId').innerText = "زائر";
+            currentUserId = "زائر";
+            isGuestUser = true;
             
-            // إخفاء زر القائمة للزائر نهائياً بناءً على طلبك
-            document.getElementById('menuBtn').style.display = 'none';
+            updateUserInterface();
 
             // الانتقال للصفحة الرئيسية
             document.getElementById('login-page').style.display = 'none';
             document.getElementById('main-page').style.display = 'flex';
         }
 
+        function updateUserInterface() {
+            // تحديث الرقم في كل الأشرطة العلوية
+            document.getElementById('userDisplayId').innerText = currentUserId;
+            document.getElementById('userDisplayIdModels').innerText = currentUserId;
+            document.getElementById('userDisplayIdSub').innerText = currentUserId;
+
+            // إذا كان زائر، إخفاء أزرار القائمة الثلاث شرط تماماً
+            let menuButtons = [document.getElementById('menuBtn'), document.getElementById('menuBtnModels'), document.getElementById('menuBtnSub')];
+            menuButtons.forEach(btn => {
+                if (btn) btn.style.display = isGuestUser ? 'none' : 'block';
+            });
+        }
+
         function toggleMenu() {
-            let menu = document.getElementById('dropdownMenu');
-            menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
+            if (isGuestUser) return;
+            // تبديل ظهور القائمة المنسدلة في الصفحة النشطة حالياً
+            let menus = [
+                document.getElementById('dropdownMenu'),
+                document.getElementById('dropdownMenuModels'),
+                document.getElementById('dropdownMenuSub')
+            ];
+            menus.forEach(menu => {
+                if (menu) {
+                    menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
+                }
+            });
+        }
+
+        function goToMain() {
+            closeAllMenus();
+            document.getElementById('models-page').style.display = 'none';
+            document.getElementById('sub-models-page').style.display = 'none';
+            document.getElementById('main-page').style.display = 'flex';
+        }
+
+        function openModels(brandName) {
+            activeBrandName = brandName;
+            document.getElementById('selectedBrandTitle').innerText = `موديلات ماركة: ${brandName}`;
+            
+            // بناء الـ 100 خانة الأفقية للموديلات
+            let container = document.getElementById('modelsListContainer');
+            container.innerHTML = '';
+            for (let i = 1; i <= 100; i++) {
+                let box = document.createElement('div');
+                box.className = 'horizontal-box';
+                box.innerHTML = `<span>موديل ${brandName} رقم (${i})</span> <i class="fa-solid fa-chevron-left" style="font-size: 12px; color: #0052D4;"></i>`;
+                box.onclick = function() { openSubModels(`موديل ${brandName} (${i})`); };
+                container.appendChild(box);
+            }
+
+            document.getElementById('main-page').style.display = 'none';
+            document.getElementById('models-page').style.display = 'flex';
+            window.scrollTo(0, 0);
+        }
+
+        function openSubModels(modelName) {
+            document.getElementById('selectedModelTitle').innerText = modelName;
+
+            // بناء الـ 10 خانات الفرعية الأفقية، وكل خانة مقسمة 4 خانات فرعية بجانب بعضها
+            let container = document.getElementById('subModelsContainer');
+            container.innerHTML = '';
+            for (let i = 1; i <= 10; i++) {
+                let subBox = document.createElement('div');
+                subBox.className = 'sub-box';
+                
+                let gridHTML = `<div class="sub-grid-4">`;
+                for (let j = 1; j <= 4; j++) {
+                    gridHTML += `<div class="quad-part">فئة ${i}-${j}</div>`;
+                }
+                gridHTML += `</div>`;
+                
+                subBox.innerHTML = `<div style="font-size: 13px; font-weight:700; color:#0052D4; margin-bottom:8px;">التصنيف الفرعي رقم (${i})</div>` + gridHTML;
+                container.appendChild(subBox);
+            }
+
+            document.getElementById('models-page').style.display = 'none';
+            document.getElementById('sub-models-page').style.display = 'flex';
+            window.scrollTo(0, 0);
+        }
+
+        function goBackToModels() {
+            document.getElementById('sub-models-page').style.display = 'none';
+            document.getElementById('models-page').style.display = 'flex';
+            window.scrollTo(0, 0);
         }
 
         function logout() {
-            // العودة لصفحة تسجيل الدخول وإخفاء القائمة المنسدلة
-            document.getElementById('dropdownMenu').style.display = 'none';
+            closeAllMenus();
             document.getElementById('main-page').style.display = 'none';
+            document.getElementById('models-page').style.display = 'none';
+            document.getElementById('sub-models-page').style.display = 'none';
             document.getElementById('login-page').style.display = 'flex';
-            // تفريغ الحقول
             document.getElementById('loginForm').reset();
         }
 
-        // إغلاق القائمة لو تم الضغط خارجها
+        function closeAllMenus() {
+            let menus = [
+                document.getElementById('dropdownMenu'),
+                document.getElementById('dropdownMenuModels'),
+                document.getElementById('dropdownMenuSub')
+            ];
+            menus.forEach(m => { if(m) m.style.display = 'none'; });
+        }
+
+        // إغلاق القوائم عند النقر خارجها
         window.onclick = function(event) {
             if (!event.target.matches('.fa-bars') && !event.target.closest('.menu-btn')) {
-                let menu = document.getElementById('dropdownMenu');
-                if (menu && menu.style.display === 'block') {
-                    menu.style.display = 'none';
-                }
+                closeAllMenus();
             }
         }
     </script>
