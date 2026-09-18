@@ -7,6 +7,17 @@
     <!-- خط كاييرو وأيقونات FontAwesome -->
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- مكتبة Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // الطريقة الصحيحة لتعريف عميل Supabase للإصدار الثاني مع المفتاح الجديد
+        const { createClient } = window.supabase;
+        const SUPABASE_URL = 'https://byiayomtcwqlgrknvgcz.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ5aWF5b210Y3dxbGdya252Z2N6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk3MjIyODIsImV4cCI6MjEwNTI5ODI4Mn0.pBgmAUQ4K9xCXludssLVIk5enj67QvLG7AcLbd0BZlo';
+        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    </script>
+
     <style>
         * {
             box-sizing: border-box;
@@ -72,6 +83,8 @@
             border-radius: 8px;
             font-size: 14px;
             outline: none;
+            text-align: right;
+            direction: rtl;
             transition: border-color 0.3s;
         }
 
@@ -84,7 +97,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             font-size: 13px;
             color: #555;
         }
@@ -113,11 +126,29 @@
             background-color: #003fa7;
         }
 
+        .btn-register {
+            background-color: #16a34a;
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background-color 0.3s;
+        }
+
+        .btn-register:hover {
+            background-color: #15803d;
+        }
+
         .divider {
             display: flex;
             align-items: center;
             text-align: center;
-            margin: 20px 0;
+            margin: 15px 0;
             color: #888;
             font-size: 13px;
         }
@@ -149,7 +180,6 @@
             background-color: #ebf5ff;
         }
 
-
         /* --- الشريط العلوي المشترك (Navbar) --- */
         .navbar {
             background-color: #0052D4;
@@ -157,60 +187,58 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 15px 20px;
-            position: relative;
+            padding: 10px 15px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
         .nav-right, .nav-left {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 12px;
         }
 
         .menu-btn {
             background: none;
             border: none;
             color: white;
-            font-size: 20px;
+            font-size: 18px;
             cursor: pointer;
         }
 
         .brand-title {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 700;
             cursor: pointer;
         }
 
         .user-id {
-            font-size: 15px;
+            font-size: 13px;
             font-weight: 600;
             background: rgba(255, 255, 255, 0.15);
-            padding: 4px 10px;
+            padding: 3px 8px;
             border-radius: 6px;
         }
 
-        /* قائمة منسدلة لزر الـ 3 شرط */
         .dropdown-menu {
             position: absolute;
-            top: 60px;
-            right: 20px;
+            top: 50px;
+            right: 15px;
             background-color: white;
             color: #333;
             border-radius: 8px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.2);
             display: none;
             width: 160px;
-            z-index: 100;
+            z-index: 1000;
         }
 
         .dropdown-menu button {
             width: 100%;
-            padding: 12px;
+            padding: 10px 12px;
             background: none;
             border: none;
             text-align: right;
-            font-size: 14px;
+            font-size: 13px;
             color: #d32f2f;
             cursor: pointer;
             font-weight: 600;
@@ -225,28 +253,54 @@
             background-color: #ffebee;
         }
 
-
-        /* --- 2. الصفحة الرئيسية (الماركات) --- */
-        #main-page {
-            display: none;
-            min-height: 100vh;
-            flex-direction: column;
+        .sticky-header-container {
+            position: sticky;
+            top: 0;
+            z-index: 999;
+            background-color: #f4f7fc;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.06);
         }
 
         .content-container {
             max-width: 600px;
-            margin: 20px auto;
-            padding: 0 20px;
+            margin: 0 auto;
+            padding: 8px 12px;
             width: 100%;
-            flex: 1;
         }
 
-        /* أشرطة البحث (كاميرا فوق، صوت وسط، كتابة تحت) */
         .search-section {
             display: flex;
             flex-direction: column;
-            gap: 12px;
-            margin-bottom: 25px;
+            gap: 8px;
+            margin-top: 5px;
+            margin-bottom: 5px;
+        }
+
+        .search-actions-row {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-compact-btn {
+            flex: 1;
+            background: linear-gradient(135deg, #0052D4, #4364F7);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 10px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            box-shadow: 0 2px 6px rgba(0, 82, 212, 0.2);
+            transition: all 0.3s;
+        }
+
+        .action-compact-btn:hover {
+            background: linear-gradient(135deg, #003fa7, #2c4ec9);
         }
 
         .search-bar {
@@ -254,51 +308,89 @@
             align-items: center;
             background: white;
             border: 1px solid #d1d5db;
-            border-radius: 10px;
-            padding: 10px 15px;
-            gap: 10px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            border-radius: 6px;
+            padding: 6px 12px;
+            gap: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
         }
 
         .search-bar input {
             flex: 1;
             border: none;
             outline: none;
-            font-size: 14px;
+            font-size: 13px;
             background: transparent;
+            text-align: right;
+            direction: rtl;
         }
 
         .search-bar i {
             color: #0052D4;
-            font-size: 18px;
+            font-size: 15px;
             cursor: pointer;
         }
 
+        .quick-nav-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 6px;
+        }
+
+        .quick-nav-card {
+            background: white;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            padding: 6px 4px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .quick-nav-card:hover {
+            border-color: #0052D4;
+            background-color: #f0f4ff;
+        }
+
+        .quick-nav-card i {
+            font-size: 14px;
+            color: #0052D4;
+            margin-bottom: 2px;
+            display: block;
+        }
+
+        .quick-nav-card span {
+            font-size: 11px;
+            font-weight: 600;
+            color: #333;
+            display: block;
+        }
+
         .brands-title {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 700;
             color: #0052D4;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             text-align: right;
         }
 
         .brands-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
+            gap: 12px;
             padding-bottom: 30px;
+            direction: ltr;
         }
 
         .brand-card {
             background: white;
             border: 1px solid #e2e8f0;
-            border-radius: 12px;
-            padding: 20px;
+            border-radius: 10px;
+            padding: 15px;
             text-align: center;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 600;
             color: #0052D4;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.04);
             cursor: pointer;
             transition: all 0.3s ease;
         }
@@ -306,29 +398,28 @@
         .brand-card:hover {
             background-color: #0052D4;
             color: white;
-            transform: translateY(-3px);
-            box-shadow: 0 6px 12px rgba(0, 82, 212, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 82, 212, 0.2);
         }
 
-
-        /* --- 3. صفحة الموديلات (100 خانة أفقية) --- */
-        #models-page {
-            display: none;
-            min-height: 100vh;
-            flex-direction: column;
+        .page-body-content {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 15px;
+            width: 100%;
         }
 
         .back-btn {
             background: none;
             border: none;
             color: #0052D4;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 600;
             cursor: pointer;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
         }
 
         .list-container {
@@ -341,50 +432,82 @@
         .horizontal-box {
             background: white;
             border: 1px solid #d1d5db;
-            border-radius: 8px;
-            padding: 14px 18px;
-            font-size: 15px;
+            border-radius: 6px;
+            padding: 12px 15px;
+            font-size: 14px;
             font-weight: 600;
             color: #333;
-            cursor: pointer;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+            cursor: pointer;
             transition: all 0.2s;
         }
 
         .horizontal-box:hover {
-            background-color: #ebf5ff;
             border-color: #0052D4;
-            color: #0052D4;
-        }
-
-
-        /* --- 4. صفحة الخانات الفرعية (10 خانات أفقية فرعية بالأسماء المطلوبة) --- */
-        #sub-models-page {
-            display: none;
-            min-height: 100vh;
-            flex-direction: column;
+            background-color: #f8fafc;
         }
 
         .sub-horizontal-box {
-            background: white;
-            border: 1px solid #d1d5db;
-            border-radius: 8px;
-            padding: 14px 18px;
-            font-size: 15px;
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            padding: 12px 15px;
+            font-size: 14px;
             font-weight: 600;
             color: #0052D4;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.02);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            cursor: pointer;
             transition: background 0.2s;
         }
 
         .sub-horizontal-box:hover {
             background-color: #f8fafc;
+            border-color: #0052D4;
+        }
+
+        #aiCameraModal {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            padding: 15px;
+        }
+        .ai-modal-content {
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 12px;
+            max-width: 450px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .ai-modal-content h3 {
+            color: #0052D4;
+            margin-bottom: 12px;
+            font-size: 16px;
+        }
+        .close-modal-btn {
+            background-color: #d32f2f;
+            color: white;
+            border: none;
+            padding: 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 12px;
+            font-weight: bold;
+            font-size: 13px;
         }
     </style>
 </head>
@@ -395,18 +518,18 @@
         <div class="login-container">
             <div class="logo-area">
                 <h1>Electricity</h1>
-                <p>مرحباً بك، يرجى تسجيل الدخول للمتابعة</p>
+                <p>مرحباً بك، يرجى تسجيل الدخول أو إنشاء حساب للمتابعة</p>
             </div>
 
             <form id="loginForm" onsubmit="handleLogin(event)">
                 <div class="input-group">
                     <label for="phone">رقم الهاتف</label>
-                    <input type="tel" id="phone" name="phone" placeholder="أدخل رقم الهاتف" required>
+                    <input type="text" id="phone" name="phone" placeholder="أدخل رقم الهاتف" required>
                 </div>
 
                 <div class="input-group">
                     <label for="password">رمز المرور</label>
-                    <input type="password" id="password" name="password" placeholder="أدخل رمز المرور" required>
+                    <input type="text" id="password" name="password" placeholder="أدخل رمز المرور" required>
                 </div>
 
                 <div class="options-row">
@@ -416,6 +539,7 @@
                 </div>
 
                 <button type="submit" class="btn-login">تسجيل الدخول</button>
+                <button type="button" class="btn-register" onclick="handleRegister()">إنشاء حساب جديد</button>
             </form>
 
             <div class="divider">أو</div>
@@ -425,44 +549,60 @@
     </div>
 
 
-    <!-- ================= الصفحة الرئيسية (الماركات) ================= -->
-    <div id="main-page">
-        <header class="navbar">
-            <div class="nav-right">
-                <button class="menu-btn" id="menuBtn" onclick="toggleMenu()">
-                    <i class="fa-solid fa-bars"></i>
-                </button>
-                <span class="brand-title" onclick="goToMain()">Electricity</span>
-            </div>
-            <div class="nav-left">
-                <span class="user-id" id="userDisplayId">102938</span>
-            </div>
-            <div class="dropdown-menu" id="dropdownMenu">
-                <button onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> تسجيل الخروج</button>
-            </div>
-        </header>
-
-        <div class="content-container">
-            <!-- أشرطة البحث (كاميرا فوق، صوت وسط، كتابة تحت) -->
-            <div class="search-section">
-                <div class="search-bar" onclick="alert('جارِ فتح الكاميرا للبحث...')">
-                    <i class="fa-solid fa-camera"></i>
-                    <input type="text" placeholder="البحث باستخدام الكاميرا" readonly style="cursor: pointer;">
+    <!-- ================= التطبيق الأساسي ================= -->
+    <div id="app-wrapper" style="display: none; min-height: 100vh; flex-direction: column;">
+        
+        <div class="sticky-header-container">
+            <header class="navbar">
+                <div class="nav-right">
+                    <button class="menu-btn" id="menuBtn" onclick="toggleMenu()">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                    <span class="brand-title" onclick="goToMain()">Electricity</span>
                 </div>
-
-                <div class="search-bar" onclick="alert('جارِ الاستماع لصوتك...')">
-                    <i class="fa-solid fa-microphone"></i>
-                    <input type="text" placeholder="البحث باستخدام الصوت" readonly style="cursor: pointer;">
+                <div class="nav-left">
+                    <span class="user-id" id="userDisplayId">102938</span>
                 </div>
+                <div class="dropdown-menu" id="dropdownMenu">
+                    <button onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> تسجيل الخروج</button>
+                </div>
+            </header>
 
-                <div class="search-bar">
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                    <input type="text" placeholder="البحث بالكتابة...">
+            <div class="content-container">
+                <div class="search-section">
+                    <div class="search-actions-row">
+                        <button class="action-compact-btn" onclick="openCameraSearch()">
+                            <i class="fa-solid fa-camera"></i>
+                            <span>بحث كاميرا</span>
+                        </button>
+                        <button class="action-compact-btn" id="micBtn" onclick="startVoiceSearch()">
+                            <i class="fa-solid fa-microphone" id="micIcon"></i>
+                            <span id="micBtnText">بحث صوتي</span>
+                        </button>
+                    </div>
+
+                    <div class="search-bar">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" id="textSearchInput" placeholder="ابحث...">
+                    </div>
+
+                    <div class="quick-nav-grid">
+                        <div class="quick-nav-card" onclick="goToMain()">
+                            <i class="fa-solid fa-mobile-screen"></i>
+                            <span>الماركات</span>
+                        </div>
+                        <div class="quick-nav-card" onclick="goToCompatibility()">
+                            <i class="fa-solid fa-shuffle"></i>
+                            <span>التوافقات</span>
+                        </div>
+                    </div>
                 </div>
             </div>
+        </div>
 
-            <div class="brands-title">الماركات المتوفرة</div>
-            <div class="brands-grid">
+        <div id="main-page" class="page-body-content">
+            <div class="brands-title" id="brandsHeaderTitle">الماركات</div>
+            <div class="brands-grid" id="brandsGrid">
                 <div class="brand-card" onclick="openModels('Apple')">Apple</div>
                 <div class="brand-card" onclick="openModels('Samsung')">Samsung</div>
                 <div class="brand-card" onclick="openModels('Xiaomi')">Xiaomi</div>
@@ -475,205 +615,229 @@
                 <div class="brand-card" onclick="openModels('Nokia')">Nokia</div>
             </div>
         </div>
-    </div>
 
-
-    <!-- ================= صفحة الموديلات (100 خانة) ================= -->
-    <div id="models-page">
-        <header class="navbar">
-            <div class="nav-right">
-                <button class="menu-btn" id="menuBtnModels" onclick="toggleMenu()">
-                    <i class="fa-solid fa-bars"></i>
-                </button>
-                <span class="brand-title" onclick="goToMain()">Electricity</span>
-            </div>
-            <div class="nav-left">
-                <span class="user-id" id="userDisplayIdModels">102938</span>
-            </div>
-            <div class="dropdown-menu" id="dropdownMenuModels">
-                <button onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> تسجيل الخروج</button>
-            </div>
-        </header>
-
-        <div class="content-container">
+        <div id="models-page" class="page-body-content" style="display: none;">
             <button class="back-btn" onclick="goToMain()"><i class="fa-solid fa-arrow-right"></i> العودة للماركات</button>
-            <div class="brands-title" id="selectedBrandTitle">موديلات الماركة</div>
-            <div class="list-container" id="modelsListContainer">
-                <!-- 100 خانة أفقية -->
+            <div class="brands-title" id="modelsPageTitle">الموديلات</div>
+            <div class="list-container" id="modelsListContainer"></div>
+        </div>
+
+        <div id="spare-parts-page" class="page-body-content" style="display: none;">
+            <button class="back-btn" onclick="goToModels()"><i class="fa-solid fa-arrow-right"></i> العودة للموديلات</button>
+            <div class="brands-title" id="sparePartsPageTitle">قطع الغيار</div>
+            <div class="list-container" id="sparePartsListContainer"></div>
+        </div>
+
+        <div id="compatibility-page" class="page-body-content" style="display: none;">
+            <button class="back-btn" onclick="goToMain()"><i class="fa-solid fa-arrow-right"></i> العودة للرئيسية</button>
+            <div class="brands-title">التوافقات</div>
+            <div class="list-container">
+                <div style="background: white; padding: 20px; border-radius: 8px; text-align: center; border: 1px solid #d1d5db; color: #555; font-size: 14px;">
+                    قسم التوافقات قيد التجهيز لعرض قطع الغيار المتوافقة بين الموديلات المختلفة.
+                </div>
             </div>
+        </div>
+
+    </div>
+
+    <div id="aiCameraModal">
+        <div class="ai-modal-content">
+            <h3>📱 التعرف على نوع الهاتف</h3>
+            <input type="text" id="aiApiKey" placeholder="أدخل مفتاح الـ API هنا" style="width: 100%; padding: 6px; border: 1px solid #ccc; border-radius: 6px; text-align: right; font-size: 12px; margin-bottom: 8px;">
+            <button class="close-modal-btn" onclick="closeCameraModal()">إغلاق النافذة</button>
         </div>
     </div>
 
-
-    <!-- ================= صفحة الخانات الفرعية (10 خانات فرعية بالأسماء الدقيقة) ================= -->
-    <div id="sub-models-page">
-        <header class="navbar">
-            <div class="nav-right">
-                <button class="menu-btn" id="menuBtnSub" onclick="toggleMenu()">
-                    <i class="fa-solid fa-bars"></i>
-                </button>
-                <span class="brand-title" onclick="goToMain()">Electricity</span>
-            </div>
-            <div class="nav-left">
-                <span class="user-id" id="userDisplayIdSub">102938</span>
-            </div>
-            <div class="dropdown-menu" id="dropdownMenuSub">
-                <button onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> تسجيل الخروج</button>
-            </div>
-        </header>
-
-        <div class="content-container">
-            <button class="back-btn" onclick="goBackToModels()"><i class="fa-solid fa-arrow-right"></i> العودة للموديلات</button>
-            <div class="brands-title" id="selectedModelTitle">تفاصيل الموديل</div>
-            <div class="list-container" id="subModelsContainer">
-                <!-- الخانات الـ 10 الفرعية الدقيقة -->
-            </div>
-        </div>
-    </div>
-
-
-    <!-- ================= البرمجة التفاعلية (JavaScript) ================= -->
     <script>
         let currentUserId = "102938";
         let isGuestUser = false;
         let activeBrandName = "";
+        let activeModelName = "";
 
-        function handleLogin(event) {
+        const subCategoriesList = ["شاشة", "بطارية", "ضهرية", "فلاتة ربط", "فلاتة باور", "فلاتة شحن", "فريم", "سماعة داخلية مكالمات", "سماعة خارجية"];
+        
+        // --- تسجيل الدخول عبر Supabase ---
+        async function handleLogin(event) {
             event.preventDefault();
-            let phoneInput = document.getElementById('phone').value;
-            currentUserId = phoneInput;
-            isGuestUser = false;
-            
-            updateUserInterface();
-            
-            document.getElementById('login-page').style.display = 'none';
-            document.getElementById('main-page').style.display = 'flex';
+            let phoneInput = document.getElementById('phone').value.trim();
+            let passwordInput = document.getElementById('password').value.trim();
+
+            try {
+                let { data, error } = await supabase
+                    .from('users')
+                    .select('*')
+                    .eq('phone', phoneInput)
+                    .eq('password', passwordInput)
+                    .maybeSingle();
+
+                if (error) {
+                    alert('خطأ في قاعدة البيانات: ' + error.message);
+                    return;
+                }
+
+                if (data) {
+                    currentUserId = data.phone;
+                    isGuestUser = false;
+                    updateUserInterface();
+                    document.getElementById('login-page').style.display = 'none';
+                    document.getElementById('app-wrapper').style.display = 'flex';
+                } else {
+                    alert('رقم الهاتف أو رمز المرور غير صحيح أو غير مسجل!');
+                }
+            } catch (err) {
+                alert('حدث خطأ غير متوقع: ' + err.message);
+            }
+        }
+
+        // --- إنشاء حساب جديد عبر Supabase ---
+        async function handleRegister() {
+            let phoneInput = document.getElementById('phone').value.trim();
+            let passwordInput = document.getElementById('password').value.trim();
+
+            if (!phoneInput || !passwordInput) {
+                alert('يرجى إدخال رقم الهاتف ورمز المرور أولاً.');
+                return;
+            }
+
+            try {
+                let { data: existingUser, error: searchError } = await supabase
+                    .from('users')
+                    .select('*')
+                    .eq('phone', phoneInput)
+                    .maybeSingle();
+
+                if (searchError) {
+                    alert('خطأ أثناء البحث: ' + searchError.message);
+                    return;
+                }
+
+                if (existingUser) {
+                    alert('رقم الهاتف مسجل بالفعل، يرجى تسجيل الدخول مباشرة.');
+                    return;
+                }
+
+                let { error: insertError } = await supabase
+                    .from('users')
+                    .insert([{ phone: phoneInput, password: passwordInput }]);
+
+                if (insertError) {
+                    alert('خطأ أثناء إنشاء الحساب (تأكد من إعدادات RLS): ' + insertError.message);
+                } else {
+                    alert('تم إنشاء الحساب بنجاح! يمكنك تسجيل الدخول الآن.');
+                }
+            } catch (err) {
+                alert('حدث خطأ غير متوقع: ' + err.message);
+            }
         }
 
         function handleGuest() {
             currentUserId = "زائر";
             isGuestUser = true;
-            
             updateUserInterface();
-
             document.getElementById('login-page').style.display = 'none';
-            document.getElementById('main-page').style.display = 'flex';
+            document.getElementById('app-wrapper').style.display = 'flex';
+        }
+
+        function logout() {
+            document.getElementById('app-wrapper').style.display = 'none';
+            document.getElementById('login-page').style.display = 'flex';
+            document.getElementById('loginForm').reset();
+            closeAllMenus();
         }
 
         function updateUserInterface() {
             document.getElementById('userDisplayId').innerText = currentUserId;
-            document.getElementById('userDisplayIdModels').innerText = currentUserId;
-            document.getElementById('userDisplayIdSub').innerText = currentUserId;
-
-            let menuButtons = [document.getElementById('menuBtn'), document.getElementById('menuBtnModels'), document.getElementById('menuBtnSub')];
-            menuButtons.forEach(btn => {
-                if (btn) btn.style.display = isGuestUser ? 'none' : 'block';
-            });
+            let menuBtn = document.getElementById('menuBtn');
+            if (menuBtn) menuBtn.style.display = isGuestUser ? 'none' : 'block';
         }
 
         function toggleMenu() {
             if (isGuestUser) return;
-            let menus = [
-                document.getElementById('dropdownMenu'),
-                document.getElementById('dropdownMenuModels'),
-                document.getElementById('dropdownMenuSub')
-            ];
-            menus.forEach(menu => {
-                if (menu) {
-                    menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
-                }
-            });
+            let menu = document.getElementById('dropdownMenu');
+            if (menu) menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
+        }
+
+        function closeAllMenus() {
+            let menu = document.getElementById('dropdownMenu');
+            if (menu) menu.style.display = 'none';
+        }
+
+        function hideAllPages() {
+            document.getElementById('main-page').style.display = 'none';
+            document.getElementById('models-page').style.display = 'none';
+            document.getElementById('spare-parts-page').style.display = 'none';
+            document.getElementById('compatibility-page').style.display = 'none';
         }
 
         function goToMain() {
             closeAllMenus();
-            document.getElementById('models-page').style.display = 'none';
-            document.getElementById('sub-models-page').style.display = 'none';
-            document.getElementById('main-page').style.display = 'flex';
+            hideAllPages();
+            document.getElementById('main-page').style.display = 'block';
+            window.scrollTo(0, 0);
         }
 
         function openModels(brandName) {
             activeBrandName = brandName;
-            document.getElementById('selectedBrandTitle').innerText = `موديلات ماركة: ${brandName}`;
+            closeAllMenus();
+            hideAllPages();
+            document.getElementById('models-page').style.display = 'block';
+            document.getElementById('modelsPageTitle').innerText = `موديلات ${brandName}`;
             
             let container = document.getElementById('modelsListContainer');
             container.innerHTML = '';
-            for (let i = 1; i <= 100; i++) {
+
+            let sampleModels = [`${brandName} Pro 1`, `${brandName} Pro 2`, `${brandName} Ultra`];
+            sampleModels.forEach(model => {
                 let box = document.createElement('div');
                 box.className = 'horizontal-box';
-                box.innerHTML = `<span>موديل ${brandName} رقم (${i})</span> <i class="fa-solid fa-chevron-left" style="font-size: 12px; color: #0052D4;"></i>`;
-                box.onclick = function() { openSubModels(`موديل ${brandName} (${i})`); };
+                box.innerHTML = `<span>${model}</span><i class="fa-solid fa-chevron-left"></i>`;
+                box.onclick = () => openSpareParts(brandName, model);
                 container.appendChild(box);
-            }
-
-            document.getElementById('main-page').style.display = 'none';
-            document.getElementById('models-page').style.display = 'flex';
+            });
             window.scrollTo(0, 0);
         }
 
-        function openSubModels(modelName) {
-            document.getElementById('selectedModelTitle').innerText = modelName;
-
-            // القائمة الفرعية المكونة من 10 خانات أفقية بالأسماء المطلوبة بالتمام
-            let subCategories = [
-                "شاشة",
-                "بطارية",
-                "ظهرية",
-                "فلاتة ربط",
-                "فلاتة باور",
-                "فلاتة شحن",
-                "مدل",
-                "فريم",
-                "سماعة داخلية مكالمات",
-                "سماعة خارجية"
-            ];
-
-            let container = document.getElementById('subModelsContainer');
-            container.innerHTML = '';
+        function openSpareParts(brandName, modelName) {
+            activeModelName = modelName;
+            hideAllPages();
+            document.getElementById('spare-parts-page').style.display = 'block';
+            document.getElementById('sparePartsPageTitle').innerText = `قطع غيار ${modelName}`;
             
-            subCategories.forEach((catName, index) => {
+            let container = document.getElementById('sparePartsListContainer');
+            container.innerHTML = '';
+
+            subCategoriesList.forEach(part => {
                 let subBox = document.createElement('div');
                 subBox.className = 'sub-horizontal-box';
-                subBox.innerHTML = `<span>${catName}</span> <span style="font-size: 12px; color: #666;">خانة فرعية (${index + 1})</span>`;
-                subBox.onclick = function() {
-                    alert(`تم اختيار قسم: ${catName} لـ ${modelName}`);
-                };
+                subBox.innerHTML = `<span>${part}</span><i class="fa-solid fa-chevron-down"></i>`;
                 container.appendChild(subBox);
             });
-
-            document.getElementById('models-page').style.display = 'none';
-            document.getElementById('sub-models-page').style.display = 'flex';
             window.scrollTo(0, 0);
         }
 
-        function goBackToModels() {
-            document.getElementById('sub-models-page').style.display = 'none';
-            document.getElementById('models-page').style.display = 'flex';
+        function goToModels() {
+            hideAllPages();
+            document.getElementById('models-page').style.display = 'block';
             window.scrollTo(0, 0);
         }
 
-        function logout() {
+        function goToCompatibility() {
             closeAllMenus();
-            document.getElementById('main-page').style.display = 'none';
-            document.getElementById('models-page').style.display = 'none';
-            document.getElementById('sub-models-page').style.display = 'none';
-            document.getElementById('login-page').style.display = 'flex';
-            document.getElementById('loginForm').reset();
+            hideAllPages();
+            document.getElementById('compatibility-page').style.display = 'block';
+            window.scrollTo(0, 0);
         }
 
-        function closeAllMenus() {
-            let menus = [
-                document.getElementById('dropdownMenu'),
-                document.getElementById('dropdownMenuModels'),
-                document.getElementById('dropdownMenuSub')
-            ];
-            menus.forEach(m => { if(m) m.style.display = 'none'; });
+        function openCameraSearch() {
+            document.getElementById('aiCameraModal').style.display = 'flex';
         }
 
-        window.onclick = function(event) {
-            if (!event.target.matches('.fa-bars') && !event.target.closest('.menu-btn')) {
-                closeAllMenus();
-            }
+        function closeCameraModal() {
+            document.getElementById('aiCameraModal').style.display = 'none';
+        }
+
+        function startVoiceSearch() {
+            alert('خاصية البحث الصوتي قيد التفعيل...');
         }
     </script>
 </body>
