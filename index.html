@@ -344,7 +344,7 @@
                 </form>
 
                 <div class="divider">أو</div>
-                <button type="button" class="btn guest-btn" onclick="handleграммGuest()">الدخول كزائر</button>
+                <button type="button" class="btn guest-btn" onclick="handleGuest()">الدخول كزائر</button>
             </div>
 
             <!-- نموذج إنشاء حساب -->
@@ -458,7 +458,6 @@
         function handleLogin(e) {
             e.preventDefault();
             const phone = document.getElementById('login-phone').value;
-            localStorage.setItem('currentUser', phone);
             showHome(phone);
         }
 
@@ -466,21 +465,19 @@
         function handleRegister(e) {
             e.preventDefault();
             const phone = document.getElementById('reg-phone').value;
-            localStorage.setItem('currentUser', phone);
             showHome(phone);
         }
 
-        // الدخول كزائر
+        // الدخول كزائر (تم تصحيح اسم الدالة)
         function handleGuest() {
-            localStorage.setItem('currentUser', 'زائر');
             showHome('زائر');
         }
 
         // إظهار الصفحة الرئيسية وإخفاء صفحة الدخول
-        function showHome(useridentifier) {
+        function showHome(userIdentifier) {
             document.getElementById('auth-page').style.display = 'none';
             document.getElementById('home-page').style.display = 'block';
-            document.getElementById('user-display').innerText = useridentifier;
+            document.getElementById('user-display').innerText = userIdentifier;
         }
 
         // الرجوع لصفحة الدخول (عند الضغط على اسم المستخدم/الزائر)
