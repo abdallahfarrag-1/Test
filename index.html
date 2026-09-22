@@ -799,7 +799,6 @@
                 const card = document.createElement('div');
                 card.className = 'model-card';
                 
-                // الاسم الكامل والطراز معاً وتحت بعض
                 const deviceName = model.device_name || model.name || 'جهاز غير محدد';
                 const modelCode = model.model_code || model.code || 'طراز غير متوفر';
 
@@ -825,7 +824,6 @@
             renderModels(filtered);
         }
 
-        // مربع "التوافقات"
         function showCompatibilitiesSection() {
             document.getElementById('mainOptionsView').style.display = 'none';
             document.getElementById('dynamicListContainer').style.display = 'block';
@@ -840,7 +838,6 @@
             `;
         }
 
-        // مربع "ملاحظات بعد التركيب"
         function showNotesSection() {
             document.getElementById('mainOptionsView').style.display = 'none';
             document.getElementById('dynamicListContainer').style.display = 'block';
@@ -864,7 +861,6 @@
             document.getElementById('models-page').style.display = 'block';
         }
 
-        // 3. جلب قطع الغيار
         async function loadSpareParts(modelName) {
             document.getElementById('models-page').style.display = 'none';
             document.getElementById('parts-page').style.display = 'block';
