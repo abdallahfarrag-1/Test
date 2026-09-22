@@ -209,7 +209,7 @@
             padding: 20px;
         }
 
-        /* شريط البحث مع الكاميرا والمايك */
+        /* شريط البحث مع الكاميرا والمايك الثابت */
         .search-bar-container {
             display: flex;
             align-items: center;
@@ -267,7 +267,7 @@
             color: #0056b3;
         }
 
-        /* شبكة الماركات */
+        /* شبكة الماركات بالصفحة الأولى */
         .grid-container {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -338,7 +338,7 @@
             color: #0056b3;
         }
 
-        /* عرض الموديلات تحت بعض أفقياً (قائمة طولية) وتتضمن الاسم والطراز */
+        /* عرض الموديلات تحت بعض أفقياً (قائمة طولية) وتتضمن الاسم الكامل والطراز */
         .models-list {
             display: flex;
             flex-direction: column;
@@ -501,7 +501,7 @@
             <!-- خانة البحث مع الكاميرا والمايك -->
             <div class="search-bar-container">
                 <i class="fa-solid fa-magnifying-glass" style="color: #627d98;"></i>
-                <input type="text" id="searchInput" placeholder="ابحث عن ماركة أو موديل..." oninput="filterBrands()">
+                <input type="text" id="searchInput" placeholder="ابحث عن ماركة..." oninput="filterBrands()">
                 <button class="search-icon-btn" onclick="openCamera()" title="بحث بالكاميرا"><i class="fa-solid fa-camera"></i></button>
                 <button class="search-icon-btn" onclick="openMic()" title="بحث صوتي"><i class="fa-solid fa-microphone"></i></button>
             </div>
@@ -526,6 +526,14 @@
         </header>
 
         <div class="content-container">
+            <!-- شريط البحث، الكاميرا والمايك في الواجهة الثانية كمان -->
+            <div class="search-bar-container">
+                <i class="fa-solid fa-magnifying-glass" style="color: #627d98;"></i>
+                <input type="text" id="searchSubInput" placeholder="ابحث داخل القسم الحالي..." oninput="filterSubContent()">
+                <button class="search-icon-btn" onclick="openCamera()" title="بحث بالكاميرا"><i class="fa-solid fa-camera"></i></button>
+                <button class="search-icon-btn" onclick="openMic()" title="بحث صوتي"><i class="fa-solid fa-microphone"></i></button>
+            </div>
+
             <div class="section-title">
                 <span id="models-heading">اختر القسم المطلُوب</span>
                 <button class="back-btn" onclick="goToHome()">الرئيسية</button>
@@ -551,7 +559,7 @@
             <div id="dynamicListContainer" style="margin-top: 15px; display: none;">
                 <button class="back-btn" onclick="resetMainOptions()" style="margin-bottom: 15px;">← رجوع للقائمة الرئيسية</button>
                 <div class="models-list" id="models-container">
-                    <!-- الموديلات تظهر هنا تحت بعض أفقياً -->
+                    <!-- الموديلات تظهر هنا تحت بعض أفقياً بالاسم الكامل والطراز -->
                 </div>
             </div>
         </div>
@@ -590,6 +598,7 @@
 
         let currentSelectedBrand = '';
         let allBrandsData = [];
+        let allModelsData = [];
 
         function switchTab(tabName) {
             const loginSection = document.getElementById('login-section');
@@ -674,7 +683,6 @@
             document.getElementById('auth-page').style.display = 'flex';
         }
 
-        // دوظائف البحث والكاميرا والمايك الإضافية
         function openCamera() {
             alert('ميزة البحث بالكاميرا قيد التفعيل...');
         }
@@ -683,7 +691,7 @@
             alert('جاري الاستماع للبحث الصوتي...');
         }
 
-        // 1. جلب الماركات من جدول brands
+        // 1. جلب الماركات
         async function loadBrandsFromSupabase() {
             const grid = document.getElementById('brands-container');
             grid.innerHTML = '<div style="grid-column: span 2; text-align:center; color:#627d98;">جاري التحميل...</div>';
@@ -721,12 +729,12 @@
             renderBrands(filtered);
         }
 
-        // الانتقال للواجهة الثانية التي تحتوي على الماركات والتوافقات والملاحظات
         function openBrandHub(brandName) {
             currentSelectedBrand = brandName;
             document.getElementById('home-page').style.display = 'none';
             document.getElementById('models-page').style.display = 'block';
             document.getElementById('selected-brand-title').innerText = brandName;
+            document.getElementById('searchSubInput').value = '';
             resetMainOptions();
         }
 
@@ -736,7 +744,7 @@
             document.getElementById('models-heading').innerText = `اختر القسم المطلُوب (${currentSelectedBrand})`;
         }
 
-        // عند الضغط على مربع "الماركات" في الواجهة الثانية
+        // عند اختيار "الماركات" في الواجهة الثانية
         async function showBrandsSubSection() {
             document.getElementById('mainOptionsView').style.display = 'none';
             document.getElementById('dynamicListContainer').style.display = 'block';
@@ -775,12 +783,23 @@
                 return;
             }
 
+            allModelsData = data;
+            renderModels(allModelsData);
+        }
+
+        function renderModels(models) {
+            const container = document.getElementById('models-container');
             container.innerHTML = '';
-            data.forEach(model => {
+            if (models.length === 0) {
+                container.innerHTML = '<div style="text-align:center; color:#627d98;">لا توجد موديلات مطابقة للبحث</div>';
+                return;
+            }
+
+            models.forEach(model => {
                 const card = document.createElement('div');
                 card.className = 'model-card';
                 
-                // عرض الاسم الكامل والطراز معاً
+                // الاسم الكامل والطراز معاً وتحت بعض
                 const deviceName = model.device_name || model.name || 'جهاز غير محدد';
                 const modelCode = model.model_code || model.code || 'طراز غير متوفر';
 
@@ -796,7 +815,17 @@
             });
         }
 
-        // مبرع "التوافقات"
+        function filterSubContent() {
+            const query = document.getElementById('searchSubInput').value.toLowerCase();
+            const filtered = allModelsData.filter(m => {
+                const name = (m.device_name || m.name || '').toLowerCase();
+                const code = (m.model_code || m.code || '').toLowerCase();
+                return name.includes(query) || code.includes(query);
+            });
+            renderModels(filtered);
+        }
+
+        // مربع "التوافقات"
         function showCompatibilitiesSection() {
             document.getElementById('mainOptionsView').style.display = 'none';
             document.getElementById('dynamicListContainer').style.display = 'block';
@@ -835,7 +864,7 @@
             document.getElementById('models-page').style.display = 'block';
         }
 
-        // 3. جلب قطع الغيار من جدول spare_parts
+        // 3. جلب قطع الغيار
         async function loadSpareParts(modelName) {
             document.getElementById('models-page').style.display = 'none';
             document.getElementById('parts-page').style.display = 'block';
