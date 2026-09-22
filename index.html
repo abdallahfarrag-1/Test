@@ -203,7 +203,6 @@
             color: #fff;
         }
 
-        /* حاوية المحتوى العام */
         .content-container {
             max-width: 500px;
             margin: 0 auto;
@@ -233,7 +232,6 @@
             color: #0056b3;
         }
 
-        /* شبكة عرض الماركات والموديلات (مربعات متساوية الأضلاع) */
         .grid-container {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -267,7 +265,6 @@
             box-shadow: 0 6px 15px rgba(0, 86, 179, 0.15);
         }
 
-        /* تصميم قائمة قطع الغيار (تكون بشكل قوائم طولية وليست مربعات لسهولة قراءة التفاصيل) */
         .parts-list {
             display: flex;
             flex-direction: column;
@@ -306,7 +303,7 @@
 </head>
 <body>
 
-    <!-- ================= الصفحة الأولى: تسجيل الدخول / إنشاء حساب ================= -->
+    <!-- صفحة تسجيل الدخول / إنشاء حساب -->
     <div id="auth-page">
         <div class="container">
             <div class="logo-area">
@@ -318,7 +315,6 @@
                 <button class="tab-btn" onclick="switchTab('register')">إنشاء حساب</button>
             </div>
 
-            <!-- نموذج تسجيل الدخول -->
             <div id="login-section" class="form-section active">
                 <form onsubmit="handleLogin(event)">
                     <div class="form-group">
@@ -338,7 +334,6 @@
                 <button type="button" class="btn guest-btn" onclick="handleGuest()">الدخول كزائر</button>
             </div>
 
-            <!-- نموذج إنشاء حساب -->
             <div id="register-section" class="form-section">
                 <form onsubmit="handleRegister(event)">
                     <div class="form-group">
@@ -375,7 +370,7 @@
         </div>
     </div>
 
-    <!-- ================= الصفحة الرئيسية: عرض الماركات ================= -->
+    <!-- الصفحة الرئيسية: عرض الماركات -->
     <div id="home-page">
         <header>
             <div class="header-right" onclick="alert('القائمة الجانبية')" title="القائمة">
@@ -391,13 +386,11 @@
 
         <div class="content-container">
             <h2 class="section-title">الماركات</h2>
-            <div class="grid-container" id="brands-container">
-                <!-- تحميل الماركات ديناميكياً -->
-            </div>
+            <div class="grid-container" id="brands-container"></div>
         </div>
     </div>
 
-    <!-- ================= صفحة عرض الموديلات الخاصة بالماركة ================= -->
+    <!-- صفحة الموديلات -->
     <div id="models-page">
         <header>
             <div class="header-right" onclick="goToHome()" title="الرجوع للماركات">
@@ -414,13 +407,11 @@
                 <span id="models-heading">موديلات الماركة</span>
                 <button class="back-btn" onclick="goToHome()">رجوع للماركات</button>
             </div>
-            <div class="grid-container" id="models-container">
-                <!-- تحميل الموديلات ديناميكياً -->
-            </div>
+            <div class="grid-container" id="models-container"></div>
         </div>
     </div>
 
-    <!-- ================= صفحة عرض قطع الغيار الخاصة بالموديل ================= -->
+    <!-- صفحة قطع الغيار -->
     <div id="parts-page">
         <header>
             <div class="header-right" onclick="goBackToModels()" title="الرجوع للموديلات">
@@ -437,14 +428,11 @@
                 <span id="parts-heading">قطع الغيار المتوفرة</span>
                 <button class="back-btn" onclick="goBackToModels()">رجوع للموديلات</button>
             </div>
-            <div class="parts-list" id="parts-container">
-                <!-- تحميل قطع الغيار ديناميكياً -->
-            </div>
+            <div class="parts-list" id="parts-container"></div>
         </div>
     </div>
 
     <script>
-        // إعدادات الاتصال بـ Supabase
         const SUPABASE_URL = 'https://byiayomtcwqlgrknvgcz.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_buMxNAI5pVKhgLa_KlcHoQ_Tf_jN6Ks';
         
@@ -536,14 +524,14 @@
             document.getElementById('auth-page').style.display = 'flex';
         }
 
-        // 1. جلب الماركات
+        // جلب الماركات مع دعم أسماء أعمدة متعددة لتجنب undefined
         async function loadBrandsFromSupabase() {
             const grid = document.getElementById('brands-container');
             grid.innerHTML = '<div style="grid-column: span 2; text-align:center; color:#627d98;">جاري التحميل...</div>';
 
             const { data, error } = await _supabase.from('brands').select('*');
 
-            if (error) {
+            if (error || !data) {
                 grid.innerHTML = '<div style="grid-column: span 2; text-align:center; color:red;">فشل تحميل الماركات</div>';
                 return;
             }
@@ -552,14 +540,13 @@
             data.forEach(brand => {
                 const card = document.createElement('div');
                 card.className = 'card-item';
-                card.innerText = brand.name;
-                // عند الضغط على الماركة، ننتقل لجلب موديلاتها (مثلاً اسم جدول الموديلات: iphone_models أو بناءً على اسم الماركة)
-                card.onclick = () => loadModelsForBrand(brand.name);
+                // فحص كافة الاحتمالات لاسم العمود في الجدول
+                card.innerText = brand.name || brand.brand_name || brand.title || brand.brand || 'غير معروف';
+                card.onclick = () => loadModelsForBrand(card.innerText);
                 grid.appendChild(card);
             });
         }
 
-        // 2. جلب الموديلات بناءً على الماركة المختارّة
         async function loadModelsForBrand(brandName) {
             currentSelectedBrand = brandName;
             document.getElementById('home-page').style.display = 'none';
@@ -570,14 +557,12 @@
             const grid = document.getElementById('models-container');
             grid.innerHTML = '<div style="grid-column: span 2; text-align:center; color:#627d98;">جاري التحميل...</div>';
 
-            // تخمين اسم جدول الموديلات بناءً على اسم الماركة (مثال: iphone_models, samsung_models)
-            // تحويل الاسم لصغيرة وإزالة المسافات
             let tableName = brandName.toLowerCase().replace(/\s+/g, '_') + '_models';
 
             const { data, error } = await _supabase.from(tableName).select('*');
 
-            if (error) {
-                grid.innerHTML = `<div style="grid-column: span 2; text-align:center; color:red;">عفواً، لا توجد موديلات متاحة حالياً لهذه الماركة (${tableName})</div>`;
+            if (error || !data) {
+                grid.innerHTML = `<div style="grid-column: span 2; text-align:center; color:red;">لا توجد موديلات متاحة حالياً لهذه الماركة</div>`;
                 return;
             }
 
@@ -585,7 +570,7 @@
             data.forEach(model => {
                 const card = document.createElement('div');
                 card.className = 'card-item';
-                card.innerText = model.name || model.model_name; // دعم حسب اسم العامود عندك
+                card.innerText = model.name || model.model_name || model.title || 'موديل';
                 card.onclick = () => loadSpareParts(card.innerText);
                 grid.appendChild(card);
             });
@@ -596,7 +581,6 @@
             document.getElementById('models-page').style.display = 'block';
         }
 
-        // 3. جلب قطع الغيار الخاصة بالموديل من جدول spare_parts
         async function loadSpareParts(modelName) {
             document.getElementById('models-page').style.display = 'none';
             document.getElementById('parts-page').style.display = 'block';
@@ -606,11 +590,10 @@
             const container = document.getElementById('parts-container');
             container.innerHTML = '<div style="text-align:center; color:#627d98;">جاري تحميل قطع الغيار...</div>';
 
-            // نفترض أن جدول spare_parts يحتوي على عمود يربط الموديل أو اسم الموديل (مثال: model_name أو model_id)
             const { data, error } = await _supabase
                 .from('spare_parts')
                 .select('*')
-                .eq('model_name', modelName); // عدل اسم العمود `model_name` ليطابق اسم العمود عندك في جدول spare_parts
+                .eq('model_name', modelName);
 
             if (error || !data || data.length === 0) {
                 container.innerHTML = '<div style="text-align:center; color:#627d98;">لا توجد قطع غيار مسجلة لهذا الموديل حالياً</div>';
@@ -623,7 +606,7 @@
                 item.className = 'part-card';
                 item.innerHTML = `
                     <div class="part-info">
-                        <h3>${part.name || part.part_name}</h3>
+                        <h3>${part.name || part.part_name || part.title || 'قطعة غيار'}</h3>
                         <p>السعر: ${part.price ? part.price + ' جنية' : 'غير متوفر'}</p>
                     </div>
                     <div style="font-weight:700; color:#0056b3;">متوفر</div>
