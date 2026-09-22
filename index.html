@@ -3,842 +3,149 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Electricity</title>
-    <!-- خط كاييرو وأيقونات FontAwesome -->
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- مكتبة Supabase -->
+    <title>مشروع الكهرباء - لوحة التحكم</title>
+    <!-- تضمين مكتبة Supabase عبر CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script>
-        // الطريقة الصحيحة لتعريف عميل Supabase للإصدار الثاني مع المفتاح الجديد
-        const { createClient } = window.supabase;
-        const SUPABASE_URL = 'https://byiayomtcwqlgrknvgcz.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ5aWF5b210Y3dxbGdya252Z2N6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk3MjIyODIsImV4cCI6MjEwNTI5ODI4Mn0.pBgmAUQ4K9xCXludssLVIk5enj67QvLG7AcLbd0BZlo';
-        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    </script>
-
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Cairo', sans-serif;
-        }
-
         body {
-            background-color: #f4f7fc;
-            color: #333;
-        }
-
-        /* --- 1. واجهة تسجيل الدخول --- */
-        #login-page {
-            background: linear-gradient(135deg, #0052D4, #4364F7, #6FB1FC);
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .login-container {
-            background-color: #ffffff;
-            padding: 40px 30px;
-            border-radius: 15px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-            width: 100%;
-            max-width: 400px;
-            text-align: center;
-        }
-
-        .logo-area h1 {
-            color: #0052D4;
-            font-size: 32px;
-            margin-bottom: 5px;
-            font-weight: 700;
-        }
-
-        .logo-area p {
-            color: #666;
-            font-size: 14px;
-            margin-bottom: 30px;
-        }
-
-        .input-group {
-            margin-bottom: 20px;
-            text-align: right;
-        }
-
-        .input-group label {
-            display: block;
-            margin-bottom: 8px;
-            color: #333;
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        .input-group input {
-            width: 100%;
-            padding: 12px 15px;
-            border: 1px solid #d1d5db;
-            border-radius: 8px;
-            font-size: 14px;
-            outline: none;
-            text-align: right;
-            direction: rtl;
-            transition: border-color 0.3s;
-        }
-
-        .input-group input:focus {
-            border-color: #0052D4;
-            box-shadow: 0 0 5px rgba(0, 82, 212, 0.2);
-        }
-
-        .options-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            font-size: 13px;
-            color: #555;
-        }
-
-        .options-row label {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            cursor: pointer;
-        }
-
-        .btn-login {
-            background-color: #0052D4;
-            color: white;
-            border: none;
-            width: 100%;
-            padding: 12px;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        .btn-login:hover {
-            background-color: #003fa7;
-        }
-
-        .btn-register {
-            background-color: #16a34a;
-            color: white;
-            border: none;
-            width: 100%;
-            padding: 12px;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            margin-top: 10px;
-            transition: background-color 0.3s;
-        }
-
-        .btn-register:hover {
-            background-color: #15803d;
-        }
-
-        .divider {
-            display: flex;
-            align-items: center;
-            text-align: center;
-            margin: 15px 0;
-            color: #888;
-            font-size: 13px;
-        }
-
-        .divider::before, .divider::after {
-            content: '';
-            flex: 1;
-            border-bottom: 1px solid #e5e7eb;
-        }
-        .divider::before { margin-left: 10px; }
-        .divider::after { margin-right: 10px; }
-
-        .btn-guest {
-            background-color: #f3f4f6;
-            color: #0052D4;
-            border: 1px solid #0052D4;
-            width: 100%;
-            padding: 12px;
-            border-radius: 8px;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-block;
-            transition: all 0.3s;
-        }
-
-        .btn-guest:hover {
-            background-color: #ebf5ff;
-        }
-
-        /* --- الشريط العلوي المشترك (Navbar) --- */
-        .navbar {
-            background-color: #0052D4;
-            color: white;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 15px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-
-        .nav-right, .nav-left {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .menu-btn {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 18px;
-            cursor: pointer;
-        }
-
-        .brand-title {
-            font-size: 18px;
-            font-weight: 700;
-            cursor: pointer;
-        }
-
-        .user-id {
-            font-size: 13px;
-            font-weight: 600;
-            background: rgba(255, 255, 255, 0.15);
-            padding: 3px 8px;
-            border-radius: 6px;
-        }
-
-        .dropdown-menu {
-            position: absolute;
-            top: 50px;
-            right: 15px;
-            background-color: white;
-            color: #333;
-            border-radius: 8px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            display: none;
-            width: 160px;
-            z-index: 1000;
-        }
-
-        .dropdown-menu button {
-            width: 100%;
-            padding: 10px 12px;
-            background: none;
-            border: none;
-            text-align: right;
-            font-size: 13px;
-            color: #d32f2f;
-            cursor: pointer;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            border-radius: 8px;
-            transition: background 0.2s;
-        }
-
-        .dropdown-menu button:hover {
-            background-color: #ffebee;
-        }
-
-        .sticky-header-container {
-            position: sticky;
-            top: 0;
-            z-index: 999;
-            background-color: #f4f7fc;
-            box-shadow: 0 3px 8px rgba(0,0,0,0.06);
-        }
-
-        .content-container {
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 8px 12px;
-            width: 100%;
-        }
-
-        .search-section {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            margin-top: 5px;
-            margin-bottom: 5px;
-        }
-
-        .search-actions-row {
-            display: flex;
-            gap: 8px;
-        }
-
-        .action-compact-btn {
-            flex: 1;
-            background: linear-gradient(135deg, #0052D4, #4364F7);
-            color: white;
-            border: none;
-            border-radius: 6px;
-            padding: 8px 10px;
-            font-size: 13px;
-            font-weight: 700;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            box-shadow: 0 2px 6px rgba(0, 82, 212, 0.2);
-            transition: all 0.3s;
-        }
-
-        .action-compact-btn:hover {
-            background: linear-gradient(135deg, #003fa7, #2c4ec9);
-        }
-
-        .search-bar {
-            display: flex;
-            align-items: center;
-            background: white;
-            border: 1px solid #d1d5db;
-            border-radius: 6px;
-            padding: 6px 12px;
-            gap: 8px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
-        }
-
-        .search-bar input {
-            flex: 1;
-            border: none;
-            outline: none;
-            font-size: 13px;
-            background: transparent;
-            text-align: right;
-            direction: rtl;
-        }
-
-        .search-bar i {
-            color: #0052D4;
-            font-size: 15px;
-            cursor: pointer;
-        }
-
-        .quick-nav-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 6px;
-        }
-
-        .quick-nav-card {
-            background: white;
-            border: 1px solid #d1d5db;
-            border-radius: 6px;
-            padding: 6px 4px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .quick-nav-card:hover {
-            border-color: #0052D4;
-            background-color: #f0f4ff;
-        }
-
-        .quick-nav-card i {
-            font-size: 14px;
-            color: #0052D4;
-            margin-bottom: 2px;
-            display: block;
-        }
-
-        .quick-nav-card span {
-            font-size: 11px;
-            font-weight: 600;
-            color: #333;
-            display: block;
-        }
-
-        .brands-title {
-            font-size: 16px;
-            font-weight: 700;
-            color: #0052D4;
-            margin-bottom: 12px;
-            text-align: right;
-        }
-
-        .brands-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            padding-bottom: 30px;
-            direction: ltr;
-        }
-
-        .brand-card {
-            background: white;
-            border: 1px solid #e2e8f0;
-            border-radius: 10px;
-            padding: 15px;
-            text-align: center;
-            font-size: 15px;
-            font-weight: 600;
-            color: #0052D4;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.04);
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .brand-card:hover {
-            background-color: #0052D4;
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 10px rgba(0, 82, 212, 0.2);
-        }
-
-        .page-body-content {
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 15px;
-            width: 100%;
-        }
-
-        .back-btn {
-            background: none;
-            border: none;
-            color: #0052D4;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .list-container {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            padding-bottom: 30px;
-        }
-
-        .horizontal-box {
-            background: white;
-            border: 1px solid #d1d5db;
-            border-radius: 6px;
-            padding: 12px 15px;
-            font-size: 14px;
-            font-weight: 600;
-            color: #333;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.02);
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .horizontal-box:hover {
-            border-color: #0052D4;
-            background-color: #f8fafc;
-        }
-
-        .sub-horizontal-box {
-            background: #ffffff;
-            border: 1px solid #cbd5e1;
-            border-radius: 6px;
-            padding: 12px 15px;
-            font-size: 14px;
-            font-weight: 600;
-            color: #0052D4;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.02);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .sub-horizontal-box:hover {
-            background-color: #f8fafc;
-            border-color: #0052D4;
-        }
-
-        #aiCameraModal {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.6);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 2000;
-            padding: 15px;
-        }
-        .ai-modal-content {
-            background: #ffffff;
+            font-family: Tahoma, sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
             padding: 20px;
-            border-radius: 12px;
-            max-width: 450px;
-            width: 100%;
+            direction: rtl;
+            text-align: right;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .hidden { display: none; }
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .grid-item {
+            background: #e3f2fd;
+            padding: 15px;
             text-align: center;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-            max-height: 90vh;
-            overflow-y: auto;
+            border-radius: 4px;
+            border: 1px solid #90caf9;
         }
-        .ai-modal-content h3 {
-            color: #0052D4;
-            margin-bottom: 12px;
-            font-size: 16px;
+        input, button {
+            padding: 10px;
+            margin: 5px 0;
+            width: 100%;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
         }
-        .close-modal-btn {
-            background-color: #d32f2f;
+        button {
+            background-color: #1976d2;
             color: white;
             border: none;
-            padding: 8px;
-            border-radius: 6px;
             cursor: pointer;
-            width: 100%;
-            margin-top: 12px;
-            font-weight: bold;
-            font-size: 13px;
         }
+        button:hover { background-color: #115293; }
     </style>
 </head>
 <body>
 
-    <!-- ================= واجهة تسجيل الدخول ================= -->
-    <div id="login-page">
-        <div class="login-container">
-            <div class="logo-area">
-                <h1>Electricity</h1>
-                <p>مرحباً بك، يرجى تسجيل الدخول أو إنشاء حساب للمتابعة</p>
-            </div>
-
-            <form id="loginForm" onsubmit="handleLogin(event)">
-                <div class="input-group">
-                    <label for="phone">رقم الهاتف</label>
-                    <input type="text" id="phone" name="phone" placeholder="أدخل رقم الهاتف" required>
-                </div>
-
-                <div class="input-group">
-                    <label for="password">رمز المرور</label>
-                    <input type="text" id="password" name="password" placeholder="أدخل رمز المرور" required>
-                </div>
-
-                <div class="options-row">
-                    <label>
-                        <input type="checkbox" name="remember"> تذكرني
-                    </label>
-                </div>
-
-                <button type="submit" class="btn-login">تسجيل الدخول</button>
-                <button type="button" class="btn-register" onclick="handleRegister()">إنشاء حساب جديد</button>
-            </form>
-
-            <div class="divider">أو</div>
-
-            <button type="button" class="btn-guest" onclick="handleGuest()">الدخول كزائر</button>
-        </div>
+<div class="container">
+    <!-- شاشة تسجيل الدخول -->
+    <div id="login-section">
+        <h2>تسجيل الدخول - نظام الكهرباء</h2>
+        <input type="text" id="username" placeholder="اسم المستخدم">
+        <input type="password" id="password" placeholder="كلمة المرور">
+        <button onclick="handleLogin()">دخول</button>
+        <p id="error-msg" style="color: red;"></p>
     </div>
 
-
-    <!-- ================= التطبيق الأساسي ================= -->
-    <div id="app-wrapper" style="display: none; min-height: 100vh; flex-direction: column;">
+    <!-- لوحة البيانات والشبكة (30 عنصر) -->
+    <div id="dashboard-section" class="hidden">
+        <h2>لوحة التحكم - شبكة الـ 30 عنصر</h2>
+        <button onclick="fetchData()" style="width: auto; margin-bottom: 15px;">تحديث البيانات من قاعدة البيانات</button>
         
-        <div class="sticky-header-container">
-            <header class="navbar">
-                <div class="nav-right">
-                    <button class="menu-btn" id="menuBtn" onclick="toggleMenu()">
-                        <i class="fa-solid fa-bars"></i>
-                    </button>
-                    <span class="brand-title" onclick="goToMain()">Electricity</span>
-                </div>
-                <div class="nav-left">
-                    <span class="user-id" id="userDisplayId">102938</span>
-                </div>
-                <div class="dropdown-menu" id="dropdownMenu">
-                    <button onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> تسجيل الخروج</button>
-                </div>
-            </header>
-
-            <div class="content-container">
-                <div class="search-section">
-                    <div class="search-actions-row">
-                        <button class="action-compact-btn" onclick="openCameraSearch()">
-                            <i class="fa-solid fa-camera"></i>
-                            <span>بحث كاميرا</span>
-                        </button>
-                        <button class="action-compact-btn" id="micBtn" onclick="startVoiceSearch()">
-                            <i class="fa-solid fa-microphone" id="micIcon"></i>
-                            <span id="micBtnText">بحث صوتي</span>
-                        </button>
-                    </div>
-
-                    <div class="search-bar">
-                        <i class="fa-solid fa-magnifying-glass"></i>
-                        <input type="text" id="textSearchInput" placeholder="ابحث...">
-                    </div>
-
-                    <div class="quick-nav-grid">
-                        <div class="quick-nav-card" onclick="goToMain()">
-                            <i class="fa-solid fa-mobile-screen"></i>
-                            <span>الماركات</span>
-                        </div>
-                        <div class="quick-nav-card" onclick="goToCompatibility()">
-                            <i class="fa-solid fa-shuffle"></i>
-                            <span>التوافقات</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div id="main-page" class="page-body-content">
-            <div class="brands-title" id="brandsHeaderTitle">الماركات</div>
-            <div class="brands-grid" id="brandsGrid">
-                <div class="brand-card" onclick="openModels('Apple')">Apple</div>
-                <div class="brand-card" onclick="openModels('Samsung')">Samsung</div>
-                <div class="brand-card" onclick="openModels('Xiaomi')">Xiaomi</div>
-                <div class="brand-card" onclick="openModels('Infinix')">Infinix</div>
-                <div class="brand-card" onclick="openModels('Oppo')">Oppo</div>
-                <div class="brand-card" onclick="openModels('Huawei')">Huawei</div>
-                <div class="brand-card" onclick="openModels('Vivo')">Vivo</div>
-                <div class="brand-card" onclick="openModels('Honor')">Honor</div>
-                <div class="brand-card" onclick="openModels('htc')">htc</div>
-                <div class="brand-card" onclick="openModels('Nokia')">Nokia</div>
-            </div>
-        </div>
-
-        <div id="models-page" class="page-body-content" style="display: none;">
-            <button class="back-btn" onclick="goToMain()"><i class="fa-solid fa-arrow-right"></i> العودة للماركات</button>
-            <div class="brands-title" id="modelsPageTitle">الموديلات</div>
-            <div class="list-container" id="modelsListContainer"></div>
-        </div>
-
-        <div id="spare-parts-page" class="page-body-content" style="display: none;">
-            <button class="back-btn" onclick="goToModels()"><i class="fa-solid fa-arrow-right"></i> العودة للموديلات</button>
-            <div class="brands-title" id="sparePartsPageTitle">قطع الغيار</div>
-            <div class="list-container" id="sparePartsListContainer"></div>
-        </div>
-
-        <div id="compatibility-page" class="page-body-content" style="display: none;">
-            <button class="back-btn" onclick="goToMain()"><i class="fa-solid fa-arrow-right"></i> العودة للرئيسية</button>
-            <div class="brands-title">التوافقات</div>
-            <div class="list-container">
-                <div style="background: white; padding: 20px; border-radius: 8px; text-align: center; border: 1px solid #d1d5db; color: #555; font-size: 14px;">
-                    قسم التوافقات قيد التجهيز لعرض قطع الغيار المتوافقة بين الموديلات المختلفة.
-                </div>
-            </div>
-        </div>
-
-    </div>
-
-    <div id="aiCameraModal">
-        <div class="ai-modal-content">
-            <h3>📱 التعرف على نوع الهاتف</h3>
-            <input type="text" id="aiApiKey" placeholder="أدخل مفتاح الـ API هنا" style="width: 100%; padding: 6px; border: 1px solid #ccc; border-radius: 6px; text-align: right; font-size: 12px; margin-bottom: 8px;">
-            <button class="close-modal-btn" onclick="closeCameraModal()">إغلاق النافذة</button>
+        <div class="grid-container" id="grid-30">
+            <!-- سيتم توليد الـ 30 عنصر تلقائياً عبر الجافاسكريبت -->
         </div>
     </div>
+</div>
 
-    <script>
-        let currentUserId = "102938";
-        let isGuestUser = false;
-        let activeBrandName = "";
-        let activeModelName = "";
+<script>
+    // بيانات الاتصال بقاعدة بيانات Supabase الخاصة بك
+    const SUPABASE_URL = 'https://byiayomtcwqlgrknvgcz.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable_buMxNAI5pVKhgLa_KlcHoQ_Tf_jN6Ks';
+    
+    // تهيئة العميل (Supabase Client)
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        const subCategoriesList = ["شاشة", "بطارية", "ضهرية", "فلاتة ربط", "فلاتة باور", "فلاتة شحن", "فريم", "سماعة داخلية مكالمات", "سماعة خارجية"];
-        
-        // --- تسجيل الدخول عبر Supabase ---
-        async function handleLogin(event) {
-            event.preventDefault();
-            let phoneInput = document.getElementById('phone').value.trim();
-            let passwordInput = document.getElementById('password').value.trim();
+    // دالة تسجيل الدخول والتحقق
+    async function handleLogin() {
+        const user = document.getElementById('username').value.trim();
+        const pass = document.getElementById('password').value.trim();
+        const errorMsg = document.getElementById('error-msg');
 
-            try {
-                let { data, error } = await supabase
-                    .from('users')
-                    .select('*')
-                    .eq('phone', phoneInput)
-                    .eq('password', passwordInput)
-                    .maybeSingle();
-
-                if (error) {
-                    alert('خطأ في قاعدة البيانات: ' + error.message);
-                    return;
-                }
-
-                if (data) {
-                    currentUserId = data.phone;
-                    isGuestUser = false;
-                    updateUserInterface();
-                    document.getElementById('login-page').style.display = 'none';
-                    document.getElementById('app-wrapper').style.display = 'flex';
-                } else {
-                    alert('رقم الهاتف أو رمز المرور غير صحيح أو غير مسجل!');
-                }
-            } catch (err) {
-                alert('حدث خطأ غير متوقع: ' + err.message);
-            }
+        // يمكنك تعديل بيانات الاعتماد الافتراضية حسب رغبتك أو ربطها بجدول المستخدمين في Supabase
+        if (user === "admin" && pass === "123456") {
+            document.getElementById('login-section').classList.add('hidden');
+            document.getElementById('dashboard-section').classList.remove('hidden');
+            initGrid();
+            fetchData();
+        } else {
+            errorMsg.textContent = "اسم المستخدم أو كلمة المرور غير صحيحة!";
         }
+    }
 
-        // --- إنشاء حساب جديد عبر Supabase ---
-        async function handleRegister() {
-            let phoneInput = document.getElementById('phone').value.trim();
-            let passwordInput = document.getElementById('password').value.trim();
+    // بناء شبكة الـ 30 عنصر في واجهة المستخدم
+    function initGrid() {
+        const grid = document.getElementById('grid-30');
+        grid.innerHTML = '';
+        for (let i = 1; i <= 30; i++) {
+            const item = document.createElement('div');
+            item.className = 'grid-item';
+            item.id = `item-${i}`;
+            item.innerHTML = `<strong>عنصر ${i}</strong><br><span id="val-${i}">جاري التحميل...</span>`;
+            grid.appendChild(item);
+        }
+    }
 
-            if (!phoneInput || !passwordInput) {
-                alert('يرجى إدخال رقم الهاتف ورمز المرور أولاً.');
+    // جلب البيانات من جدول قاعدة البيانات في Supabase
+    async function fetchData() {
+        try {
+            // استبدل 'electricity_data' باسم الجدول الفعلي لديك في Supabase إذا كان مختلفاً
+            const { data, error } = await supabaseClient
+                .from('electricity_data')
+                .select('*');
+
+            if (error) {
+                console.error('خطأ في جلب البيانات:', error.message);
                 return;
             }
 
-            try {
-                let { data: existingUser, error: searchError } = await supabase
-                    .from('users')
-                    .select('*')
-                    .eq('phone', phoneInput)
-                    .maybeSingle();
-
-                if (searchError) {
-                    alert('خطأ أثناء البحث: ' + searchError.message);
-                    return;
-                }
-
-                if (existingUser) {
-                    alert('رقم الهاتف مسجل بالفعل، يرجى تسجيل الدخول مباشرة.');
-                    return;
-                }
-
-                let { error: insertError } = await supabase
-                    .from('users')
-                    .insert([{ phone: phoneInput, password: passwordInput }]);
-
-                if (insertError) {
-                    alert('خطأ أثناء إنشاء الحساب (تأكد من إعدادات RLS): ' + insertError.message);
-                } else {
-                    alert('تم إنشاء الحساب بنجاح! يمكنك تسجيل الدخول الآن.');
-                }
-            } catch (err) {
-                alert('حدث خطأ غير متوقع: ' + err.message);
+            if (data && data.length > 0) {
+                // تحديث العناصر بناءً على البيانات المسترجعة
+                data.forEach((row, index) => {
+                    const id = index + 1;
+                    if (id <= 30) {
+                        const valSpan = document.getElementById(`val-${id}`);
+                        if (valSpan) {
+                            // اعرض الحقل المناسب من جدولك (مثلاً status أو value)
+                            valSpan.textContent = row.status || row.value || 'نشط';
+                        }
+                    }
+                });
             }
+        } catch (err) {
+            console.error('حدث استثناء أثناء الاتصال:', err);
         }
+    }
+</script>
 
-        function handleGuest() {
-            currentUserId = "زائر";
-            isGuestUser = true;
-            updateUserInterface();
-            document.getElementById('login-page').style.display = 'none';
-            document.getElementById('app-wrapper').style.display = 'flex';
-        }
-
-        function logout() {
-            document.getElementById('app-wrapper').style.display = 'none';
-            document.getElementById('login-page').style.display = 'flex';
-            document.getElementById('loginForm').reset();
-            closeAllMenus();
-        }
-
-        function updateUserInterface() {
-            document.getElementById('userDisplayId').innerText = currentUserId;
-            let menuBtn = document.getElementById('menuBtn');
-            if (menuBtn) menuBtn.style.display = isGuestUser ? 'none' : 'block';
-        }
-
-        function toggleMenu() {
-            if (isGuestUser) return;
-            let menu = document.getElementById('dropdownMenu');
-            if (menu) menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
-        }
-
-        function closeAllMenus() {
-            let menu = document.getElementById('dropdownMenu');
-            if (menu) menu.style.display = 'none';
-        }
-
-        function hideAllPages() {
-            document.getElementById('main-page').style.display = 'none';
-            document.getElementById('models-page').style.display = 'none';
-            document.getElementById('spare-parts-page').style.display = 'none';
-            document.getElementById('compatibility-page').style.display = 'none';
-        }
-
-        function goToMain() {
-            closeAllMenus();
-            hideAllPages();
-            document.getElementById('main-page').style.display = 'block';
-            window.scrollTo(0, 0);
-        }
-
-        function openModels(brandName) {
-            activeBrandName = brandName;
-            closeAllMenus();
-            hideAllPages();
-            document.getElementById('models-page').style.display = 'block';
-            document.getElementById('modelsPageTitle').innerText = `موديلات ${brandName}`;
-            
-            let container = document.getElementById('modelsListContainer');
-            container.innerHTML = '';
-
-            let sampleModels = [`${brandName} Pro 1`, `${brandName} Pro 2`, `${brandName} Ultra`];
-            sampleModels.forEach(model => {
-                let box = document.createElement('div');
-                box.className = 'horizontal-box';
-                box.innerHTML = `<span>${model}</span><i class="fa-solid fa-chevron-left"></i>`;
-                box.onclick = () => openSpareParts(brandName, model);
-                container.appendChild(box);
-            });
-            window.scrollTo(0, 0);
-        }
-
-        function openSpareParts(brandName, modelName) {
-            activeModelName = modelName;
-            hideAllPages();
-            document.getElementById('spare-parts-page').style.display = 'block';
-            document.getElementById('sparePartsPageTitle').innerText = `قطع غيار ${modelName}`;
-            
-            let container = document.getElementById('sparePartsListContainer');
-            container.innerHTML = '';
-
-            subCategoriesList.forEach(part => {
-                let subBox = document.createElement('div');
-                subBox.className = 'sub-horizontal-box';
-                subBox.innerHTML = `<span>${part}</span><i class="fa-solid fa-chevron-down"></i>`;
-                container.appendChild(subBox);
-            });
-            window.scrollTo(0, 0);
-        }
-
-        function goToModels() {
-            hideAllPages();
-            document.getElementById('models-page').style.display = 'block';
-            window.scrollTo(0, 0);
-        }
-
-        function goToCompatibility() {
-            closeAllMenus();
-            hideAllPages();
-            document.getElementById('compatibility-page').style.display = 'block';
-            window.scrollTo(0, 0);
-        }
-
-        function openCameraSearch() {
-            document.getElementById('aiCameraModal').style.display = 'flex';
-        }
-
-        function closeCameraModal() {
-            document.getElementById('aiCameraModal').style.display = 'none';
-        }
-
-        function startVoiceSearch() {
-            alert('خاصية البحث الصوتي قيد التفعيل...');
-        }
-    </script>
 </body>
 </html>
