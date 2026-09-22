@@ -233,21 +233,23 @@
 
         .search-actions {
             display: flex;
-            gap: 12px;
+            gap: 15px; /* مسافة أوسع قليلاً بين الأيقونات */
             margin-right: 10px;
+            align-items: center;
         }
 
         .search-actions button {
             background: none;
             border: none;
             color: #0056b3;
-            font-size: 18px;
+            font-size: 22px; /* تم تكبير حجم الأيقونات سيكا */
             cursor: pointer;
             transition: 0.2s;
         }
 
         .search-actions button:hover {
             color: #003d82;
+            transform: scale(1.1);
         }
 
         .brands-section {
@@ -265,22 +267,23 @@
             padding-bottom: 5px;
         }
 
+        /* شبكة مربعات ثنائية (2 أعمدة) ومن اليسار لليمين */
         .brands-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(2, 1fr);
             gap: 15px;
-            direction: ltr; /* من اليسار لليمين */
+            direction: ltr; 
         }
 
         .brand-card {
             background-color: #ffffff;
             border: 2px solid #0056b3;
             border-radius: 12px;
-            aspect-ratio: 1 / 1; /* مربع متساوي الأضلاع */
+            aspect-ratio: 1 / 1; /* مربع متساوي الأضلاع تماماً */
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 15px;
+            font-size: 17px;
             font-weight: 700;
             color: #0056b3;
             box-shadow: 0 4px 10px rgba(0, 86, 179, 0.08);
@@ -299,11 +302,11 @@
 
         @media (max-width: 480px) {
             .brands-grid {
-                grid-template-columns: repeat(3, 1fr);
-                gap: 10px;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
             }
             .brand-card {
-                font-size: 13px;
+                font-size: 15px;
             }
         }
     </style>
@@ -468,7 +471,7 @@
             showHome(phone);
         }
 
-        // الدخول كزائر (تم تصحيح اسم الدالة)
+        // الدخول كزائر
         function handleGuest() {
             showHome('زائر');
         }
@@ -480,7 +483,7 @@
             document.getElementById('user-display').innerText = userIdentifier;
         }
 
-        // الرجوع لصفحة الدخول (عند الضغط على اسم المستخدم/الزائر)
+        // الرجوع لصفحة الدخول
         function goToAuth() {
             document.getElementById('home-page').style.display = 'none';
             document.getElementById('auth-page').style.display = 'flex';
