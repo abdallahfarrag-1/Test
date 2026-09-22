@@ -7,6 +7,10 @@
     <!-- استيراد خط Cairo وأيقونات FontAwesome -->
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- استيراد مكتبة Supabase للربط بقاعدة البيانات -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <style>
         * {
             box-sizing: border-box;
@@ -116,19 +120,6 @@
             background-color: #fff;
         }
 
-        .remember-me {
-            display: flex;
-            align-items: center;
-            margin-bottom: 15px;
-            font-size: 14px;
-            color: #486581;
-        }
-
-        .remember-me input {
-            margin-left: 8px;
-            accent-color: #0056b3;
-        }
-
         .btn {
             width: 100%;
             padding: 12px;
@@ -176,7 +167,6 @@
 
         .divider::before { right: 0; }
         .divider::after { left: 0; }
-
 
         /* ================= الصفحة الرئيسية ================= */
         #home-page {
@@ -251,7 +241,7 @@
             background: none;
             border: none;
             color: #0056b3;
-            font-size: 20px; /* مكبرة سيكا ومظبوطة تماماً */
+            font-size: 20px;
             cursor: pointer;
             transition: 0.2s;
             display: flex;
@@ -280,7 +270,6 @@
             padding-bottom: 5px;
         }
 
-        /* شبكة مربعات ثنائية (عمدان اثنين) ومن اليسار لليمين ومتساوية الأضلاع */
         .brands-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -292,7 +281,7 @@
             background-color: #ffffff;
             border: 2px solid #ccd8e2;
             border-radius: 12px;
-            aspect-ratio: 1 / 1; /* مربع متساوي الأضلاع تماماً */
+            aspect-ratio: 1 / 1; 
             display: flex;
             justify-content: center;
             align-items: center;
@@ -354,11 +343,6 @@
                         <input type="password" id="login-pass" placeholder="أدخل رمز المرور" required>
                     </div>
 
-                    <div class="remember-me">
-                        <input type="checkbox" id="remember">
-                        <label for="remember" style="margin-bottom:0; display:inline;">تذكرني</label>
-                    </div>
-
                     <button type="submit" class="btn">دخول</button>
                 </form>
 
@@ -403,7 +387,6 @@
         </div>
     </div>
 
-
     <!-- ================= الصفحة الثانية: الرئيسية والماركات ================= -->
     <div id="home-page">
         <header>
@@ -413,7 +396,7 @@
             <div class="header-center">
                 <h1>Electrisity &ldquo;Aswan&rdquo;</h1>
             </div>
-            <div class="header-left" id="user-display" onclick="goToAuth()" title="تسجيل الخروج / تبديل الحساب">
+            <div class="header-left" id="user-display" onclick="goToAuth()" title="تسجيل الخروج">
                 زائر
             </div>
         </header>
@@ -434,26 +417,20 @@
 
         <div class="brands-section">
             <h2 class="section-title">الماركات</h2>
-            <div class="brands-grid">
-                <div class="brand-card" onclick="selectBrand('Apple')">Apple</div>
-                <div class="brand-card" onclick="selectBrand('Samsung')">Samsung</div>
-                <div class="brand-card" onclick="selectBrand('Xiaomi')">Xiaomi</div>
-                <div class="brand-card" onclick="selectBrand('Redmi')">Redmi</div>
-                <div class="brand-card" onclick="selectBrand('Infinix')">Infinix</div>
-                <div class="brand-card" onclick="selectBrand('Oppo')">Oppo</div>
-                <div class="brand-card" onclick="selectBrand('Realme')">Realme</div>
-                <div class="brand-card" onclick="selectBrand('Huawei')">Huawei</div>
-                <div class="brand-card" onclick="selectBrand('Vivo')">Vivo</div>
-                <div class="brand-card" onclick="selectBrand('Honor')">Honor</div>
-                <div class="brand-card" onclick="selectBrand('Techno')">Techno</div>
-                <div class="brand-card" onclick="selectBrand('itel')">itel</div>
-                <div class="brand-card" onclick="selectBrand('Nokia')">Nokia</div>
+            <div class="brands-grid" id="brands-container">
+                <!-- سيتم جلب الماركات هنا من Supabase -->
             </div>
         </div>
     </div>
 
-
     <script>
+        // إعدادات الاتصال بـ Supabase الخاصة بك
+        const SUPABASE_URL = 'https://byiayomtcwqlgrknvgcz.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_buMxNAI5pVKhgLa_KlcHoQ_Tf_jN6Ks';
+        
+        const { createClient } = supabase;
+        const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
         function switchTab(tabName) {
             const loginSection = document.getElementById('login-section');
             const registerSection = document.getElementById('register-section');
@@ -472,26 +449,81 @@
             }
         }
 
-        function handleLogin(e) {
+        // تسجيل الدخول من جدول users
+        async function handleLogin(e) {
             e.preventDefault();
             const phone = document.getElementById('login-phone').value;
-            showHome(phone);
+            const pass = document.getElementById('login-pass').value;
+
+            const { data, error } = await _supabase
+                .from('users')
+                .select('*')
+                .eq('phone', phone)
+                .eq('password', pass)
+                .single();
+
+            if (error || !data) {
+                alert("رقم الهاتف أو رمز المرور غير صحيح!");
+            } else {
+                showHome(data.phone);
+            }
         }
 
-        function handleRegister(e) {
+        // إنشاء حساب جديد وإضافته لجدول users
+        async function handleRegister(e) {
             e.preventDefault();
+            const name = document.getElementById('reg-name').value;
+            const shop = document.getElementById('reg-shop').value;
+            const address = document.getElementById('reg-address').value;
             const phone = document.getElementById('reg-phone').value;
-            showHome(phone);
+            const password = document.getElementById('reg-pass').value;
+
+            const { error } = await _supabase
+                .from('users')
+                .insert([{ name, shop_name: shop, address, phone, password }]);
+
+            if (error) {
+                alert("خطأ أثناء إنشاء الحساب، تأكد من البيانات أو أن الرقم غير مسجل مسبقاً: " + error.message);
+            } else {
+                alert("تم إنشاء الحساب بنجاح!");
+                showHome(phone);
+            }
         }
 
         function handleGuest() {
             showHome('زائر');
         }
 
+        // جلب الماركات من جدول brands
+        async function loadBrandsFromSupabase() {
+            const grid = document.getElementById('brands-container');
+            grid.innerHTML = '<div style="grid-column: span 2; text-align:center; color:#627d98;">جاري التحميل...</div>';
+
+            const { data, error } = await _supabase
+                .from('brands')
+                .select('*');
+
+            if (error) {
+                grid.innerHTML = '<div style="grid-column: span 2; text-align:center; color:red;">فشل تحميل الماركات</div>';
+                console.error(error);
+                return;
+            }
+
+            grid.innerHTML = '';
+            data.forEach(brand => {
+                const card = document.createElement('div');
+                card.className = 'brand-card';
+                card.innerText = brand.name; // تأكد أن اسم العمود في جدول brands هو name
+                card.onclick = () => selectBrand(brand.name);
+                grid.appendChild(card);
+            });
+        }
+
         function showHome(userIdentifier) {
             document.getElementById('auth-page').style.display = 'none';
             document.getElementById('home-page').style.display = 'block';
             document.getElementById('user-display').innerText = userIdentifier;
+            loadBrandsFromSupabase();
         }
 
         function goToAuth() {
@@ -512,7 +544,7 @@
         }
 
         function selectBrand(brandName) {
-            alert("تم اختيار ماركة: " + brandName);
+            alert("تم اختيار ماركة: " + brandName + " (جاهز لعرض موديلاتها وقطع غيارها في الخطوة القادمة)");
         }
     </script>
 </body>
