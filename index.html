@@ -16,55 +16,49 @@
         }
 
         body {
-            background: linear-gradient(135deg, #f0f4f8, #d9e2ec);
+            background-color: #f4f7fb;
             min-height: 100vh;
             color: #102a43;
         }
 
-        /* ================= تصميم صفحة تسجيل الدخول / إنشاء حساب ================= */
+        /* ================= صفحة تسجيل الدخول / إنشاء حساب ================= */
         #auth-page {
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
             padding: 20px;
+            background: linear-gradient(135deg, #0056b3, #e3f2fd);
         }
 
         .container {
             background-color: #ffffff;
             width: 100%;
-            max-width: 440px;
-            padding: 35px;
-            border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0, 86, 179, 0.12);
-            border-top: 6px solid #0056b3;
-            animation: fadeIn 0.4s ease-in-out;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
+            max-width: 420px;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            border-top: 5px solid #0056b3;
         }
 
         .logo-area {
             text-align: center;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
 
         .logo-area h1 {
             color: #0056b3;
-            font-size: 26px;
+            font-size: 24px;
             font-weight: 900;
             direction: ltr;
             unicode-bidi: embed;
-            letter-spacing: 0.5px;
         }
 
         .tabs {
             display: flex;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             background: #f0f4f8;
-            border-radius: 12px;
+            border-radius: 10px;
             padding: 4px;
         }
 
@@ -77,14 +71,13 @@
             font-weight: 700;
             cursor: pointer;
             color: #627d98;
-            border-radius: 10px;
-            transition: all 0.3s ease;
+            border-radius: 8px;
+            transition: 0.3s;
         }
 
         .tab-btn.active {
             background-color: #0056b3;
             color: #ffffff;
-            box-shadow: 0 4px 10px rgba(0, 86, 179, 0.2);
         }
 
         .form-section {
@@ -96,12 +89,12 @@
         }
 
         .form-group {
-            margin-bottom: 18px;
+            margin-bottom: 15px;
         }
 
         .form-group label {
             display: block;
-            margin-bottom: 6px;
+            margin-bottom: 5px;
             color: #243b53;
             font-size: 14px;
             font-weight: 700;
@@ -109,25 +102,24 @@
 
         .form-group input {
             width: 100%;
-            padding: 13px 15px;
-            border: 2px solid #bcccdc;
-            border-radius: 12px;
+            padding: 12px;
+            border: 1.5px solid #ccd8e2;
+            border-radius: 10px;
             font-size: 14px;
             outline: none;
-            transition: all 0.3s;
-            background-color: #f8fafc;
+            background-color: #fafbfc;
+            transition: 0.3s;
         }
 
         .form-group input:focus {
             border-color: #0056b3;
             background-color: #fff;
-            box-shadow: 0 0 0 4px rgba(0, 86, 179, 0.1);
         }
 
         .remember-me {
             display: flex;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             font-size: 14px;
             color: #486581;
         }
@@ -135,27 +127,23 @@
         .remember-me input {
             margin-left: 8px;
             accent-color: #0056b3;
-            width: 16px;
-            height: 16px;
         }
 
         .btn {
             width: 100%;
-            padding: 14px;
+            padding: 12px;
             background-color: #0056b3;
             color: #fff;
             border: none;
-            border-radius: 12px;
-            font-size: 16px;
+            border-radius: 10px;
+            font-size: 15px;
             font-weight: 700;
             cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 4px 12px rgba(0, 86, 179, 0.2);
+            transition: 0.3s;
         }
 
         .btn:hover {
             background-color: #004085;
-            transform: translateY(-1px);
         }
 
         .guest-btn {
@@ -163,7 +151,6 @@
             color: #0056b3;
             border: 2px solid #0056b3;
             margin-top: 10px;
-            box-shadow: none;
         }
 
         .guest-btn:hover {
@@ -172,7 +159,7 @@
 
         .divider {
             text-align: center;
-            margin: 20px 0;
+            margin: 15px 0;
             color: #9fb3c8;
             font-size: 13px;
             position: relative;
@@ -182,7 +169,7 @@
             content: "";
             position: absolute;
             top: 50%;
-            width: 42%;
+            width: 40%;
             height: 1px;
             background-color: #d9e2ec;
         }
@@ -191,52 +178,45 @@
         .divider::after { left: 0; }
 
 
-        /* ================= تصميم الصفحة الرئيسية ================= -->
+        /* ================= الصفحة الرئيسية ================= */
         #home-page {
             display: none;
-            background-color: #f4f7fb;
             min-height: 100vh;
-            padding-bottom: 40px;
-            animation: fadeIn 0.4s ease-in-out;
+            padding-bottom: 30px;
         }
 
         header {
-            background: linear-gradient(135deg, #0056b3, #003d82);
+            background-color: #0056b3;
             color: #fff;
-            padding: 16px 24px;
+            padding: 15px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
 
         .header-right, .header-left {
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 600;
             cursor: pointer;
             background: rgba(255, 255, 255, 0.15);
-            padding: 8px 14px;
-            border-radius: 10px;
-            transition: 0.2s;
-        }
-
-        .header-right:hover, .header-left:hover {
-            background: rgba(255, 255, 255, 0.25);
+            padding: 6px 12px;
+            border-radius: 8px;
         }
 
         .header-center h1 {
-            font-size: 21px;
+            font-size: 18px;
             font-weight: 900;
             direction: ltr;
             unicode-bidi: embed;
             text-align: center;
             color: #fff;
-            letter-spacing: 0.5px;
         }
 
+        /* شريط البحث */
         .search-container {
-            padding: 25px 20px;
-            max-width: 600px;
+            padding: 20px;
+            max-width: 500px;
             margin: 0 auto;
         }
 
@@ -245,30 +225,25 @@
             align-items: center;
             background: #fff;
             border: 2px solid #0056b3;
-            border-radius: 16px;
-            padding: 6px 16px;
-            box-shadow: 0 8px 20px rgba(0, 86, 179, 0.08);
-            transition: 0.3s;
-        }
-
-        .search-box:focus-within {
-            box-shadow: 0 8px 25px rgba(0, 86, 179, 0.18);
+            border-radius: 12px;
+            padding: 6px 14px;
+            box-shadow: 0 4px 12px rgba(0, 86, 179, 0.06);
         }
 
         .search-box input {
             flex: 1;
             border: none;
             outline: none;
-            font-size: 15px;
-            padding: 8px;
+            font-size: 14px;
+            padding: 6px;
             background: transparent;
             color: #102a43;
         }
 
         .search-actions {
             display: flex;
-            gap: 15px;
-            margin-right: 10px;
+            gap: 14px;
+            margin-right: 8px;
             align-items: center;
         }
 
@@ -276,53 +251,57 @@
             background: none;
             border: none;
             color: #0056b3;
-            font-size: 22px; /* مكبرة سيكا ومريحة للضغط */
+            font-size: 20px; /* مكبرة سيكا ومظبوطة تماماً */
             cursor: pointer;
             transition: 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .search-actions button:hover {
             color: #003d82;
-            transform: scale(1.12);
+            transform: scale(1.1);
         }
 
+        /* قسم الماركات */
         .brands-section {
-            max-width: 600px;
+            max-width: 500px;
             margin: 0 auto;
             padding: 0 20px;
         }
 
         .section-title {
-            font-size: 19px;
+            font-size: 17px;
             font-weight: 800;
             color: #0056b3;
-            margin-bottom: 18px;
-            border-bottom: 3px solid #e2e8f0;
-            padding-bottom: 8px;
+            margin-bottom: 12px;
+            border-bottom: 2px solid #d9e2ec;
+            padding-bottom: 5px;
         }
 
-        /* شبكة مربعات ثنائية (عمدان اثنين) ومتساوية الأضلاع ومن اليسار لليمين */
+        /* شبكة مربعات ثنائية (عمدان اثنين) ومن اليسار لليمين ومتساوية الأضلاع */
         .brands-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 16px;
+            gap: 12px;
             direction: ltr; 
         }
 
         .brand-card {
             background-color: #ffffff;
-            border: 2px solid #e2e8f0;
-            border-radius: 16px;
-            aspect-ratio: 1 / 1; /* يضمن أن المربع متساوي الأضلاع تماماً */
+            border: 2px solid #ccd8e2;
+            border-radius: 12px;
+            aspect-ratio: 1 / 1; /* مربع متساوي الأضلاع تماماً */
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 800;
             color: #0056b3;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.25s ease;
             text-align: center;
             padding: 10px;
         }
@@ -331,20 +310,19 @@
             background-color: #0056b3;
             color: #ffffff;
             border-color: #0056b3;
-            transform: translateY(-4px);
-            box-shadow: 0 10px 20px rgba(0, 86, 179, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 86, 179, 0.15);
         }
 
         @media (max-width: 480px) {
             .container {
-                padding: 25px 20px;
+                padding: 20px;
             }
             .brands-grid {
-                gap: 12px;
+                gap: 10px;
             }
             .brand-card {
-                font-size: 16px;
-                border-radius: 14px;
+                font-size: 15px;
             }
         }
     </style>
@@ -476,7 +454,6 @@
 
 
     <script>
-        // التبديل بين تبويبات تسجيل الدخول وإنشاء الحساب
         function switchTab(tabName) {
             const loginSection = document.getElementById('login-section');
             const registerSection = document.getElementById('register-section');
@@ -495,39 +472,33 @@
             }
         }
 
-        // التعامل مع تسجيل الدخول والانتقال للرئيسية
         function handleLogin(e) {
             e.preventDefault();
             const phone = document.getElementById('login-phone').value;
             showHome(phone);
         }
 
-        // التعامل مع إنشاء الحساب والانتقال للرئيسية
         function handleRegister(e) {
             e.preventDefault();
             const phone = document.getElementById('reg-phone').value;
             showHome(phone);
         }
 
-        // الدخول كزائر
         function handleGuest() {
             showHome('زائر');
         }
 
-        // إظهار الصفحة الرئيسية وإخفاء صفحة الدخول
         function showHome(userIdentifier) {
             document.getElementById('auth-page').style.display = 'none';
             document.getElementById('home-page').style.display = 'block';
             document.getElementById('user-display').innerText = userIdentifier;
         }
 
-        // الرجوع لصفحة الدخول
         function goToAuth() {
             document.getElementById('home-page').style.display = 'none';
             document.getElementById('auth-page').style.display = 'flex';
         }
 
-        // أزرار الوظائف في الصفحة الرئيسية
         function openMenu() {
             alert("تم فتح القائمة الجانبية");
         }
