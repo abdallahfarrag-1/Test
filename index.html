@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Electrisity "Aswan"</title>
-    <!-- استيراد خط عربي وأيقونات FontAwesome -->
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- استيراد خط Cairo وأيقونات FontAwesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
@@ -16,28 +16,34 @@
         }
 
         body {
-            background: linear-gradient(135deg, #0056b3, #e3f2fd);
+            background: linear-gradient(135deg, #f0f4f8, #d9e2ec);
             min-height: 100vh;
-            color: #333;
+            color: #102a43;
         }
 
-        /* حاوية صفحة تسجيل الدخول */
+        /* ================= تصميم صفحة تسجيل الدخول / إنشاء حساب ================= */
         #auth-page {
-            height: 100vh;
+            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 15px;
+            padding: 20px;
         }
 
         .container {
             background-color: #ffffff;
             width: 100%;
-            max-width: 420px;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 10px 25px rgba(0, 86, 179, 0.2);
-            border-top: 5px solid #0056b3;
+            max-width: 440px;
+            padding: 35px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 86, 179, 0.12);
+            border-top: 6px solid #0056b3;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .logo-area {
@@ -47,16 +53,19 @@
 
         .logo-area h1 {
             color: #0056b3;
-            font-size: 24px;
-            font-weight: 700;
+            font-size: 26px;
+            font-weight: 900;
             direction: ltr;
             unicode-bidi: embed;
+            letter-spacing: 0.5px;
         }
 
         .tabs {
             display: flex;
-            margin-bottom: 20px;
-            border-bottom: 2px solid #e0e0e0;
+            margin-bottom: 25px;
+            background: #f0f4f8;
+            border-radius: 12px;
+            padding: 4px;
         }
 
         .tab-btn {
@@ -64,17 +73,18 @@
             background: none;
             border: none;
             padding: 10px;
-            font-size: 16px;
-            font-weight: 600;
+            font-size: 15px;
+            font-weight: 700;
             cursor: pointer;
-            color: #666;
-            transition: 0.3s;
+            color: #627d98;
+            border-radius: 10px;
+            transition: all 0.3s ease;
         }
 
         .tab-btn.active {
-            color: #0056b3;
-            border-bottom: 3px solid #0056b3;
-            margin-bottom: -2px;
+            background-color: #0056b3;
+            color: #ffffff;
+            box-shadow: 0 4px 10px rgba(0, 86, 179, 0.2);
         }
 
         .form-section {
@@ -86,60 +96,66 @@
         }
 
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 18px;
         }
 
         .form-group label {
             display: block;
-            margin-bottom: 5px;
-            color: #0056b3;
+            margin-bottom: 6px;
+            color: #243b53;
             font-size: 14px;
-            font-weight: 600;
+            font-weight: 700;
         }
 
         .form-group input {
             width: 100%;
-            padding: 12px;
-            border: 1px solid #b0bec5;
-            border-radius: 8px;
+            padding: 13px 15px;
+            border: 2px solid #bcccdc;
+            border-radius: 12px;
             font-size: 14px;
             outline: none;
-            transition: 0.3s;
+            transition: all 0.3s;
+            background-color: #f8fafc;
         }
 
         .form-group input:focus {
             border-color: #0056b3;
-            box-shadow: 0 0 5px rgba(0, 86, 179, 0.3);
+            background-color: #fff;
+            box-shadow: 0 0 0 4px rgba(0, 86, 179, 0.1);
         }
 
         .remember-me {
             display: flex;
             align-items: center;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             font-size: 14px;
-            color: #555;
+            color: #486581;
         }
 
         .remember-me input {
             margin-left: 8px;
             accent-color: #0056b3;
+            width: 16px;
+            height: 16px;
         }
 
         .btn {
             width: 100%;
-            padding: 12px;
+            padding: 14px;
             background-color: #0056b3;
             color: #fff;
             border: none;
-            border-radius: 8px;
+            border-radius: 12px;
             font-size: 16px;
-            font-weight: 600;
+            font-weight: 700;
             cursor: pointer;
-            transition: background 0.3s;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(0, 86, 179, 0.2);
         }
 
         .btn:hover {
-            background-color: #003d82;
+            background-color: #004085;
+            transform: translateY(-1px);
         }
 
         .guest-btn {
@@ -147,16 +163,17 @@
             color: #0056b3;
             border: 2px solid #0056b3;
             margin-top: 10px;
+            box-shadow: none;
         }
 
         .guest-btn:hover {
-            background-color: #e3f2fd;
+            background-color: #f0f4ff;
         }
 
         .divider {
             text-align: center;
-            margin: 15px 0;
-            color: #888;
+            margin: 20px 0;
+            color: #9fb3c8;
             font-size: 13px;
             position: relative;
         }
@@ -165,49 +182,60 @@
             content: "";
             position: absolute;
             top: 50%;
-            width: 40%;
+            width: 42%;
             height: 1px;
-            background-color: #ddd;
+            background-color: #d9e2ec;
         }
 
         .divider::before { right: 0; }
         .divider::after { left: 0; }
 
-        /* حاوية الصفحة الرئيسية (مخفية افتراضياً حتى يتم الدخول) */
+
+        /* ================= تصميم الصفحة الرئيسية ================= -->
         #home-page {
             display: none;
-            background-color: #f4f9ff;
+            background-color: #f4f7fb;
             min-height: 100vh;
-            padding-bottom: 30px;
+            padding-bottom: 40px;
+            animation: fadeIn 0.4s ease-in-out;
         }
 
         header {
-            background-color: #0056b3;
+            background: linear-gradient(135deg, #0056b3, #003d82);
             color: #fff;
-            padding: 15px 20px;
+            padding: 16px 24px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
 
         .header-right, .header-left {
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 600;
             cursor: pointer;
+            background: rgba(255, 255, 255, 0.15);
+            padding: 8px 14px;
+            border-radius: 10px;
+            transition: 0.2s;
+        }
+
+        .header-right:hover, .header-left:hover {
+            background: rgba(255, 255, 255, 0.25);
         }
 
         .header-center h1 {
-            font-size: 20px;
-            font-weight: 700;
+            font-size: 21px;
+            font-weight: 900;
             direction: ltr;
             unicode-bidi: embed;
             text-align: center;
             color: #fff;
+            letter-spacing: 0.5px;
         }
 
         .search-container {
-            padding: 20px;
+            padding: 25px 20px;
             max-width: 600px;
             margin: 0 auto;
         }
@@ -217,9 +245,14 @@
             align-items: center;
             background: #fff;
             border: 2px solid #0056b3;
-            border-radius: 12px;
-            padding: 8px 15px;
-            box-shadow: 0 4px 15px rgba(0, 86, 179, 0.1);
+            border-radius: 16px;
+            padding: 6px 16px;
+            box-shadow: 0 8px 20px rgba(0, 86, 179, 0.08);
+            transition: 0.3s;
+        }
+
+        .search-box:focus-within {
+            box-shadow: 0 8px 25px rgba(0, 86, 179, 0.18);
         }
 
         .search-box input {
@@ -227,13 +260,14 @@
             border: none;
             outline: none;
             font-size: 15px;
-            padding: 5px;
+            padding: 8px;
             background: transparent;
+            color: #102a43;
         }
 
         .search-actions {
             display: flex;
-            gap: 15px; /* مسافة أوسع قليلاً بين الأيقونات */
+            gap: 15px;
             margin-right: 10px;
             align-items: center;
         }
@@ -242,14 +276,14 @@
             background: none;
             border: none;
             color: #0056b3;
-            font-size: 22px; /* تم تكبير حجم الأيقونات سيكا */
+            font-size: 22px; /* مكبرة سيكا ومريحة للضغط */
             cursor: pointer;
             transition: 0.2s;
         }
 
         .search-actions button:hover {
             color: #003d82;
-            transform: scale(1.1);
+            transform: scale(1.12);
         }
 
         .brands-section {
@@ -259,36 +293,36 @@
         }
 
         .section-title {
-            font-size: 18px;
-            font-weight: 700;
+            font-size: 19px;
+            font-weight: 800;
             color: #0056b3;
-            margin-bottom: 15px;
-            border-bottom: 2px solid #e3f2fd;
-            padding-bottom: 5px;
+            margin-bottom: 18px;
+            border-bottom: 3px solid #e2e8f0;
+            padding-bottom: 8px;
         }
 
-        /* شبكة مربعات ثنائية (2 أعمدة) ومن اليسار لليمين */
+        /* شبكة مربعات ثنائية (عمدان اثنين) ومتساوية الأضلاع ومن اليسار لليمين */
         .brands-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
+            gap: 16px;
             direction: ltr; 
         }
 
         .brand-card {
             background-color: #ffffff;
-            border: 2px solid #0056b3;
-            border-radius: 12px;
-            aspect-ratio: 1 / 1; /* مربع متساوي الأضلاع تماماً */
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            aspect-ratio: 1 / 1; /* يضمن أن المربع متساوي الأضلاع تماماً */
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 17px;
-            font-weight: 700;
+            font-size: 18px;
+            font-weight: 800;
             color: #0056b3;
-            box-shadow: 0 4px 10px rgba(0, 86, 179, 0.08);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             text-align: center;
             padding: 10px;
         }
@@ -296,17 +330,21 @@
         .brand-card:hover {
             background-color: #0056b3;
             color: #ffffff;
-            transform: translateY(-3px);
-            box-shadow: 0 6px 15px rgba(0, 86, 179, 0.2);
+            border-color: #0056b3;
+            transform: translateY(-4px);
+            box-shadow: 0 10px 20px rgba(0, 86, 179, 0.2);
         }
 
         @media (max-width: 480px) {
+            .container {
+                padding: 25px 20px;
+            }
             .brands-grid {
-                grid-template-columns: repeat(2, 1fr);
                 gap: 12px;
             }
             .brand-card {
-                font-size: 15px;
+                font-size: 16px;
+                border-radius: 14px;
             }
         }
     </style>
@@ -335,12 +373,12 @@
 
                     <div class="form-group">
                         <label for="login-pass">رمز المرور</label>
-                        <input type="text" id="login-pass" placeholder="أدخل رمز المرور" required>
+                        <input type="password" id="login-pass" placeholder="أدخل رمز المرور" required>
                     </div>
 
                     <div class="remember-me">
                         <input type="checkbox" id="remember">
-                        <label for="remember" style="margin-bottom:0; display:inline; color:#555;">تذكرني</label>
+                        <label for="remember" style="margin-bottom:0; display:inline;">تذكرني</label>
                     </div>
 
                     <button type="submit" class="btn">دخول</button>
@@ -375,7 +413,7 @@
 
                     <div class="form-group">
                         <label for="reg-pass">رمز المرور</label>
-                        <input type="text" id="reg-pass" placeholder="أنشئ رمز مرور" required>
+                        <input type="password" id="reg-pass" placeholder="أنشئ رمز مرور" required>
                     </div>
 
                     <button type="submit" class="btn">إنشاء حساب وتسجيل الدخول</button>
