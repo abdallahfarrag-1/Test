@@ -3,232 +3,651 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>إدارة صيانة المحمول</title>
-    <!-- مكتبة Supabase -->
+    <title>Electrisity "Aswan"</title>
+    <!-- استيراد خط Cairo وأيقونات FontAwesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- استيراد مكتبة Supabase للربط بقاعدة البيانات -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <style>
-        body { font-family: Tahoma, sans-serif; background-color: #f4f6f9; margin: 0; padding: 20px; direction: rtl; }
-        .container { max-width: 600px; margin: auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        h2 { text-align: center; color: #333; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; }
-        select, input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
-        button { background-color: #007bff; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; width: 100%; font-size: 16px; }
-        button:hover { background-color: #0056b3; }
-        .checkbox-group { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 5px; }
-        .checkbox-group label { font-weight: normal; display: flex; align-items: center; gap: 5px; }
-        .hidden { display: none; }
-        #authSection { margin-bottom: 30px; padding-bottom: 20px; border-bottom: 2px solid #eee; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        body {
+            background-color: #f4f7fb;
+            min-height: 100vh;
+            color: #102a43;
+        }
+
+        /* ================= صفحة تسجيل الدخول / إنشاء حساب ================= */
+        #auth-page {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            background: linear-gradient(135deg, #0056b3, #e3f2fd);
+        }
+
+        .container {
+            background-color: #ffffff;
+            width: 100%;
+            max-width: 420px;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            border-top: 5px solid #0056b3;
+        }
+
+        .logo-area {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .logo-area h1 {
+            color: #0056b3;
+            font-size: 24px;
+            font-weight: 900;
+            direction: ltr;
+            unicode-bidi: embed;
+        }
+
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            background: #f0f4f8;
+            border-radius: 10px;
+            padding: 4px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            background: none;
+            border: none;
+            padding: 10px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            color: #627d98;
+            border-radius: 8px;
+            transition: 0.3s;
+        }
+
+        .tab-btn.active {
+            background-color: #0056b3;
+            color: #ffffff;
+        }
+
+        .form-section {
+            display: none;
+        }
+
+        .form-section.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #243b53;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1.5px solid #ccd8e2;
+            border-radius: 10px;
+            font-size: 14px;
+            outline: none;
+            background-color: #fafbfc;
+            transition: 0.3s;
+        }
+
+        .form-group input:focus {
+            border-color: #0056b3;
+            background-color: #fff;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            background-color: #0056b3;
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn:hover {
+            background-color: #004085;
+        }
+
+        .guest-btn {
+            background-color: #ffffff;
+            color: #0056b3;
+            border: 2px solid #0056b3;
+            margin-top: 10px;
+        }
+
+        .guest-btn:hover {
+            background-color: #f0f4ff;
+        }
+
+        .divider {
+            text-align: center;
+            margin: 15px 0;
+            color: #9fb3c8;
+            font-size: 13px;
+            position: relative;
+        }
+
+        .divider::before, .divider::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            width: 40%;
+            height: 1px;
+            background-color: #d9e2ec;
+        }
+
+        .divider::before { right: 0; }
+        .divider::after { left: 0; }
+
+        /* ================= الصفحة الرئيسية / الموديلات / قطع الغيار ================= */
+        #home-page, #models-page, #parts-page {
+            display: none;
+            min-height: 100vh;
+            padding-bottom: 30px;
+        }
+
+        header {
+            background-color: #0056b3;
+            color: #fff;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-right, .header-left {
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.15);
+            padding: 6px 12px;
+            border-radius: 8px;
+        }
+
+        .header-center h1 {
+            font-size: 18px;
+            font-weight: 900;
+            direction: ltr;
+            unicode-bidi: embed;
+            text-align: center;
+            color: #fff;
+        }
+
+        .content-container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .section-title {
+            font-size: 17px;
+            font-weight: 800;
+            color: #0056b3;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #d9e2ec;
+            padding-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .back-btn {
+            background: #e2e8f0;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 700;
+            color: #0056b3;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            direction: ltr; 
+        }
+
+        .card-item {
+            background-color: #ffffff;
+            border: 2px solid #ccd8e2;
+            border-radius: 12px;
+            aspect-ratio: 1 / 1; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 16px;
+            font-weight: 800;
+            color: #0056b3;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+            cursor: pointer;
+            transition: all 0.25s ease;
+            text-align: center;
+            padding: 10px;
+        }
+
+        .card-item:hover {
+            background-color: #0056b3;
+            color: #ffffff;
+            border-color: #0056b3;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 86, 179, 0.15);
+        }
+
+        .parts-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            direction: rtl;
+        }
+
+        .part-card {
+            background: #fff;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1.5px solid #ccd8e2;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .part-info h3 {
+            font-size: 16px;
+            color: #0056b3;
+            margin-bottom: 4px;
+        }
+
+        .part-info p {
+            font-size: 13px;
+            color: #627d98;
+        }
+
+        @media (max-width: 480px) {
+            .container { padding: 20px; }
+            .grid-container { gap: 10px; }
+            .card-item { font-size: 15px; }
+        }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <!-- قسم تسجيل الدخول / إنشاء حساب للمحل -->
-    <div id="authSection">
-        <h2>تسجيل دخول المحل</h2>
-        <div class="form-group">
-            <label>رقم الهاتف:</label>
-            <input type="text" id="loginPhone" placeholder="أدخل رقم الهاتف">
-        </div>
-        <div class="form-group">
-            <label>كلمة المرور:</label>
-            <input type="password" id="loginPassword" placeholder="أدخل كلمة المرور">
-        </div>
-        <button onclick="loginUser()">دخول</button>
-    </div>
+    <!-- ================= الصفحة الأولى: تسجيل الدخول / إنشاء حساب ================= -->
+    <div id="auth-page">
+        <div class="container">
+            <div class="logo-area">
+                <h1>Electrisity &ldquo;Aswan&rdquo;</h1>
+            </div>
 
-    <!-- القسم الرئيسي (يظهر بعد تسجيل الدخول) -->
-    <div id="mainSection" class="hidden">
-        <h2 id="welcomeShop">مرحباً بك</h2>
-        
-        <div class="form-group">
-            <label for="brandSelect">اختر الماركة:</label>
-            <select id="brandSelect" onchange="onBrandChange()">
-                <option value="">-- اختر الماركة --</option>
-            </select>
-        </div>
+            <div class="tabs">
+                <button class="tab-btn active" onclick="switchTab('login')">تسجيل الدخول</button>
+                <button class="tab-btn" onclick="switchTab('register')">إنشاء حساب</button>
+            </div>
 
-        <div class="form-group">
-            <label for="modelSelect">اختر الموديل:</label>
-            <select id="modelSelect">
-                <option value="">-- اختر الموديل أولاً --</option>
-            </select>
-        </div>
+            <!-- نموذج تسجيل الدخول -->
+            <div id="login-section" class="form-section active">
+                <form onsubmit="handleLogin(event)">
+                    <div class="form-group">
+                        <label for="login-phone">رقم الهاتف</label>
+                        <input type="text" id="login-phone" placeholder="أدخل رقم الهاتف" required>
+                    </div>
 
-        <div class="form-group">
-            <label>قطع الغيار المطلوبة:</label>
-            <div id="sparePartsContainer" class="checkbox-group">
-                <!-- سيتم تعبئتها تلقائياً -->
+                    <div class="form-group">
+                        <label for="login-pass">رمز المرور</label>
+                        <input type="password" id="login-pass" placeholder="أدخل رمز المرور" required>
+                    </div>
+
+                    <button type="submit" class="btn">دخول</button>
+                </form>
+
+                <div class="divider">أو</div>
+                <button type="button" class="btn guest-btn" onclick="handleGuest()">الدخول كزائر</button>
+            </div>
+
+            <!-- نموذج إنشاء حساب -->
+            <div id="register-section" class="form-section">
+                <form onsubmit="handleRegister(event)">
+                    <div class="form-group">
+                        <label for="reg-name">الاسم</label>
+                        <input type="text" id="reg-name" placeholder="الاسم الكامل" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="reg-shop">اسم المحل</label>
+                        <input type="text" id="reg-shop" placeholder="اسم المحل" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="reg-address">عنوان المحل</label>
+                        <input type="text" id="reg-address" placeholder="عنوان المحل" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="reg-phone">رقم الهاتف</label>
+                        <input type="text" id="reg-phone" placeholder="رقم الهاتف" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="reg-pass">رمز المرور</label>
+                        <input type="password" id="reg-pass" placeholder="أنشئ رمز مرور" required>
+                    </div>
+
+                    <button type="submit" class="btn">إنشاء حساب وتسجيل الدخول</button>
+                </form>
+
+                <div class="divider">أو</div>
+                <button type="button" class="btn guest-btn" onclick="handleGuest()">الدخول كزائر</button>
             </div>
         </div>
-
-        <button onclick="saveOrder()">حفظ الطلب / البيانات</button>
     </div>
-</div>
 
-<script>
-    // بيانات الاتصال بـ Supabase (ضع بياناتك هنا)
-    const SUPABASE_URL = 'YOUR_SUPABASE_URL';
-    const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
-    
-    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    <!-- ================= الصفحة الرئيسية: عرض الماركات ================= -->
+    <div id="home-page">
+        <header>
+            <div class="header-right" onclick="alert('القائمة الجانبية')" title="القائمة">
+                <i class="fa-solid fa-bars fa-lg"></i>
+            </div>
+            <div class="header-center">
+                <h1>Electrisity &ldquo;Aswan&rdquo;</h1>
+            </div>
+            <div class="header-left" id="user-display" onclick="goToAuth()" title="تسجيل الخروج">
+                زائر
+            </div>
+        </header>
 
-    let currentUser = null;
+        <div class="content-container">
+            <h2 class="section-title">الماركات</h2>
+            <div class="grid-container" id="brands-container">
+                <!-- تحميل الماركات ديناميكياً -->
+            </div>
+        </div>
+    </div>
 
-    // دالة تسجيل الدخول
-    async function loginUser() {
-        const phone = document.getElementById('loginPhone').value.trim();
-        const password = document.getElementById('loginPassword').value.trim();
+    <!-- ================= صفحة عرض الموديلات الخاصة بالماركة ================= -->
+    <div id="models-page">
+        <header>
+            <div class="header-right" onclick="goToHome()" title="الرجوع للماركات">
+                <i class="fa-solid fa-arrow-right fa-lg"></i>
+            </div>
+            <div class="header-center">
+                <h1 id="selected-brand-title">الموديلات</h1>
+            </div>
+            <div class="header-left" onclick="goToAuth()">خروج</div>
+        </header>
 
-        if (!phone || !password) {
-            alert('الرجاء إدخال رقم الهاتف وكلمة المرور');
-            return;
-        }
+        <div class="content-container">
+            <div class="section-title">
+                <span id="models-heading">موديلات الماركة</span>
+                <button class="back-btn" onclick="goToHome()">رجوع للماركات</button>
+            </div>
+            <div class="grid-container" id="models-container">
+                <!-- تحميل الموديلات ديناميكياً -->
+            </div>
+        </div>
+    </div>
 
-        const { data, error } = await supabaseClient
-            .from('users')
-            .select('*')
-            .eq('phone_number', phone)
-            .eq('password', password)
-            .single();
+    <!-- ================= صفحة عرض قطع الغيار الخاصة بالموديل ================= -->
+    <div id="parts-page">
+        <header>
+            <div class="header-right" onclick="goBackToModels()" title="الرجوع للموديلات">
+                <i class="fa-solid fa-arrow-right fa-lg"></i>
+            </div>
+            <div class="header-center">
+                <h1 id="selected-model-title">قطع الغيار</h1>
+            </div>
+            <div class="header-left" onclick="goToAuth()">خروج</div>
+        </header>
 
-        if (error || !data) {
-            alert('خطأ في البيانات أو الحساب غير مسجل!');
-            return;
-        }
+        <div class="content-container">
+            <div class="section-title">
+                <span id="parts-heading">قطع الغيار المتوفرة</span>
+                <button class="back-btn" onclick="goBackToModels()">رجوع للموديلات</button>
+            </div>
+            <div class="parts-list" id="parts-container">
+                <!-- تحميل قطع الغيار ديناميكياً -->
+            </div>
+        </div>
+    </div>
 
-        currentUser = data;
-        document.getElementById('welcomeShop').textContent = `مرحباً بك في محل: ${data.shop_name} (${data.owner_name})`;
-        document.getElementById('authSection').classList.add('hidden');
-        document.getElementById('mainSection').classList.remove('hidden');
-
-        // تحميل البيانات الأساسية بعد تسجيل الدخول
-        loadBrands();
-        loadSpareParts();
-    }
-
-    // جلب الماركات
-    async function loadBrands() {
-        const { data, error } = await supabaseClient
-            .from('brands')
-            .select('*')
-            .order('id', { ascending: true });
-
-        if (error) {
-            console.error('خطأ في تحميل الماركات:', error.message);
-            return;
-        }
-
-        const brandSelect = document.getElementById('brandSelect');
-        brandSelect.innerHTML = '<option value="">-- اختر الماركة --</option>';
-        data.forEach(brand => {
-            let option = document.createElement('option');
-            option.value = brand.brand_name;
-            option.textContent = brand.brand_name;
-            brandSelect.appendChild(option);
-        });
-    }
-
-    // عند تغيير الماركة يتم تحميل موديلات الهواتف الخاصة بها
-    async function onBrandChange() {
-        const brandName = document.getElementById('brandSelect').value;
-        const modelSelect = document.getElementById('modelSelect');
-        modelSelect.innerHTML = '<option value="">-- جاري التحميل... --</option>';
-
-        if (!brandName) {
-            modelSelect.innerHTML = '<option value="">-- اختر الماركة أولاً --</option>';
-            return;
-        }
-
-        let tableName = '';
-        switch (brandName.toLowerCase()) {
-            case 'samsung': tableName = 'samsung_models'; break;
-            case 'iphone': tableName = 'iphone_models'; break;
-            case 'honor': tableName = 'honor_models'; break;
-            case 'huawei': tableName = 'huawei_models'; break;
-            case 'itel': tableName = 'itel_models'; break;
-            case 'nokia': tableName = 'nokia_models'; break;
-            case 'vivo': tableName = 'vivo_models'; break;
-            case 'techno':
-            case 'tecno': tableName = 'tecno_models'; break;
-            case 'oppo': tableName = 'oppo_models'; break;
-            case 'realme': tableName = 'realme_models'; break;
-            case 'redmi': tableName = 'redmi_models'; break;
-            case 'xiaomi': tableName = 'xiaomi_poco_models'; break;
-            case 'infinix': tableName = 'infinix_models'; break;
-            default:
-                modelSelect.innerHTML = '<option value="">لا توجد موديلات متاحة</option>';
-                return;
-        }
-
-        const { data, error } = await supabaseClient
-            .from(tableName)
-            .select('*');
-
-        if (error) {
-            console.error('خطأ في جلب الموديلات:', error.message);
-            modelSelect.innerHTML = '<option value="">خطأ في التحميل</option>';
-            return;
-        }
-
-        modelSelect.innerHTML = '<option value="">-- اختر الموديل --</option>';
-        data.forEach(device => {
-            let option = document.createElement('option');
-            option.value = device.model_code;
-            option.textContent = `${device.device_name} (${device.model_code})`;
-            modelSelect.appendChild(option);
-        });
-    }
-
-    // جلب قطع الغيار وعرضها كـ Checkboxes
-    async function loadSpareParts() {
-        const { data, error } = await supabaseClient
-            .from('spare_parts')
-            .select('*');
-
-        if (error) {
-            console.error('خطأ في جلب قطع الغيار:', error.message);
-            return;
-        }
-
-        const container = document.getElementById('sparePartsContainer');
-        container.innerHTML = '';
-        data.forEach(part => {
-            container.innerHTML += `
-                <label>
-                    <input type="checkbox" name="spare_part" value="${part.part_name}">
-                    ${part.part_name}
-                </label>
-            `;
-        });
-    }
-
-    // دالة حفظ الطلب (مثال توضيحي للاستفادة بالبيانات المتاحة)
-    function saveOrder() {
-        const brand = document.getElementById('brandSelect').value;
-        const model = document.getElementById('modelSelect').value;
+    <script>
+        // إعدادات الاتصال بـ Supabase
+        const SUPABASE_URL = 'https://byiayomtcwqlgrknvgcz.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_buMxNAI5pVKhgLa_KlcHoQ_Tf_jN6Ks';
         
-        const selectedParts = [];
-        document.querySelectorAll('input[name="spare_part"]:checked').forEach(checkbox => {
-            selectedParts.push(checkbox.value);
-        });
+        const { createClient } = supabase;
+        const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        if (!brand || !model) {
-            alert('الرجاء اختيار الماركة والموديل!');
-            return;
+        let currentSelectedBrand = '';
+
+        function switchTab(tabName) {
+            const loginSection = document.getElementById('login-section');
+            const registerSection = document.getElementById('register-section');
+            const buttons = document.querySelectorAll('.tab-btn');
+
+            buttons.forEach(btn => btn.classList.remove('active'));
+
+            if (tabName === 'login') {
+                loginSection.classList.add('active');
+                registerSection.classList.remove('active');
+                buttons[0].classList.add('active');
+            } else {
+                registerSection.classList.add('active');
+                loginSection.classList.remove('active');
+                buttons[1].classList.add('active');
+            }
         }
 
-        console.log('بيانات الطلب:', {
-            user: currentUser.shop_name,
-            brand: brand,
-            model: model,
-            parts: selectedParts
-        });
+        async function handleLogin(e) {
+            e.preventDefault();
+            const phone = document.getElementById('login-phone').value;
+            const pass = document.getElementById('login-pass').value;
 
-        alert('تم حفظ البيانات بنجاح!');
-    }
-</script>
+            const { data, error } = await _supabase
+                .from('users')
+                .select('*')
+                .eq('phone_number', phone)
+                .eq('password', pass)
+                .single();
 
+            if (error || !data) {
+                alert("رقم الهاتف أو رمز المرور غير صحيح!");
+            } else {
+                showHome(data.shop_name || data.owner_name || data.phone_number);
+            }
+        }
+
+        async function handleRegister(e) {
+            e.preventDefault();
+            const name = document.getElementById('reg-name').value;
+            const shop = document.getElementById('reg-shop').value;
+            const address = document.getElementById('reg-address').value;
+            const phone = document.getElementById('reg-phone').value;
+            const password = document.getElementById('reg-pass').value;
+
+            const { error } = await _supabase
+                .from('users')
+                .insert([{ owner_name: name, shop_name: shop, address: address, phone_number: phone, password: password }]);
+
+            if (error) {
+                alert("خطأ أثناء إنشاء الحساب، الرقم مسجل مسبقاً: " + error.message);
+            } else {
+                alert("تم إنشاء الحساب بنجاح!");
+                showHome(shop);
+            }
+        }
+
+        function handleGuest() {
+            showHome('زائر');
+        }
+
+        function showHome(userIdentifier) {
+            document.getElementById('auth-page').style.display = 'none';
+            document.getElementById('models-page').style.display = 'none';
+            document.getElementById('parts-page').style.display = 'none';
+            document.getElementById('home-page').style.display = 'block';
+            document.getElementById('user-display').innerText = userIdentifier;
+            loadBrandsFromSupabase();
+        }
+
+        function goToHome() {
+            document.getElementById('models-page').style.display = 'none';
+            document.getElementById('parts-page').style.display = 'none';
+            document.getElementById('home-page').style.display = 'block';
+        }
+
+        function goToAuth() {
+            document.getElementById('home-page').style.display = 'none';
+            document.getElementById('models-page').style.display = 'none';
+            document.getElementById('parts-page').style.display = 'none';
+            document.getElementById('auth-page').style.display = 'flex';
+        }
+
+        // 1. جلب الماركات من جدول brands (العمود brand_name)
+        async function loadBrandsFromSupabase() {
+            const grid = document.getElementById('brands-container');
+            grid.innerHTML = '<div style="grid-column: span 2; text-align:center; color:#627d98;">جاري التحميل...</div>';
+
+            const { data, error } = await _supabase.from('brands').select('*');
+
+            if (error) {
+                grid.innerHTML = '<div style="grid-column: span 2; text-align:center; color:red;">فشل تحميل الماركات</div>';
+                return;
+            }
+
+            grid.innerHTML = '';
+            data.forEach(brand => {
+                const card = document.createElement('div');
+                card.className = 'card-item';
+                // استخدام العمود brand_name الموجود في جدول brands عندك
+                card.innerText = brand.brand_name;
+                card.onclick = () => loadModelsForBrand(brand.brand_name);
+                grid.appendChild(card);
+            });
+        }
+
+        // 2. جلب الموديلات بناءً على اسم الماركة وتوجيهها للجدول الصحيح
+        async function loadModelsForBrand(brandName) {
+            currentSelectedBrand = brandName;
+            document.getElementById('home-page').style.display = 'none';
+            document.getElementById('models-page').style.display = 'block';
+            document.getElementById('selected-brand-title').innerText = brandName;
+            document.getElementById('models-heading').innerText = `موديلات ${brandName}`;
+
+            const grid = document.getElementById('models-container');
+            grid.innerHTML = '<div style="grid-column: span 2; text-align:center; color:#627d98;">جاري التحميل...</div>';
+
+            // تحديد اسم الجدول بدقة حسب الماركات اللي عندك في قاعدة البيانات
+            let tableName = '';
+            const cleanBrand = brandName.toLowerCase().trim();
+            
+            switch (cleanBrand) {
+                case 'samsung': tableName = 'samsung_models'; break;
+                case 'iphone': tableName = 'iphone_models'; break;
+                case 'honor': tableName = 'honor_models'; break;
+                case 'huawei': tableName = 'huawei_models'; break;
+                case 'itel': tableName = 'itel_models'; break;
+                case 'nokia': tableName = 'nokia_models'; break;
+                case 'vivo': tableName = 'vivo_models'; break;
+                case 'tecno':
+                case 'techno': tableName = 'tecno_models'; break;
+                case 'oppo': tableName = 'oppo_models'; break;
+                case 'realme': tableName = 'realme_models'; break;
+                case 'redmi': tableName = 'redmi_models'; break;
+                case 'xiaomi':
+                case 'poco': tableName = 'xiaomi_poco_models'; break;
+                case 'infinix': tableName = 'infinix_models'; break;
+                default:
+                    tableName = cleanBrand.replace(/\s+/g, '_') + '_models';
+            }
+
+            const { data, error } = await _supabase.from(tableName).select('*');
+
+            if (error || !data) {
+                grid.innerHTML = `<div style="grid-column: span 2; text-align:center; color:red;">عفواً، لا توجد موديلات متاحة حالياً (${tableName})</div>`;
+                return;
+            }
+
+            grid.innerHTML = '';
+            data.forEach(model => {
+                const card = document.createElement('div');
+                card.className = 'card-item';
+                // جلب اسم الجهاز أو كود الموديل من أعمدة الجداول (device_name أو model_code)
+                card.innerText = model.device_name || model.model_code || model.name;
+                card.onclick = () => loadSpareParts(card.innerText);
+                grid.appendChild(card);
+            });
+        }
+
+        function goBackToModels() {
+            document.getElementById('parts-page').style.display = 'none';
+            document.getElementById('models-page').style.display = 'block';
+        }
+
+        // 3. جلب قطع الغيار من جدول spare_parts
+        async function loadSpareParts(modelName) {
+            document.getElementById('models-page').style.display = 'none';
+            document.getElementById('parts-page').style.display = 'block';
+            document.getElementById('selected-model-title').innerText = modelName;
+            document.getElementById('parts-heading').innerText = `قطع غيار: ${modelName}`;
+
+            const container = document.getElementById('parts-container');
+            container.innerHTML = '<div style="text-align:center; color:#627d98;">جاري تحميل قطع الغيار...</div>';
+
+            // جلب كل قطع الغيار المتاحة من جدول spare_parts
+            const { data, error } = await _supabase
+                .from('spare_parts')
+                .select('*');
+
+            if (error || !data || data.length === 0) {
+                container.innerHTML = '<div style="text-align:center; color:#627d98;">لا توجد قطع غيار مسجلة حالياً</div>';
+                return;
+            }
+
+            container.innerHTML = '';
+            data.forEach(part => {
+                const item = document.createElement('div');
+                item.className = 'part-card';
+                item.innerHTML = `
+                    <div class="part-info">
+                        <h3>${part.part_name || part.name}</h3>
+                        <p>التصنيف: قطع غيار أصلية</p>
+                    </div>
+                    <div style="font-weight:700; color:#0056b3;">متوفر</div>
+                `;
+                container.appendChild(item);
+            });
+        }
+    </script>
 </body>
 </html>
