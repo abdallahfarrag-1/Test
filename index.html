@@ -168,8 +168,8 @@
         .divider::before { right: 0; }
         .divider::after { left: 0; }
 
-        /* ================= الصفحة الرئيسية ================= */
-        #home-page {
+        /* ================= الصفحة الرئيسية / الموديلات / قطع الغيار ================= */
+        #home-page, #models-page, #parts-page {
             display: none;
             min-height: 100vh;
             padding-bottom: 30px;
@@ -203,81 +203,45 @@
             color: #fff;
         }
 
-        /* شريط البحث */
-        .search-container {
+        /* حاوية المحتوى العام */
+        .content-container {
+            max-width: 500px;
+            margin: 0 auto;
             padding: 20px;
-            max-width: 500px;
-            margin: 0 auto;
-        }
-
-        .search-box {
-            display: flex;
-            align-items: center;
-            background: #fff;
-            border: 2px solid #0056b3;
-            border-radius: 12px;
-            padding: 6px 14px;
-            box-shadow: 0 4px 12px rgba(0, 86, 179, 0.06);
-        }
-
-        .search-box input {
-            flex: 1;
-            border: none;
-            outline: none;
-            font-size: 14px;
-            padding: 6px;
-            background: transparent;
-            color: #102a43;
-        }
-
-        .search-actions {
-            display: flex;
-            gap: 14px;
-            margin-right: 8px;
-            align-items: center;
-        }
-
-        .search-actions button {
-            background: none;
-            border: none;
-            color: #0056b3;
-            font-size: 20px;
-            cursor: pointer;
-            transition: 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .search-actions button:hover {
-            color: #003d82;
-            transform: scale(1.1);
-        }
-
-        /* قسم الماركات */
-        .brands-section {
-            max-width: 500px;
-            margin: 0 auto;
-            padding: 0 20px;
         }
 
         .section-title {
             font-size: 17px;
             font-weight: 800;
             color: #0056b3;
-            margin-bottom: 12px;
+            margin-bottom: 15px;
             border-bottom: 2px solid #d9e2ec;
             padding-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        .brands-grid {
+        .back-btn {
+            background: #e2e8f0;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 700;
+            color: #0056b3;
+        }
+
+        /* شبكة عرض الماركات والموديلات (مربعات متساوية الأضلاع) */
+        .grid-container {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 12px;
             direction: ltr; 
         }
 
-        .brand-card {
+        .card-item {
             background-color: #ffffff;
             border: 2px solid #ccd8e2;
             border-radius: 12px;
@@ -295,7 +259,7 @@
             padding: 10px;
         }
 
-        .brand-card:hover {
+        .card-item:hover {
             background-color: #0056b3;
             color: #ffffff;
             border-color: #0056b3;
@@ -303,16 +267,40 @@
             box-shadow: 0 6px 15px rgba(0, 86, 179, 0.15);
         }
 
+        /* تصميم قائمة قطع الغيار (تكون بشكل قوائم طولية وليست مربعات لسهولة قراءة التفاصيل) */
+        .parts-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            direction: rtl;
+        }
+
+        .part-card {
+            background: #fff;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1.5px solid #ccd8e2;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .part-info h3 {
+            font-size: 16px;
+            color: #0056b3;
+            margin-bottom: 4px;
+        }
+
+        .part-info p {
+            font-size: 13px;
+            color: #627d98;
+        }
+
         @media (max-width: 480px) {
-            .container {
-                padding: 20px;
-            }
-            .brands-grid {
-                gap: 10px;
-            }
-            .brand-card {
-                font-size: 15px;
-            }
+            .container { padding: 20px; }
+            .grid-container { gap: 10px; }
+            .card-item { font-size: 15px; }
         }
     </style>
 </head>
@@ -387,10 +375,10 @@
         </div>
     </div>
 
-    <!-- ================= الصفحة الثانية: الرئيسية والماركات ================= -->
+    <!-- ================= الصفحة الرئيسية: عرض الماركات ================= -->
     <div id="home-page">
         <header>
-            <div class="header-right" onclick="openMenu()" title="القائمة">
+            <div class="header-right" onclick="alert('القائمة الجانبية')" title="القائمة">
                 <i class="fa-solid fa-bars fa-lg"></i>
             </div>
             <div class="header-center">
@@ -401,35 +389,69 @@
             </div>
         </header>
 
-        <div class="search-container">
-            <div class="search-box">
-                <input type="text" id="search-input" placeholder="ابحث عن قطع الغيار، الماركات...">
-                <div class="search-actions">
-                    <button type="button" onclick="startCameraSearch()" title="بحث بالكاميرا">
-                        <i class="fa-solid fa-camera"></i>
-                    </button>
-                    <button type="button" onclick="startVoiceSearch()" title="بحث بالصوت">
-                        <i class="fa-solid fa-microphone"></i>
-                    </button>
-                </div>
+        <div class="content-container">
+            <h2 class="section-title">الماركات</h2>
+            <div class="grid-container" id="brands-container">
+                <!-- تحميل الماركات ديناميكياً -->
             </div>
         </div>
+    </div>
 
-        <div class="brands-section">
-            <h2 class="section-title">الماركات</h2>
-            <div class="brands-grid" id="brands-container">
-                <!-- سيتم جلب الماركات هنا من Supabase -->
+    <!-- ================= صفحة عرض الموديلات الخاصة بالماركة ================= -->
+    <div id="models-page">
+        <header>
+            <div class="header-right" onclick="goToHome()" title="الرجوع للماركات">
+                <i class="fa-solid fa-arrow-right fa-lg"></i>
+            </div>
+            <div class="header-center">
+                <h1 id="selected-brand-title">الموديلات</h1>
+            </div>
+            <div class="header-left" onclick="goToAuth()">خروج</div>
+        </header>
+
+        <div class="content-container">
+            <div class="section-title">
+                <span id="models-heading">موديلات الماركة</span>
+                <button class="back-btn" onclick="goToHome()">رجوع للماركات</button>
+            </div>
+            <div class="grid-container" id="models-container">
+                <!-- تحميل الموديلات ديناميكياً -->
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= صفحة عرض قطع الغيار الخاصة بالموديل ================= -->
+    <div id="parts-page">
+        <header>
+            <div class="header-right" onclick="goBackToModels()" title="الرجوع للموديلات">
+                <i class="fa-solid fa-arrow-right fa-lg"></i>
+            </div>
+            <div class="header-center">
+                <h1 id="selected-model-title">قطع الغيار</h1>
+            </div>
+            <div class="header-left" onclick="goToAuth()">خروج</div>
+        </header>
+
+        <div class="content-container">
+            <div class="section-title">
+                <span id="parts-heading">قطع الغيار المتوفرة</span>
+                <button class="back-btn" onclick="goBackToModels()">رجوع للموديلات</button>
+            </div>
+            <div class="parts-list" id="parts-container">
+                <!-- تحميل قطع الغيار ديناميكياً -->
             </div>
         </div>
     </div>
 
     <script>
-        // إعدادات الاتصال بـ Supabase الخاصة بك
+        // إعدادات الاتصال بـ Supabase
         const SUPABASE_URL = 'https://byiayomtcwqlgrknvgcz.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_buMxNAI5pVKhgLa_KlcHoQ_Tf_jN6Ks';
         
         const { createClient } = supabase;
         const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let currentSelectedBrand = '';
 
         function switchTab(tabName) {
             const loginSection = document.getElementById('login-section');
@@ -449,7 +471,6 @@
             }
         }
 
-        // تسجيل الدخول من جدول users
         async function handleLogin(e) {
             e.preventDefault();
             const phone = document.getElementById('login-phone').value;
@@ -469,7 +490,6 @@
             }
         }
 
-        // إنشاء حساب جديد وإضافته لجدول users
         async function handleRegister(e) {
             e.preventDefault();
             const name = document.getElementById('reg-name').value;
@@ -483,7 +503,7 @@
                 .insert([{ name, shop_name: shop, address, phone, password }]);
 
             if (error) {
-                alert("خطأ أثناء إنشاء الحساب، تأكد من البيانات أو أن الرقم غير مسجل مسبقاً: " + error.message);
+                alert("خطأ أثناء إنشاء الحساب، الرقم مسجل مسبقاً: " + error.message);
             } else {
                 alert("تم إنشاء الحساب بنجاح!");
                 showHome(phone);
@@ -494,57 +514,122 @@
             showHome('زائر');
         }
 
-        // جلب الماركات من جدول brands
+        function showHome(userIdentifier) {
+            document.getElementById('auth-page').style.display = 'none';
+            document.getElementById('models-page').style.display = 'none';
+            document.getElementById('parts-page').style.display = 'none';
+            document.getElementById('home-page').style.display = 'block';
+            document.getElementById('user-display').innerText = userIdentifier;
+            loadBrandsFromSupabase();
+        }
+
+        function goToHome() {
+            document.getElementById('models-page').style.display = 'none';
+            document.getElementById('parts-page').style.display = 'none';
+            document.getElementById('home-page').style.display = 'block';
+        }
+
+        function goToAuth() {
+            document.getElementById('home-page').style.display = 'none';
+            document.getElementById('models-page').style.display = 'none';
+            document.getElementById('parts-page').style.display = 'none';
+            document.getElementById('auth-page').style.display = 'flex';
+        }
+
+        // 1. جلب الماركات
         async function loadBrandsFromSupabase() {
             const grid = document.getElementById('brands-container');
             grid.innerHTML = '<div style="grid-column: span 2; text-align:center; color:#627d98;">جاري التحميل...</div>';
 
-            const { data, error } = await _supabase
-                .from('brands')
-                .select('*');
+            const { data, error } = await _supabase.from('brands').select('*');
 
             if (error) {
                 grid.innerHTML = '<div style="grid-column: span 2; text-align:center; color:red;">فشل تحميل الماركات</div>';
-                console.error(error);
                 return;
             }
 
             grid.innerHTML = '';
             data.forEach(brand => {
                 const card = document.createElement('div');
-                card.className = 'brand-card';
-                card.innerText = brand.name; // تأكد أن اسم العمود في جدول brands هو name
-                card.onclick = () => selectBrand(brand.name);
+                card.className = 'card-item';
+                card.innerText = brand.name;
+                // عند الضغط على الماركة، ننتقل لجلب موديلاتها (مثلاً اسم جدول الموديلات: iphone_models أو بناءً على اسم الماركة)
+                card.onclick = () => loadModelsForBrand(brand.name);
                 grid.appendChild(card);
             });
         }
 
-        function showHome(userIdentifier) {
-            document.getElementById('auth-page').style.display = 'none';
-            document.getElementById('home-page').style.display = 'block';
-            document.getElementById('user-display').innerText = userIdentifier;
-            loadBrandsFromSupabase();
-        }
-
-        function goToAuth() {
+        // 2. جلب الموديلات بناءً على الماركة المختارّة
+        async function loadModelsForBrand(brandName) {
+            currentSelectedBrand = brandName;
             document.getElementById('home-page').style.display = 'none';
-            document.getElementById('auth-page').style.display = 'flex';
+            document.getElementById('models-page').style.display = 'block';
+            document.getElementById('selected-brand-title').innerText = brandName;
+            document.getElementById('models-heading').innerText = `موديلات ${brandName}`;
+
+            const grid = document.getElementById('models-container');
+            grid.innerHTML = '<div style="grid-column: span 2; text-align:center; color:#627d98;">جاري التحميل...</div>';
+
+            // تخمين اسم جدول الموديلات بناءً على اسم الماركة (مثال: iphone_models, samsung_models)
+            // تحويل الاسم لصغيرة وإزالة المسافات
+            let tableName = brandName.toLowerCase().replace(/\s+/g, '_') + '_models';
+
+            const { data, error } = await _supabase.from(tableName).select('*');
+
+            if (error) {
+                grid.innerHTML = `<div style="grid-column: span 2; text-align:center; color:red;">عفواً، لا توجد موديلات متاحة حالياً لهذه الماركة (${tableName})</div>`;
+                return;
+            }
+
+            grid.innerHTML = '';
+            data.forEach(model => {
+                const card = document.createElement('div');
+                card.className = 'card-item';
+                card.innerText = model.name || model.model_name; // دعم حسب اسم العامود عندك
+                card.onclick = () => loadSpareParts(card.innerText);
+                grid.appendChild(card);
+            });
         }
 
-        function openMenu() {
-            alert("تم فتح القائمة الجانبية");
+        function goBackToModels() {
+            document.getElementById('parts-page').style.display = 'none';
+            document.getElementById('models-page').style.display = 'block';
         }
 
-        function startCameraSearch() {
-            alert("جاري فتح الكاميرا للبحث...");
-        }
+        // 3. جلب قطع الغيار الخاصة بالموديل من جدول spare_parts
+        async function loadSpareParts(modelName) {
+            document.getElementById('models-page').style.display = 'none';
+            document.getElementById('parts-page').style.display = 'block';
+            document.getElementById('selected-model-title').innerText = modelName;
+            document.getElementById('parts-heading').innerText = `قطع غيار: ${modelName}`;
 
-        function startVoiceSearch() {
-            alert("جاري الاستماع للبحث الصوتي...");
-        }
+            const container = document.getElementById('parts-container');
+            container.innerHTML = '<div style="text-align:center; color:#627d98;">جاري تحميل قطع الغيار...</div>';
 
-        function selectBrand(brandName) {
-            alert("تم اختيار ماركة: " + brandName + " (جاهز لعرض موديلاتها وقطع غيارها في الخطوة القادمة)");
+            // نفترض أن جدول spare_parts يحتوي على عمود يربط الموديل أو اسم الموديل (مثال: model_name أو model_id)
+            const { data, error } = await _supabase
+                .from('spare_parts')
+                .select('*')
+                .eq('model_name', modelName); // عدل اسم العمود `model_name` ليطابق اسم العمود عندك في جدول spare_parts
+
+            if (error || !data || data.length === 0) {
+                container.innerHTML = '<div style="text-align:center; color:#627d98;">لا توجد قطع غيار مسجلة لهذا الموديل حالياً</div>';
+                return;
+            }
+
+            container.innerHTML = '';
+            data.forEach(part => {
+                const item = document.createElement('div');
+                item.className = 'part-card';
+                item.innerHTML = `
+                    <div class="part-info">
+                        <h3>${part.name || part.part_name}</h3>
+                        <p>السعر: ${part.price ? part.price + ' جنية' : 'غير متوفر'}</p>
+                    </div>
+                    <div style="font-weight:700; color:#0056b3;">متوفر</div>
+                `;
+                container.appendChild(item);
+            });
         }
     </script>
 </body>
