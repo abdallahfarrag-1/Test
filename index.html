@@ -11,7 +11,6 @@
             padding: 0;
             font-family: Arial, sans-serif;
         }
-
         body {
             background-color: #f4f6f9;
             color: #333;
@@ -20,266 +19,188 @@
             align-items: center;
             min-height: 100vh;
         }
-
         .app-container {
             width: 100%;
             max-width: 480px;
-            background-color: #ffffff;
+            background: #fff;
             min-height: 100vh;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            border: 2px solid #b3d7ff;
+            position: relative;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             display: flex;
             flex-direction: column;
-            position: relative;
         }
-
-        .screen {
+        .page {
             display: none;
-            flex-direction: column;
             flex: 1;
             padding: 20px;
+            flex-direction: column;
         }
-
-        .screen.active {
+        .page.active {
             display: flex;
         }
-
-        .header-title {
+        .company-title {
             text-align: center;
             color: #0056b3;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             font-size: 24px;
+            font-weight: bold;
         }
-
         .tabs {
             display: flex;
             margin-bottom: 20px;
-            border-bottom: 2px solid #ddd;
+            border-bottom: 2px solid #0056b3;
         }
-
-        .tab-btn {
+        .tab {
             flex: 1;
-            padding: 12px;
-            background: none;
-            border: none;
-            font-size: 16px;
+            text-align: center;
+            padding: 10px;
             cursor: pointer;
-            color: #666;
+            background: #e9ecef;
             font-weight: bold;
         }
-
-        .tab-btn.active {
-            color: #0056b3;
-            border-bottom: 3px solid #0056b3;
-            margin-bottom: -2px;
+        .tab.active {
+            background: #0056b3;
+            color: #fff;
         }
-
-        .form-group {
-            margin-bottom: 15px;
+        .form-section {
+            display: none;
+            flex-direction: column;
+            gap: 15px;
         }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            color: #555;
-            font-size: 14px;
+        .form-section.active {
+            display: flex;
         }
-
-        .form-control {
+        input[type="text"],
+        input[type="password"],
+        input[type="tel"] {
             width: 100%;
             padding: 12px;
             border: 1px solid #ccc;
             border-radius: 8px;
-            font-size: 14px;
             outline: none;
         }
-
-        .form-control:focus {
+        input:focus {
             border-color: #0056b3;
         }
-
-        .checkbox-group {
+        .checkbox-container {
             display: flex;
             align-items: center;
-            margin-bottom: 20px;
-            font-size: 14px;
-            color: #555;
+            gap: 8px;
         }
-
-        .checkbox-group input {
-            margin-left: 8px;
-        }
-
         .btn {
-            width: 100%;
-            padding: 12px;
             background-color: #0056b3;
             color: white;
+            padding: 12px;
             border: none;
             border-radius: 8px;
-            font-size: 16px;
             cursor: pointer;
+            font-size: 16px;
             font-weight: bold;
             text-align: center;
         }
-
         .btn:hover {
-            background-color: #004494;
+            background-color: #004085;
         }
-
-        .visitor-btn {
-            background-color: #6c757d;
+        .guest-btn {
+            background-color: #e2e3e5;
+            color: #383d41;
             margin-top: 15px;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            text-align: center;
         }
-
-        .visitor-btn:hover {
-            background-color: #5a6268;
-        }
-
-        .top-nav {
+        .header-fixed {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 15px 20px;
-            background-color: #ffffff;
-            border-bottom: 1px solid #eee;
-            position: sticky;
-            top: 0;
-            z-index: 10;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 15px;
         }
-
-        .top-nav .menu-btn {
-            background: none;
-            border: none;
-            font-size: 20px;
-            cursor: pointer;
-            color: #0056b3;
-        }
-
-        .top-nav .company-name {
-            font-size: 18px;
-            font-weight: bold;
-            color: #0056b3;
-        }
-
-        .top-nav .user-phone {
-            font-size: 14px;
-            color: #555;
-            direction: ltr;
-        }
-
         .search-container {
             display: flex;
             gap: 10px;
-            padding: 15px 20px;
-            background-color: #fff;
-            border-bottom: 1px solid #eee;
+            margin-bottom: 15px;
         }
-
-        .search-container input {
+        .search-btn {
+            background-color: #0056b3;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        .search-input {
             flex: 1;
             padding: 10px;
             border: 1px solid #ccc;
             border-radius: 8px;
             outline: none;
         }
-
-        .search-container button {
-            padding: 10px 15px;
-            background-color: #0056b3;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-        }
-
         .grid-2x2 {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 15px;
-            padding: 20px;
         }
-
-        .card-box {
-            background-color: #ffffff;
-            border: 1px solid #0056b3;
-            border-radius: 12px;
+        .grid-box {
+            background: #f8f9fa;
+            border: 1px solid #b3d7ff;
+            border-radius: 8px;
             padding: 20px;
             text-align: center;
             cursor: pointer;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
             font-weight: bold;
             color: #0056b3;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100px;
         }
-
-        .card-box:hover {
-            background-color: #f0f4f8;
-        }
-
         .brands-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            padding: 20px;
+            gap: 10px;
         }
-
-        .brand-item {
+        .brand-box {
             aspect-ratio: 1 / 1;
-            background-color: #ffffff;
-            border: 1px solid #0056b3;
-            border-radius: 12px;
+            background: #f8f9fa;
+            border: 1px solid #b3d7ff;
+            border-radius: 8px;
             display: flex;
             justify-content: center;
             align-items: center;
+            cursor: pointer;
             font-weight: bold;
             color: #0056b3;
-            cursor: pointer;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
         }
-
-        .brand-item:hover {
-            background-color: #f0f4f8;
-        }
-
         .list-item {
-            background-color: #ffffff;
-            border: 1px solid #0056b3;
+            background: #f8f9fa;
+            border: 1px solid #b3d7ff;
             border-radius: 8px;
             padding: 15px;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
             cursor: pointer;
+            text-align: center;
             font-weight: bold;
             color: #0056b3;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
         }
-
-        .list-item:hover {
-            background-color: #f0f4f8;
-        }
-
-        .back-btn-container {
-            margin-bottom: 15px;
-        }
-
         .back-btn {
-            background-color: #6c757d;
+            background-color: #0056b3;
             color: white;
             border: none;
             padding: 8px 15px;
-            border-radius: 6px;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 14px;
+            margin-bottom: 15px;
+            align-self: flex-end;
         }
-
-        .back-btn:hover {
-            background-color: #5a6268;
-        }
-
-        .content-padding {
-            padding: 20px;
+        .content-box {
+            border: 1px solid #b3d7ff;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            background: #fff;
         }
     </style>
 </head>
@@ -287,230 +208,178 @@
 
 <div class="app-container">
 
-    <!-- شاشة تسجيل الدخول / إنشاء حساب (الصفحة الأولى) -->
-    <div id="screen-auth" class="screen active">
-        <h1 class="header-title">Electricity Aswan</h1>
+    <!-- الصفحة الأولى -->
+    <div id="page1" class="page active">
+        <div class="company-title">Electricity Aswan</div>
         <div class="tabs">
-            <button class="tab-btn active" onclick="switchAuthTab('login')">تسجيل الدخول</button>
-            <button class="tab-btn" onclick="switchAuthTab('register')">إنشاء حساب</button>
+            <div class="tab active" onclick="switchTab('login')">تسجيل الدخول</div>
+            <div class="tab" onclick="switchTab('register')">إنشاء حساب</div>
         </div>
 
         <!-- تسجيل الدخول -->
-        <div id="auth-login" class="auth-form">
-            <div class="form-group">
-                <label>رقم الهاتف</label>
-                <input type="text" class="form-control" id="login-phone">
+        <div id="loginSection" class="form-section active">
+            <input type="tel" placeholder="رقم الهاتف">
+            <input type="password" placeholder="رمز المرور">
+            <div class="checkbox-container">
+                <input type="checkbox" id="remember">
+                <label for="remember">تذكرنى</label>
             </div>
-            <div class="form-group">
-                <label>رمز المرور</label>
-                <input type="password" class="form-control" id="login-password">
-            </div>
-            <div class="checkbox-group">
-                <input type="checkbox" id="remember-me">
-                <label for="remember-me" style="margin-bottom: 0;">تذكرنى</label>
-            </div>
-            <button class="btn" onclick="goToMainScreen()">تسجيل الدخول</button>
+            <button class="btn" onclick="goToPage2()">تسجيل الدخول</button>
         </div>
 
         <!-- إنشاء حساب -->
-        <div id="auth-register" class="auth-form" style="display: none;">
-            <div class="form-group">
-                <label>اسم الفنى</label>
-                <input type="text" class="form-control">
-            </div>
-            <div class="form-group">
-                <label>اسم المحل</label>
-                <input type="text" class="form-control">
-            </div>
-            <div class="form-group">
-                <label>عنوان المحل</label>
-                <input type="text" class="form-control">
-            </div>
-            <div class="form-group">
-                <label>رقم الهاتف</label>
-                <input type="text" class="form-control">
-            </div>
-            <div class="form-group">
-                <label>رمز المرور</label>
-                <input type="password" class="form-control">
-            </div>
-            <button class="btn" onclick="goToMainScreen()">إنشاء حساب</button>
+        <div id="registerSection" class="form-section">
+            <input type="text" placeholder="اسم الفنى">
+            <input type="text" placeholder="اسم المحل">
+            <input type="text" placeholder="عنوان المحل">
+            <input type="tel" placeholder="رقم الهاتف">
+            <input type="password" placeholder="رمز المرور">
+            <button class="btn" onclick="goToPage2()">إنشاء حساب</button>
         </div>
 
-        <button class="btn visitor-btn" onclick="goToMainScreen()">الدخول كزائر</button>
+        <button class="guest-btn" onclick="goToPage2()">الدخول كزائر</button>
     </div>
 
-    <!-- الجزء الثابت فى الأعلى لكل الصفحات بعد تسجيل الدخول -->
-    <div id="persistent-header" style="display: none; flex-direction: column;">
-        <div class="top-nav">
-            <button class="menu-btn">&#9776;</button>
-            <div class="company-name">Electricity Aswan</div>
-            <div class="user-phone">01234567890</div>
+    <!-- الصفحة الثانية -->
+    <div id="page2" class="page">
+        <!-- الجزء الثابت فى الأعلى -->
+        <div class="header-fixed">
+            <button class="search-btn" onclick="alert('قائمة منسدلة')">☰</button>
+            <div class="company-title" style="margin:0; font-size:18px;">Electricity Aswan</div>
+            <div style="font-size: 14px; font-weight: bold;">0123456789</div>
         </div>
         <div class="search-container">
-            <input type="text" placeholder="ابحث">
-            <button>كتابة</button>
-            <button>صوت</button>
-            <button>كاميرا</button>
+            <input type="text" class="search-input" placeholder="ابحث">
+            <button class="search-btn" onclick="alert('بحث بالكاميرا')">كاميرا</button>
+            <button class="search-btn" onclick="alert('بحث بالصوت')">صوت</button>
         </div>
-    </div>
 
-    <!-- الشاشة الثانية (الرئيسية) -->
-    <div id="screen-main" class="screen" style="padding: 0;">
-        <div class="grid-2x2">
-            <div class="card-box" onclick="goToBrands()">الماركات</div>
-            <div class="card-box">التوافقات</div>
-            <div class="card-box">تنبيهات بعد التركيب</div>
-            <div class="card-box">التواصل مع الشركة</div>
+        <!-- المحتوى الرئيسي (٤ مربعات بشكل ثنائى) -->
+        <div id="mainDashboard" class="grid-2x2">
+            <div class="grid-box" onclick="showBrands()">الماركات</div>
+            <div class="grid-box" onclick="alert('التوافقات')">التوافقات</div>
+            <div class="grid-box" onclick="alert('تنبيهات بعد التركيب')">تنبيهات بعد التركيب</div>
+            <div class="grid-box" onclick="alert('التواصل مع الشركة')">التواصل مع الشركة</div>
         </div>
-    </div>
 
-    <!-- شاشة الماركات -->
-    <div id="screen-brands" class="screen" style="padding: 0;">
-        <div class="content-padding">
-            <div class="back-btn-container">
-                <button class="back-btn" onclick="goToMainScreen()">العودة للرئيسية</button>
-            </div>
-            <div class="brands-grid" id="brands-container">
-                <!-- سيتم تعبئتها ديناميكياً -->
-            </div>
+        <!-- قسم الماركات -->
+        <div id="brandsSection" style="display:none; flex-direction:column;">
+            <button class="back-btn" onclick="showDashboard()">عودة</button>
+            <div class="brands-grid" id="brandsGrid"></div>
         </div>
-    </div>
 
-    <!-- شاشة الموديلات -->
-    <div id="screen-models" class="screen" style="padding: 0;">
-        <div class="content-padding">
-            <div class="back-btn-container">
-                <button class="back-btn" onclick="goToBrands()">العودة للماركات</button>
-            </div>
-            <div id="models-container">
-                <!-- سيتم تعبئتها ديناميكياً -->
-            </div>
+        <!-- قسم الموديلات -->
+        <div id="modelsSection" style="display:none; flex-direction:column;">
+            <button class="back-btn" onclick="showBrands()">عودة للماركات</button>
+            <div id="modelsList"></div>
         </div>
-    </div>
 
-    <!-- شاشة قطع الغيار -->
-    <div id="screen-parts" class="screen" style="padding: 0;">
-        <div class="content-padding">
-            <div class="back-btn-container">
-                <button class="back-btn" onclick="goToModels()">العودة للموديلات</button>
-            </div>
-            <div id="parts-container">
-                <!-- سيتم تعبئتها ديناميكياً -->
-            </div>
+        <!-- قسم قطع الغيار -->
+        <div id="partsSection" style="display:none; flex-direction:column;">
+            <button class="back-btn" onclick="showModels()">عودة للموديلات</button>
+            <div id="partsList"></div>
         </div>
-    </div>
 
-    <!-- شاشة تفاصيل قطعة الغيار -->
-    <div id="screen-part-detail" class="screen" style="padding: 0;">
-        <div class="content-padding">
-            <div class="back-btn-container">
-                <button class="back-btn" onclick="goToParts()">العودة لقطع الغيار</button>
-            </div>
-            <div class="list-item" style="border: 1px solid #0056b3;">شراء المنتج</div>
-            <div class="list-item" style="border: 1px solid #0056b3;">التوافقات</div>
-            <div class="list-item" style="border: 1px solid #0056b3;">تنبيهات بعد التركيب</div>
+        <!-- قسم تفاصيل قطعة الغيار -->
+        <div id="partDetailSection" style="display:none; flex-direction:column;">
+            <button class="back-btn" onclick="showParts()">عودة لقطع الغيار</button>
+            <div class="content-box">شراء المنتج</div>
+            <div class="content-box">التوافقات</div>
+            <div class="content-box">تنبيهات بعد التركيب</div>
         </div>
     </div>
 
 </div>
 
 <script>
-    const brandsList = [
-        "Apple", "Samsung", "Xiaomi", "Redmi", "Infinix", 
-        "Oppo", "Realme", "Huawei", "Vivo", "Honor", 
-        "Itel", "Nokia", "Techno"
+    function switchTab(tabName) {
+        const tabs = document.querySelectorAll('.tab');
+        tabs[0].classList.toggle('active', tabName === 'login');
+        tabs[1].classList.toggle('active', tabName === 'register');
+
+        document.getElementById('loginSection').classList.toggle('active', tabName === 'login');
+        document.getElementById('registerSection').classList.toggle('active', tabName === 'register');
+    }
+
+    function goToPage2() {
+        document.getElementById('page1').classList.remove('active');
+        document.getElementById('page2').classList.add('active');
+    }
+
+    function showDashboard() {
+        document.getElementById('mainDashboard').style.display = 'grid';
+        document.getElementById('brandsSection').style.display = 'none';
+        document.getElementById('modelsSection').style.display = 'none';
+        document.getElementById('partsSection').style.display = 'none';
+        document.getElementById('partDetailSection').style.display = 'none';
+    }
+
+    const brands = [
+        "Apple", "Samsung", "Xiaomi", "Redmi", "Infinix", "Oppo",
+        "Realme", "Huawei", "Vivo", "Honor", "Itel", "Nokia", "Techno"
     ];
 
-    const partsList = [
-        "شاشة", "بطارية", "ضهرية", "فلاتة ربط", "فلاتة باور", 
-        "فلاتة شحن", "فريم", "ميدل", "سماعة داخلية مكالمات", 
-        "سماعة خارجية مكبر الصوت", "سوكيت", "ايسيهات"
-    ];
+    function showBrands() {
+        document.getElementById('mainDashboard').style.display = 'none';
+        document.getElementById('brandsSection').style.display = 'flex';
+        document.getElementById('modelsSection').style.display = 'none';
+        document.getElementById('partsSection').style.display = 'none';
+        document.getElementById('partDetailSection').style.display = 'none';
 
-    function switchAuthTab(tab) {
-        const loginForm = document.getElementById('auth-login');
-        const registerForm = document.getElementById('auth-register');
-        const buttons = document.querySelectorAll('.tab-btn');
-
-        buttons.forEach(btn => btn.classList.remove('active'));
-
-        if (tab === 'login') {
-            loginForm.style.display = 'block';
-            registerForm.style.display = 'none';
-            buttons[0].classList.add('active');
-        } else {
-            loginForm.style.display = 'none';
-            registerForm.style.display = 'block';
-            buttons[1].classList.add('active');
-        }
-    }
-
-    function hideAllScreens() {
-        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    }
-
-    function goToMainScreen() {
-        hideAllScreens();
-        document.getElementById('persistent-header').style.display = 'flex';
-        document.getElementById('screen-main').classList.add('active');
-    }
-
-    function goToBrands() {
-        hideAllScreens();
-        document.getElementById('persistent-header').style.display = 'flex';
-        document.getElementById('screen-brands').classList.add('active');
-        
-        const container = document.getElementById('brands-container');
-        container.innerHTML = '';
-        brandsList.forEach(brand => {
+        const grid = document.getElementById('brandsGrid');
+        grid.innerHTML = '';
+        brands.forEach(brand => {
             const div = document.createElement('div');
-            div.className = 'brand-item';
+            div.className = 'brand-box';
             div.innerText = brand;
-            div.onclick = () => goToModels(brand);
-            container.appendChild(div);
+            div.onclick = () => showModels(brand);
+            grid.appendChild(div);
         });
     }
 
-    function goToModels(brandName) {
-        hideAllScreens();
-        document.getElementById('persistent-header').style.display = 'flex';
-        document.getElementById('screen-models').classList.add('active');
+    function showModels(brandName) {
+        document.getElementById('brandsSection').style.display = 'none';
+        document.getElementById('modelsSection').style.display = 'flex';
+        document.getElementById('partsSection').style.display = 'none';
+        document.getElementById('partDetailSection').style.display = 'none';
 
-        const container = document.getElementById('models-container');
-        container.innerHTML = '';
-        
-        // محاكاة موديلات للماركة المختارة
-        const dummyModels = [brandName + " - Model 1", brandName + " - Model 2", brandName + " - Model 3"];
-        dummyModels.forEach(model => {
+        const list = document.getElementById('modelsList');
+        list.innerHTML = '';
+        // افتراض موديلات تجريبية للماركة
+        const models = [brandName + " Model 1", brandName + " Model 2", brandName + " Model 3"];
+        models.forEach(model => {
             const div = document.createElement('div');
             div.className = 'list-item';
             div.innerText = model;
-            div.onclick = () => goToParts(model);
-            container.appendChild(div);
+            div.onclick = () => showParts();
+            list.appendChild(div);
         });
     }
 
-    function goToParts(modelName) {
-        hideAllScreens();
-        document.getElementById('persistent-header').style.display = 'flex';
-        document.getElementById('screen-parts').classList.add('active');
+    const parts = [
+        "شاشة", "بطارية", "ضهرية", "فلاتة ربط", "فلاتة باور", "فلاتة شحن",
+        "فريم", "ميدل", "سماعة داخلية مكالمات", "سماعة خارجية مكبر الصوت", "سوكيت", "ايسيهات"
+    ];
 
-        const container = document.getElementById('parts-container');
-        container.innerHTML = '';
-        partsList.forEach(part => {
+    function showParts() {
+        document.getElementById('modelsSection').style.display = 'none';
+        document.getElementById('partsSection').style.display = 'flex';
+        document.getElementById('partDetailSection').style.display = 'none';
+
+        const list = document.getElementById('partsList');
+        list.innerHTML = '';
+        parts.forEach(part => {
             const div = document.createElement('div');
             div.className = 'list-item';
             div.innerText = part;
-            div.onclick = () => goToPartDetail(part);
-            container.appendChild(div);
+            div.onclick = () => showPartDetail();
+            list.appendChild(div);
         });
     }
 
-    function goToPartDetail(partName) {
-        hideAllScreens();
-        document.getElementById('persistent-header').style.display = 'flex';
-        document.getElementById('screen-part-detail').classList.add('active');
+    function showPartDetail() {
+        document.getElementById('partsSection').style.display = 'none';
+        document.getElementById('partDetailSection').style.display = 'flex';
     }
 </script>
 
