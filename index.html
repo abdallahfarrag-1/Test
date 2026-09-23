@@ -1,434 +1,243 @@
-
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Electricity Aswan</title>
+    <title>Toshka Water Stations</title>
+    <!-- استيراد خط عريض ومريح للعين -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- مكتبة أيقونات FontAwesome لأيقونة العين -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: Arial, sans-serif;
-        }
-        body {
-            background-color: #f0f4f8;
-            color: #003366;
-            direction: rtl;
-            text-align: right;
-            padding: 10px;
-        }
-        .page {
-            display: none;
-            background: #ffffff;
-            padding: 15px;
-            margin: 0 auto;
-            max-width: 600px;
-        }
-        .page.active {
-            display: block;
-        }
-        /* Page 1 Style */
-        #page1 {
-            border: 2px solid #b0c4de;
-        }
-        .company-title {
-            text-align: center;
-            font-size: 24px;
-            font-weight: bold;
-            color: #004080;
-            margin-bottom: 20px;
-        }
-        .tabs {
-            display: flex;
-            margin-bottom: 15px;
-            border-bottom: 2px solid #004080;
-        }
-        .tab-btn {
-            flex: 1;
-            padding: 10px;
-            text-align: center;
-            background: #e6f0fa;
-            cursor: pointer;
-            font-weight: bold;
-            color: #004080;
-            border: 1px solid #b0c4de;
-            border-bottom: none;
-        }
-        .tab-btn.active {
-            background: #ffffff;
-            border-bottom: 2px solid #ffffff;
-            margin-bottom: -2px;
-        }
-        .form-section {
-            display: none;
-        }
-        .form-section.active {
-            display: block;
-        }
-        .form-group {
-            margin-bottom: 12px;
-        }
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-size: 14px;
-        }
-        .form-group input {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #b0c4de;
-            border-radius: 4px;
-        }
-        .checkbox-group {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            margin-bottom: 12px;
-        }
-        .btn {
-            width: 100%;
-            padding: 10px;
-            background-color: #004080;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: bold;
-        }
-        .guest-btn {
-            width: 100%;
-            padding: 10px;
-            background-color: #e0e0e0;
-            color: #333333;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: bold;
-            margin-top: 15px;
-            text-align: center;
+            font-family: 'Cairo', sans-serif;
         }
 
-        /* Page 2 Style */
-        #page2 {
-            border: 1px solid #004080;
+        body {
+            background-color: #f4f7f6;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
         }
-        .top-fixed-bar {
+
+        /* شريط العنوان العلوي */
+        .header {
+            background-color: #1a365d; /* أزرق غامق */
+            color: white;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid #b0c4de;
-            padding-bottom: 10px;
-            margin-bottom: 15px;
+            padding: 10px 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
-        .menu-btn {
-            font-size: 20px;
-            cursor: pointer;
-            background: none;
-            border: none;
-            color: #004080;
-        }
-        .user-phone {
-            font-size: 14px;
-            color: #004080;
-        }
-        .search-container {
+
+        .status-badge {
+            background-color: rgba(255, 255, 255, 0.15);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 13px;
             display: flex;
-            flex-direction: column;
-            gap: 8px;
-            margin-bottom: 15px;
+            align-items: center;
+            gap: 5px;
         }
-        .search-top-row {
+
+        .status-dot {
+            color: #2ecc71; /* أخضر */
+            font-size: 10px;
+        }
+
+        .header-title {
+            font-size: 17px;
+            font-weight: 600;
+        }
+
+        .header-img {
+            width: 35px;
+            height: 35px;
+            border-radius: 4px;
+            object-fit: cover;
+        }
+
+        /* محتوى الصفحة الرئيسي */
+        .main-container {
+            flex: 1;
             display: flex;
-            gap: 8px;
-            justify-content: flex-end;
-        }
-        .search-btn-icon {
-            background-color: #004080;
-            color: white;
-            border: none;
-            padding: 8px 12px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 12px;
-        }
-        .search-input {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #b0c4de;
-            border-radius: 4px;
-        }
-        .grid-2x2 {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-        .grid-box {
-            border: 1px solid #b0c4de;
+            justify-content: center;
+            align-items: center;
             padding: 20px;
-            text-align: center;
-            background-color: #ffffff;
-            cursor: pointer;
-            border-radius: 4px;
-            color: #004080;
-            font-weight: bold;
         }
-        .back-btn {
-            background-color: #004080;
+
+        /* البطاقة الرئيسية */
+        .card {
+            background: white;
+            width: 100%;
+            max-width: 400px;
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            text-align: center;
+        }
+
+        /* صورة المحطة داخل البطاقة */
+        .station-img {
+            width: 100%;
+            height: 140px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        /* عنوان النموذج */
+        .form-title {
+            color: #1a365d;
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        /* حقول الإدخال */
+        .input-group {
+            margin-bottom: 15px;
+            position: relative;
+            text-align: right;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #dcdde1;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .input-field:focus {
+            border-color: #3182ce;
+        }
+
+        /* تنسيق حقل كلمة المرور مع أيقونة العين */
+        .password-container {
+            position: relative;
+        }
+
+        .toggle-password {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #718096;
+        }
+
+        /* خيارات إضافية (تذكرني) */
+        .options-group {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            margin-bottom: 20px;
+            font-size: 14px;
+            color: #4a5568;
+            gap: 8px;
+        }
+
+        .options-group input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+
+        /* زر الدخول */
+        .submit-btn {
+            width: 100%;
+            background-color: #3182ce;
             color: white;
             border: none;
-            padding: 8px 15px;
-            border-radius: 4px;
-            cursor: pointer;
-            margin-bottom: 15px;
-            font-weight: bold;
-        }
-        .horizontal-item {
-            border: 1px solid #b0c4de;
             padding: 12px;
-            margin-bottom: 8px;
-            border-radius: 4px;
-            cursor: pointer;
-            background-color: #ffffff;
-            text-align: center;
-            font-weight: bold;
-            color: #004080;
-        }
-        .split-section {
-            border: 1px solid #b0c4de;
-            padding: 15px;
-            margin-bottom: 10px;
-            border-radius: 4px;
-            background-color: #ffffff;
-        }
-        .split-section h3 {
-            margin-bottom: 8px;
-            color: #004080;
+            border-radius: 8px;
             font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .submit-btn:hover {
+            background-color: #2b6cb0;
+        }
+
+        /* التذييل */
+        .footer-text {
+            margin-top: 20px;
+            font-size: 11px;
+            color: #a0aec0;
         }
     </style>
 </head>
 <body>
 
-    <!-- الصفحة الأولى -->
-    <div id="page1" class="page active">
-        <div class="company-title">Electricity Aswan</div>
-        <div class="tabs">
-            <div class="tab-btn active" onclick="switchTab('login')">تسجيل الدخول</div>
-            <div class="tab-btn" onclick="switchTab('register')">إنشاء حساب</div>
+    <!-- شريط العنوان العلوي -->
+    <header class="header">
+        <div class="status-badge">
+            <i class="fa-solid fa-circle status-dot"></i>
+            <span>متصل</span>
         </div>
+        <div class="header-title">Toshka Water Stations</div>
+        <img src="https://images.unsplash.com/photo-1584467735811-62868bc44949?w=100" alt="station" class="header-img">
+    </header>
 
-        <!-- تسجيل الدخول -->
-        <div id="loginSection" class="form-section active">
-            <div class="form-group">
-                <label>رقم الهاتف</label>
-                <input type="text">
-            </div>
-            <div class="form-group">
-                <label>رمز المرور</label>
-                <input type="password">
-            </div>
-            <div class="checkbox-group">
-                <input type="checkbox" id="remember">
-                <label for="remember">تذكرنى</label>
-            </div>
-            <button class="btn" onclick="goToPage2('01234567891')">تسجيل الدخول</button>
-        </div>
+    <!-- محتوى الصفحة -->
+    <div class="main-container">
+        <div class="card">
+            <!-- صورة المحطة -->
+            <img src="https://images.unsplash.com/photo-1584467735811-62868bc44949?w=500" alt="Toshka Station" class="station-img">
+            
+            <!-- عنوان النموذج -->
+            <h2 class="form-title">تسجيل الدخول</h2>
 
-        <!-- إنشاء حساب -->
-        <div id="registerSection" class="form-section">
-            <div class="form-group">
-                <label>اسم الفنى</label>
-                <input type="text">
-            </div>
-            <div class="form-group">
-                <label>اسم المحل</label>
-                <input type="text">
-            </div>
-            <div class="form-group">
-                <label>عنوان المحل</label>
-                <input type="text">
-            </div>
-            <div class="form-group">
-                <label>رقم الهاتف</label>
-                <input type="text">
-            </div>
-            <div class="form-group">
-                <label>رمز المرور</label>
-                <input type="password">
-            </div>
-            <button class="btn" onclick="goToPage2('01234567891')">إنشاء حساب</button>
-        </div>
-
-        <div class="guest-btn" onclick="goToPage2('زائر')">الدخول كزائر</div>
-    </div>
-
-    <!-- الصفحة الثانية -->
-    <div id="page2" class="page">
-        <!-- الجزء الثابت فى الأعلى -->
-        <div class="top-fixed-bar">
-            <button class="menu-btn">&#9776;</button>
-            <div class="company-title" style="margin-bottom:0; font-size:18px;">Electricity Aswan</div>
-            <div id="userPhoneDisplay" class="user-phone"></div>
-        </div>
-
-        <div class="search-container">
-            <div class="search-top-row">
-                <button class="search-btn-icon">بحث بالصوت</button>
-                <button class="search-btn-icon">بحث بالكاميرا</button>
-            </div>
-            <input type="text" class="search-input" placeholder="ابحث">
-        </div>
-
-        <!-- المحتوى الديناميكي -->
-        <div id="mainContent">
-            <!-- ٤ مربعات رئيسية -->
-            <div id="homeGrid" class="grid-2x2">
-                <div class="grid-box" onclick="showBrands()">الماركات</div>
-                <div class="grid-box">التوافقات</div>
-                <div class="grid-box">تنبيهات بعد التركيب</div>
-                <div class="grid-box">التواصل مع الشركة</div>
-            </div>
-
-            <!-- قائمة الماركات (13 ماركة) -->
-            <div id="brandsView" style="display: none;">
-                <button class="back-btn" onclick="showHome()">عودة</button>
-                <div class="grid-2x2">
-                    <div class="grid-box" onclick="showModels('Apple')">Apple</div>
-                    <div class="grid-box" onclick="showModels('Samsung')">Samsung</div>
-                    <div class="grid-box" onclick="showModels('Xiaomi')">Xiaomi</div>
-                    <div class="grid-box" onclick="showModels('Redmi')">Redmi</div>
-                    <div class="grid-box" onclick="showModels('Infinix')">Infinix</div>
-                    <div class="grid-box" onclick="showModels('Oppo')">Oppo</div>
-                    <div class="grid-box" onclick="showModels('Realme')">Realme</div>
-                    <div class="grid-box" onclick="showModels('Huawei')">Huawei</div>
-                    <div class="grid-box" onclick="showModels('Vivo')">Vivo</div>
-                    <div class="grid-box" onclick="showModels('Honor')">Honor</div>
-                    <div class="grid-box" onclick="showModels('Itel')">Itel</div>
-                    <div class="grid-box" onclick="showModels('Nokia')">Nokia</div>
-                    <div class="grid-box" onclick="showModels('Techno')">Techno</div>
+            <form>
+                <!-- اسم المستخدم -->
+                <div class="input-group">
+                    <input type="text" class="input-field" value="عبدالله فراج" placeholder="اسم المستخدم">
                 </div>
-            </div>
 
-            <!-- قائمة الموديلات -->
-            <div id="modelsView" style="display: none;">
-                <button class="back-btn" onclick="showBrands()">عودة للماركات</button>
-                <div id="modelsList"></div>
-            </div>
+                <!-- كلمة المرور -->
+                <div class="input-group password-container">
+                    <input type="password" id="password" class="input-field" value="1234" placeholder="كلمة المرور">
+                    <i class="fa-solid fa-eye toggle-password" id="togglePassword"></i>
+                </div>
 
-            <!-- قائمة قطع الغيار -->
-            <div id="sparesView" style="display: none;">
-                <button class="back-btn" onclick="showModelsBack()">عودة للموديلات</button>
-                <div class="horizontal-item" onclick="showPartDetail('شاشة')">شاشة</div>
-                <div class="horizontal-item" onclick="showPartDetail('بطارية')">بطارية</div>
-                <div class="horizontal-item" onclick="showPartDetail('ضهرية')">ضهرية</div>
-                <div class="horizontal-item" onclick="showPartDetail('فلاتة ربط')">فلاتة ربط</div>
-                <div class="horizontal-item" onclick="showPartDetail('فلاتة باور')">فلاتة باور</div>
-                <div class="horizontal-item" onclick="showPartDetail('فلاتة شحن')">فلاتة شحن</div>
-                <div class="horizontal-item" onclick="showPartDetail('فريم')">فريم</div>
-                <div class="horizontal-item" onclick="showPartDetail('ميدل')">ميدل</div>
-                <div class="horizontal-item" onclick="showPartDetail('سماعة داخلية مكالمات')">سماعة داخلية مكالمات</div>
-                <div class="horizontal-item" onclick="showPartDetail('سماعة خارجية مكبر الصوت')">سماعة خارجية مكبر الصوت</div>
-                <div class="horizontal-item" onclick="showPartDetail('سوكيت')">سوكيت</div>
-                <div class="horizontal-item" onclick="showPartDetail('ايسيهات')">ايسيهات</div>
-            </div>
+                <!-- خيارات إضافية -->
+                <div class="options-group">
+                    <input type="checkbox" id="remember" checked>
+                    <label for="remember">تذكرني</label>
+                </div>
 
-            <!-- تفاصيل قطعة الغيار -->
-            <div id="partDetailView" style="display: none;">
-                <button class="back-btn" onclick="showSpares()">عودة لقطع الغيار</button>
-                <div class="split-section">
-                    <h3>شراء المنتج</h3>
-                    <p>تفاصيل وسعر الشراء للمنتج هنا...</p>
-                </div>
-                <div class="split-section">
-                    <h3>التوافقات</h3>
-                    <p>معلومات التوافقات هنا...</p>
-                </div>
-                <div class="split-section">
-                    <h3>تنبيهات بعد التركيب</h3>
-                    <p>تعليمات وتنبيهات ما بعد التركيب هنا...</p>
-                </div>
+                <!-- زر الإجراء -->
+                <button type="submit" class="submit-btn">دخول</button>
+            </form>
+
+            <!-- التذييل -->
+            <div class="footer-text">
+                Implemented by Ahmed Salah Ibrahim 2025 V1.6.4.8[span_0](start_span)[span_0](end_span)
             </div>
         </div>
     </div>
 
+    <!-- كود بسيط لتفعيل أيقونة إظهار/إخفاء كلمة المرور -->
     <script>
-        function switchTab(tab) {
-            const loginBtn = document.querySelectorAll('.tab-btn')[0];
-            const registerBtn = document.querySelectorAll('.tab-btn')[1];
-            const loginSec = document.getElementById('loginSection');
-            const registerSec = document.getElementById('registerSection');
+        const togglePassword = document.querySelector('#togglePassword');
+        const password = document.querySelector('#password');
 
-            if (tab === 'login') {
-                loginBtn.classList.add('active');
-                registerBtn.classList.remove('active');
-                loginSec.classList.add('active');
-                registerSec.classList.remove('active');
-            } else {
-                registerBtn.classList.add('active');
-                loginBtn.classList.remove('active');
-                registerSec.classList.add('active');
-                loginSec.classList.remove('active');
-            }
-        }
-
-        function goToPage2(phone) {
-            document.getElementById('page1').classList.remove('active');
-            document.getElementById('page2').classList.add('active');
-            document.getElementById('userPhoneDisplay').innerText = phone;
-            showHome();
-        }
-
-        function hideAllViews() {
-            document.getElementById('homeGrid').style.display = 'none';
-            document.getElementById('brandsView').style.display = 'none';
-            document.getElementById('modelsView').style.display = 'none';
-            document.getElementById('sparesView').style.display = 'none';
-            document.getElementById('partDetailView').style.display = 'none';
-        }
-
-        function showHome() {
-            hideAllViews();
-            document.getElementById('homeGrid').style.display = 'grid';
-        }
-
-        function showBrands() {
-            hideAllViews();
-            document.getElementById('brandsView').style.display = 'block';
-        }
-
-        function showModels(brandName) {
-            hideAllViews();
-            const modelsList = document.getElementById('modelsList');
-            modelsList.innerHTML = '';
-            
-            // محاكاة موديلات لكل ماركة
-            for (let i = 1; i <= 3; i++) {
-                const modelDiv = document.createElement('div');
-                modelDiv.className = 'horizontal-item';
-                modelDiv.innerText = `${brandName} - موديل ${i}`;
-                modelDiv.onclick = function() { showSpares(); };
-                modelsList.appendChild(modelDiv);
-            }
-            
-            document.getElementById('modelsView').style.display = 'block';
-        }
-
-        function showSpares() {
-            hideAllViews();
-            document.getElementById('sparesView').style.display = 'block';
-        }
-
-        function showModelsBack() {
-            document.getElementById('modelsView').style.display = 'block';
-            document.getElementById('sparesView').style.display = 'none';
-        }
-
-        function showPartDetail(partName) {
-            hideAllViews();
-            document.getElementById('partDetailView').style.display = 'block';
-        }
+        togglePassword.addEventListener('click', function () {
+            const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+            password.setAttribute('type', type);
+            this.classList.toggle('fa-eye-slash');
+        });
     </script>
+
 </body>
 </html>
