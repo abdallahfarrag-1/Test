@@ -11,6 +11,7 @@
             padding: 0;
             font-family: Arial, sans-serif;
         }
+
         body {
             background-color: #f4f6f9;
             color: #333;
@@ -19,188 +20,210 @@
             align-items: center;
             min-height: 100vh;
         }
+
         .app-container {
             width: 100%;
-            max-width: 480px;
-            background: #fff;
-            min-height: 100vh;
-            border: 2px solid #b3d7ff;
+            max-width: 400px;
+            height: 800px;
+            background-color: #ffffff;
             position: relative;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            display: flex;
-            flex-direction: column;
+            overflow-y: auto;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
+
         .page {
             display: none;
-            flex: 1;
-            padding: 20px;
-            flex-direction: column;
+            width: 100%;
+            height: 100%;
+            padding: 15px;
+            position: relative;
         }
+
         .page.active {
-            display: flex;
+            display: block;
         }
+
+        /* Page 1 Style */
+        .page-1 {
+            border: 2px solid #b3d1ff;
+        }
+
         .company-title {
             text-align: center;
             color: #0056b3;
-            margin-bottom: 20px;
+            margin: 20px 0;
             font-size: 24px;
             font-weight: bold;
         }
+
         .tabs {
             display: flex;
             margin-bottom: 20px;
-            border-bottom: 2px solid #0056b3;
+            border-bottom: 2px solid #e0e0e0;
         }
+
         .tab {
             flex: 1;
             text-align: center;
             padding: 10px;
             cursor: pointer;
-            background: #e9ecef;
             font-weight: bold;
+            color: #6c757d;
         }
+
         .tab.active {
-            background: #0056b3;
-            color: #fff;
+            color: #0056b3;
+            border-bottom: 3px solid #0056b3;
         }
+
         .form-section {
             display: none;
-            flex-direction: column;
-            gap: 15px;
         }
+
         .form-section.active {
-            display: flex;
+            display: block;
         }
+
         input[type="text"],
-        input[type="password"],
-        input[type="tel"] {
+        input[type="tel"],
+        input[type="password"] {
             width: 100%;
             padding: 12px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            outline: none;
+            margin-bottom: 15px;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
         }
-        input:focus {
-            border-color: #0056b3;
-        }
+
         .checkbox-container {
             display: flex;
             align-items: center;
-            gap: 8px;
+            margin-bottom: 15px;
         }
-        .btn {
+
+        .checkbox-container input {
+            margin-left: 8px;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 12px;
             background-color: #0056b3;
             color: white;
-            padding: 12px;
             border: none;
-            border-radius: 8px;
-            cursor: pointer;
+            border-radius: 5px;
             font-size: 16px;
-            font-weight: bold;
-            text-align: center;
+            cursor: pointer;
+            margin-bottom: 15px;
         }
-        .btn:hover {
-            background-color: #004085;
-        }
-        .guest-btn {
+
+        .btn-guest {
+            width: 100%;
+            padding: 12px;
             background-color: #e2e3e5;
             color: #383d41;
-            margin-top: 15px;
             border: none;
-            padding: 12px;
-            border-radius: 8px;
-            cursor: pointer;
+            border-radius: 5px;
             font-size: 16px;
-            font-weight: bold;
+            cursor: pointer;
             text-align: center;
         }
-        .header-fixed {
+
+        /* Page 2 Style */
+        .page-2 {
+            border: 1px solid #0056b3;
+        }
+
+        .header-top {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding-bottom: 15px;
-            border-bottom: 1px solid #ddd;
             margin-bottom: 15px;
         }
+
+        .menu-btn, .phone-display {
+            font-size: 16px;
+            font-weight: bold;
+            color: #0056b3;
+        }
+
         .search-container {
             display: flex;
             gap: 10px;
             margin-bottom: 15px;
         }
+
         .search-btn {
             background-color: #0056b3;
             color: white;
             border: none;
             padding: 10px 15px;
-            border-radius: 8px;
+            border-radius: 5px;
             cursor: pointer;
-        }
-        .search-input {
             flex: 1;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            outline: none;
         }
+
+        .search-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
         .grid-2x2 {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 15px;
         }
-        .grid-box {
-            background: #f8f9fa;
-            border: 1px solid #b3d7ff;
-            border-radius: 8px;
+
+        .grid-item {
+            border: 1px solid #b3d1ff;
             padding: 20px;
             text-align: center;
+            border-radius: 5px;
             cursor: pointer;
+            background-color: #f8fbff;
             font-weight: bold;
             color: #0056b3;
-        }
-        .brands-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-        }
-        .brand-box {
-            aspect-ratio: 1 / 1;
-            background: #f8f9fa;
-            border: 1px solid #b3d7ff;
-            border-radius: 8px;
             display: flex;
-            justify-content: center;
             align-items: center;
-            cursor: pointer;
-            font-weight: bold;
-            color: #0056b3;
+            justify-content: center;
+            min-height: 80px;
         }
-        .list-item {
-            background: #f8f9fa;
-            border: 1px solid #b3d7ff;
-            border-radius: 8px;
+
+        .horizontal-item {
+            border: 1px solid #b3d1ff;
             padding: 15px;
             margin-bottom: 10px;
-            cursor: pointer;
             text-align: center;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: #f8fbff;
             font-weight: bold;
             color: #0056b3;
         }
+
         .back-btn {
             background-color: #0056b3;
             color: white;
             border: none;
             padding: 8px 15px;
-            border-radius: 8px;
+            border-radius: 5px;
             cursor: pointer;
             margin-bottom: 15px;
-            align-self: flex-end;
+            display: inline-block;
         }
-        .content-box {
-            border: 1px solid #b3d7ff;
-            border-radius: 8px;
+
+        .split-section {
+            border: 1px solid #b3d1ff;
             padding: 15px;
-            margin-bottom: 10px;
-            background: #fff;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            text-align: center;
+            background-color: #f8fbff;
+            font-weight: bold;
+            color: #0056b3;
+            cursor: pointer;
         }
     </style>
 </head>
@@ -209,14 +232,13 @@
 <div class="app-container">
 
     <!-- الصفحة الأولى -->
-    <div id="page1" class="page active">
+    <div id="page1" class="page page-1 active">
         <div class="company-title">Electricity Aswan</div>
         <div class="tabs">
             <div class="tab active" onclick="switchTab('login')">تسجيل الدخول</div>
             <div class="tab" onclick="switchTab('register')">إنشاء حساب</div>
         </div>
 
-        <!-- تسجيل الدخول -->
         <div id="loginSection" class="form-section active">
             <input type="tel" placeholder="رقم الهاتف">
             <input type="password" placeholder="رمز المرور">
@@ -224,68 +246,94 @@
                 <input type="checkbox" id="remember">
                 <label for="remember">تذكرنى</label>
             </div>
-            <button class="btn" onclick="goToPage2()">تسجيل الدخول</button>
+            <button class="btn-primary" onclick="goToPage2()">زر تسجيل الدخول</button>
         </div>
 
-        <!-- إنشاء حساب -->
         <div id="registerSection" class="form-section">
             <input type="text" placeholder="اسم الفنى">
             <input type="text" placeholder="اسم المحل">
             <input type="text" placeholder="عنوان المحل">
             <input type="tel" placeholder="رقم الهاتف">
             <input type="password" placeholder="رمز المرور">
-            <button class="btn" onclick="goToPage2()">إنشاء حساب</button>
+            <button class="btn-primary" onclick="goToPage2()">زر إنشاء حساب</button>
         </div>
 
-        <button class="guest-btn" onclick="goToPage2()">الدخول كزائر</button>
+        <div class="btn-guest" onclick="goToPage2()">خانة الدخول كزائر</div>
     </div>
 
-    <!-- الصفحة الثانية -->
-    <div id="page2" class="page">
-        <!-- الجزء الثابت فى الأعلى -->
-        <div class="header-fixed">
-            <button class="search-btn" onclick="alert('قائمة منسدلة')">☰</button>
-            <div class="company-title" style="margin:0; font-size:18px;">Electricity Aswan</div>
-            <div style="font-size: 14px; font-weight: bold;">0123456789</div>
-        </div>
-        <div class="search-container">
-            <input type="text" class="search-input" placeholder="ابحث">
-            <button class="search-btn" onclick="alert('بحث بالكاميرا')">كاميرا</button>
-            <button class="search-btn" onclick="alert('بحث بالصوت')">صوت</button>
-        </div>
+    <!-- الصفحة الثانية وما تفرع عنها -->
+    <div id="page2" class="page page-2">
+        <div id="mainContent">
+            <div class="header-top">
+                <div class="phone-display">0123456789</div>
+                <div class="company-title" style="margin:0;">Electricity Aswan</div>
+                <div class="menu-btn">☰</div>
+            </div>
 
-        <!-- المحتوى الرئيسي (٤ مربعات بشكل ثنائى) -->
-        <div id="mainDashboard" class="grid-2x2">
-            <div class="grid-box" onclick="showBrands()">الماركات</div>
-            <div class="grid-box" onclick="alert('التوافقات')">التوافقات</div>
-            <div class="grid-box" onclick="alert('تنبيهات بعد التركيب')">تنبيهات بعد التركيب</div>
-            <div class="grid-box" onclick="alert('التواصل مع الشركة')">التواصل مع الشركة</div>
+            <div class="search-container">
+                <button class="search-btn">البحث بالكاميرا</button>
+                <button class="search-btn">البحث بالصوت</button>
+            </div>
+
+            <input type="text" class="search-input" placeholder="ابحث">
+
+            <div class="grid-2x2">
+                <div class="grid-item" onclick="showBrands()">الماركات</div>
+                <div class="grid-item">التوافقات</div>
+                <div class="grid-item">تنبيهات بعد التركيب</div>
+                <div class="grid-item">التواصل مع الشركة</div>
+            </div>
         </div>
 
         <!-- قسم الماركات -->
-        <div id="brandsSection" style="display:none; flex-direction:column;">
-            <button class="back-btn" onclick="showDashboard()">عودة</button>
-            <div class="brands-grid" id="brandsGrid"></div>
+        <div id="brandsContent" style="display: none;">
+            <button class="back-btn" onclick="showMain()">عودة</button>
+            <div class="grid-2x2">
+                <div class="grid-item" onclick="showModels('Apple')">Apple</div>
+                <div class="grid-item" onclick="showModels('Samsung')">Samsung</div>
+                <div class="grid-item" onclick="showModels('Xiaomi')">Xiaomi</div>
+                <div class="grid-item" onclick="showModels('Redmi')">Redmi</div>
+                <div class="grid-item" onclick="showModels('Infinix')">Infinix</div>
+                <div class="grid-item" onclick="showModels('Oppo')">Oppo</div>
+                <div class="grid-item" onclick="showModels('Realme')">Realme</div>
+                <div class="grid-item" onclick="showModels('Huawei')">Huawei</div>
+                <div class="grid-item" onclick="showModels('Vivo')">Vivo</div>
+                <div class="grid-item" onclick="showModels('Honor')">Honor</div>
+                <div class="grid-item" onclick="showModels('Itel')">Itel</div>
+                <div class="grid-item" onclick="showModels('Nokia')">Nokia</div>
+                <div class="grid-item" onclick="showModels('Techno')">Techno</div>
+            </div>
         </div>
 
         <!-- قسم الموديلات -->
-        <div id="modelsSection" style="display:none; flex-direction:column;">
+        <div id="modelsContent" style="display: none;">
             <button class="back-btn" onclick="showBrands()">عودة للماركات</button>
             <div id="modelsList"></div>
         </div>
 
         <!-- قسم قطع الغيار -->
-        <div id="partsSection" style="display:none; flex-direction:column;">
-            <button class="back-btn" onclick="showModels()">عودة للموديلات</button>
-            <div id="partsList"></div>
+        <div id="sparesContent" style="display: none;">
+            <button class="back-btn" onclick="showModelsBack()">عودة للموديلات</button>
+            <div class="horizontal-item" onclick="showProductDetails('شاشة')">شاشة</div>
+            <div class="horizontal-item" onclick="showProductDetails('بطارية')">بطارية</div>
+            <div class="horizontal-item" onclick="showProductDetails('ضهرية')">ضهرية</div>
+            <div class="horizontal-item" onclick="showProductDetails('فلاتة ربط')">فلاتة ربط</div>
+            <div class="horizontal-item" onclick="showProductDetails('فلاتة باور')">فلاتة باور</div>
+            <div class="horizontal-item" onclick="showProductDetails('فلاتة شحن')">فلاتة شحن</div>
+            <div class="horizontal-item" onclick="showProductDetails('فريم')">فريم</div>
+            <div class="horizontal-item" onclick="showProductDetails('ميدل')">ميدل</div>
+            <div class="horizontal-item" onclick="showProductDetails('سماعة داخلية مكالمات')">سماعة داخلية مكالمات</div>
+            <div class="horizontal-item" onclick="showProductDetails('سماعة خارجية مكبر الصوت')">سماعة خارجية مكبر الصوت</div>
+            <div class="horizontal-item" onclick="showProductDetails('سوكيت')">سوكيت</div>
+            <div class="horizontal-item" onclick="showProductDetails('ايسيهات')">ايسيهات</div>
         </div>
 
-        <!-- قسم تفاصيل قطعة الغيار -->
-        <div id="partDetailSection" style="display:none; flex-direction:column;">
-            <button class="back-btn" onclick="showParts()">عودة لقطع الغيار</button>
-            <div class="content-box">شراء المنتج</div>
-            <div class="content-box">التوافقات</div>
-            <div class="content-box">تنبيهات بعد التركيب</div>
+        <!-- قسم تفاصيل القطعة -->
+        <div id="productContent" style="display: none;">
+            <button class="back-btn" onclick="showSparesBack()">عودة لقطع الغيار</button>
+            <div class="split-section">شراء المنتج</div>
+            <div class="split-section">التوافقات</div>
+            <div class="split-section">تنبيهات بعد التركيب</div>
         </div>
     </div>
 
@@ -294,11 +342,18 @@
 <script>
     function switchTab(tabName) {
         const tabs = document.querySelectorAll('.tab');
-        tabs[0].classList.toggle('active', tabName === 'login');
-        tabs[1].classList.toggle('active', tabName === 'register');
+        tabs.forEach(t => t.classList.remove('active'));
 
-        document.getElementById('loginSection').classList.toggle('active', tabName === 'login');
-        document.getElementById('registerSection').classList.toggle('active', tabName === 'register');
+        const sections = document.querySelectorAll('.form-section');
+        sections.forEach(s => s.classList.remove('active'));
+
+        if (tabName === 'login') {
+            tabs[0].classList.add('active');
+            document.getElementById('loginSection').classList.add('active');
+        } else {
+            tabs[1].classList.add('active');
+            document.getElementById('registerSection').classList.add('active');
+        }
     }
 
     function goToPage2() {
@@ -306,80 +361,49 @@
         document.getElementById('page2').classList.add('active');
     }
 
-    function showDashboard() {
-        document.getElementById('mainDashboard').style.display = 'grid';
-        document.getElementById('brandsSection').style.display = 'none';
-        document.getElementById('modelsSection').style.display = 'none';
-        document.getElementById('partsSection').style.display = 'none';
-        document.getElementById('partDetailSection').style.display = 'none';
+    function showBrands() {
+        document.getElementById('mainContent').style.display = 'none';
+        document.getElementById('brandsContent').style.display = 'block';
+        document.getElementById('modelsContent').style.display = 'none';
+        document.getElementById('sparesContent').style.display = 'none';
+        document.getElementById('productContent').style.display = 'none';
     }
 
-    const brands = [
-        "Apple", "Samsung", "Xiaomi", "Redmi", "Infinix", "Oppo",
-        "Realme", "Huawei", "Vivo", "Honor", "Itel", "Nokia", "Techno"
-    ];
-
-    function showBrands() {
-        document.getElementById('mainDashboard').style.display = 'none';
-        document.getElementById('brandsSection').style.display = 'flex';
-        document.getElementById('modelsSection').style.display = 'none';
-        document.getElementById('partsSection').style.display = 'none';
-        document.getElementById('partDetailSection').style.display = 'none';
-
-        const grid = document.getElementById('brandsGrid');
-        grid.innerHTML = '';
-        brands.forEach(brand => {
-            const div = document.createElement('div');
-            div.className = 'brand-box';
-            div.innerText = brand;
-            div.onclick = () => showModels(brand);
-            grid.appendChild(div);
-        });
+    function showMain() {
+        document.getElementById('mainContent').style.display = 'block';
+        document.getElementById('brandsContent').style.display = 'none';
     }
 
     function showModels(brandName) {
-        document.getElementById('brandsSection').style.display = 'none';
-        document.getElementById('modelsSection').style.display = 'flex';
-        document.getElementById('partsSection').style.display = 'none';
-        document.getElementById('partDetailSection').style.display = 'none';
-
-        const list = document.getElementById('modelsList');
-        list.innerHTML = '';
-        // افتراض موديلات تجريبية للماركة
-        const models = [brandName + " Model 1", brandName + " Model 2", brandName + " Model 3"];
-        models.forEach(model => {
-            const div = document.createElement('div');
-            div.className = 'list-item';
-            div.innerText = model;
-            div.onclick = () => showParts();
-            list.appendChild(div);
-        });
+        document.getElementById('brandsContent').style.display = 'none';
+        document.getElementById('modelsContent').style.display = 'block';
+        
+        const modelsList = document.getElementById('modelsList');
+        modelsList.innerHTML = `
+            <div class="horizontal-item" onclick="showSpares()">موديل 1 لـ ${brandName}</div>
+            <div class="horizontal-item" onclick="showSpares()">موديل 2 لـ ${brandName}</div>
+            <div class="horizontal-item" onclick="showSpares()">موديل 3 لـ ${brandName}</div>
+        `;
     }
 
-    const parts = [
-        "شاشة", "بطارية", "ضهرية", "فلاتة ربط", "فلاتة باور", "فلاتة شحن",
-        "فريم", "ميدل", "سماعة داخلية مكالمات", "سماعة خارجية مكبر الصوت", "سوكيت", "ايسيهات"
-    ];
-
-    function showParts() {
-        document.getElementById('modelsSection').style.display = 'none';
-        document.getElementById('partsSection').style.display = 'flex';
-        document.getElementById('partDetailSection').style.display = 'none';
-
-        const list = document.getElementById('partsList');
-        list.innerHTML = '';
-        parts.forEach(part => {
-            const div = document.createElement('div');
-            div.className = 'list-item';
-            div.innerText = part;
-            div.onclick = () => showPartDetail();
-            list.appendChild(div);
-        });
+    function showSpares() {
+        document.getElementById('modelsContent').style.display = 'none';
+        document.getElementById('sparesContent').style.display = 'block';
     }
 
-    function showPartDetail() {
-        document.getElementById('partsSection').style.display = 'none';
-        document.getElementById('partDetailSection').style.display = 'flex';
+    function showModelsBack() {
+        document.getElementById('sparesContent').style.display = 'none';
+        document.getElementById('modelsContent').style.display = 'block';
+    }
+
+    function showProductDetails(partName) {
+        document.getElementById('sparesContent').style.display = 'none';
+        document.getElementById('productContent').style.display = 'block';
+    }
+
+    function showSparesBack() {
+        document.getElementById('productContent').style.display = 'none';
+        document.getElementById('sparesContent').style.display = 'block';
     }
 </script>
 
