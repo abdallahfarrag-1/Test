@@ -3,169 +3,143 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Electricity Aswan</title>
+    <title>Electricity Aswan - تسجيل الدخول</title>
+    <!-- تضمين Tailwind CSS لتنسيق التصميم بسرعة واحترافية -->
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap');
         body {
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
-
-        .main-card {
-            background-color: #ffffff;
-            width: 100%;
-            max-width: 900px;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            box-sizing: border-box;
-        }
-
-        .company-name {
-            text-align: center;
-            font-size: 26px;
-            font-weight: bold;
-            color: #333;
-            margin-bottom: 20px;
-        }
-
-        .company-image {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .company-image img {
-            width: 120px;
-            height: 120px;
-            object-fit: contain;
-            border-radius: 50%;
-            background-color: #eaeaea;
-        }
-
-        .divider {
-            border: none;
-            height: 1px;
-            background-color: #e0e0e0;
-            margin-bottom: 30px;
-        }
-
-        .forms-container {
-            display: flex;
-            justify-content: space-between;
-            gap: 40px;
-            direction: rtl;
-        }
-
-        .form-section {
-            flex: 1;
-        }
-
-        .form-section.login {
-            order: 1;
-        }
-
-        .form-section.register {
-            order: 2;
-        }
-
-        .form-section h3 {
-            font-size: 18px;
-            color: #333;
-            margin-bottom: 20px;
-            text-align: right;
-        }
-
-        .input-group {
-            margin-bottom: 15px;
-        }
-
-        .input-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-size: 14px;
-            color: #555;
-        }
-
-        .input-group input {
-            width: 100%;
-            padding: 10px;
-            background-color: #ffffff;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            box-sizing: border-box;
-            outline: none;
-            font-size: 14px;
-        }
-
-        .input-group input:focus {
-            border-color: #007bff;
-        }
-
-        @media (max-width: 768px) {
-            .forms-container {
-                flex-direction: column;
-                gap: 20px;
-            }
-            .form-section.login, .form-section.register {
-                order: unset;
-            }
+            font-family: 'Cairo', sans-serif;
         }
     </style>
 </head>
-<body>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen flex items-center justify-center p-4">
 
-    <div class="main-card">
-        <div class="company-name">Electricity Aswan</div>
+    <!-- البطاقة البيضاء الرئيسية -->
+    <div class="bg-white w-full max-w-md rounded-3xl shadow-2xl p-6 sm:p-8 transition-all duration-300">
         
-        <div class="company-image">
-            <img src="https://via.placeholder.com/120" alt="صورة الشركة">
+        <!-- اسم الشركة بالأعلى -->
+        <div class="text-center mb-6">
+            <h1 class="text-2xl sm:text-3xl font-bold text-gray-800 tracking-wide">Electricity Aswan</h1>
+            <p class="text-xs text-gray-400 mt-1">نظام إدارة الكهرباء والخدمات</p>
         </div>
 
-        <hr class="divider">
-
-        <div class="forms-container">
-            <div class="form-section login">
-                <h3>تسجيل الدخول</h3>
-                <div class="input-group">
-                    <label>رقم الهاتف</label>
-                    <input type="text">
-                </div>
-                <div class="input-group">
-                    <label>رمز المرور</label>
-                    <input type="password">
-                </div>
-            </div>
-
-            <div class="form-section register">
-                <h3>إنشاء حساب</h3>
-                <div class="input-group">
-                    <label>الاسم</label>
-                    <input type="text">
-                </div>
-                <div class="input-group">
-                    <label>اسم المحل</label>
-                    <input type="text">
-                </div>
-                <div class="input-group">
-                    <label>عنوان المحل</label>
-                    <input type="text">
-                </div>
-                <div class="input-group">
-                    <label>رقم الهاتف</label>
-                    <input type="text">
-                </div>
-                <div class="input-group">
-                    <label>رمز المرور</label>
-                    <input type="password">
-                </div>
-            </div>
+        <!-- الصورة المستطيلة بحواف دائرية ذات ظلال -->
+        <div class="mb-6">
+            <img src="https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?auto=format&fit=crop&w=600&q=80" 
+                 alt="Electricity Aswan Banner" 
+                 class="w-full h-36 sm:h-40 object-cover rounded-2xl shadow-md">
         </div>
+
+        <!-- أزرار التبديل بين (تسجيل الدخول) و (إنشاء حساب) -->
+        <div class="grid grid-cols-2 gap-2 bg-gray-100 p-1.5 rounded-2xl mb-6">
+            <button onclick="switchTab('login')" id="loginTabBtn" 
+                    class="py-2.5 text-sm font-semibold rounded-xl transition-all duration-200 bg-white text-blue-600 shadow-sm">
+                تسجيل الدخول
+            </button>
+            <button onclick="switchTab('register')" id="registerTabBtn" 
+                    class="py-2.5 text-sm font-semibold rounded-xl transition-all duration-200 text-gray-500 hover:text-gray-700">
+                إنشاء حساب
+            </button>
+        </div>
+
+        <!-- خانة تسجيل الدخول (تظهر افتراضياً) -->
+        <form id="loginForm" class="space-y-4">
+            <div>
+                <label class="block text-xs font-semibold text-gray-600 mb-1">رقم الهاتف</label>
+                <input type="tel" placeholder="أدخل رقم الهاتف" required
+                       class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-gray-50">
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-gray-600 mb-1">رمز المرور</label>
+                <input type="password" placeholder="••••••••" required
+                       class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-gray-50">
+            </div>
+            
+            <!-- خانة تذكرني -->
+            <div class="flex items-center justify-between text-sm">
+                <label class="flex items-center space-x-2 space-x-reverse cursor-pointer">
+                    <input type="checkbox" class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                    <span class="text-gray-600 text-xs">تذكرني</span>
+                </label>
+            </div>
+
+            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl shadow-lg shadow-blue-500/30 transition-all text-sm">
+                تسجيل الدخول
+            </button>
+        </form>
+
+        <!-- خانة إنشاء حساب (مخفية افتراضياً) -->
+        <form id="registerForm" class="space-y-3.5 hidden">
+            <div>
+                <label class="block text-xs font-semibold text-gray-600 mb-1">الاسم</label>
+                <input type="text" placeholder="الاسم الكامل" required
+                       class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-gray-50">
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-gray-600 mb-1">اسم المحل</label>
+                <input type="text" placeholder="اسم المحل أو النشاط" required
+                       class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-gray-50">
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-gray-600 mb-1">عنوان المحل</label>
+                <input type="text" placeholder="المنطقة / الشارع" required
+                       class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-gray-50">
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-gray-600 mb-1">رقم الهاتف</label>
+                <input type="tel" placeholder="رقم الهاتف" required
+                       class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-gray-50">
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-gray-600 mb-1">رمز المرور</label>
+                <input type="password" placeholder="••••••••" required
+                       class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-gray-50">
+            </div>
+
+            <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl shadow-lg shadow-emerald-500/30 transition-all text-sm mt-2">
+                إنشاء الحساب
+            </button>
+        </form>
+
+        <!-- فاصل -->
+        <div class="relative my-6">
+            <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-gray-200"></div></div>
+            <div class="relative flex justify-center text-xs uppercase"><span class="bg-white px-2 text-gray-400">أو</span></div>
+        </div>
+
+        <!-- آخر البطاقة: زر الدخول كزائر -->
+        <div>
+            <button onclick="alert('تم الدخول كزائر بنجاح')" 
+                    class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 rounded-xl transition-all text-sm border border-gray-200">
+                الدخول كزائر
+            </button>
+        </div>
+
     </div>
 
+    <!-- كود الجافاسكريبت للتحكم بالتبديل بين النماذج -->
+    <script>
+        function switchTab(tab) {
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+            const loginTabBtn = document.getElementById('loginTabBtn');
+            const registerTabBtn = document.getElementById('registerTabBtn');
+
+            if (tab === 'login') {
+                loginForm.classList.remove('hidden');
+                registerForm.classList.add('hidden');
+                
+                loginTabBtn.className = "py-2.5 text-sm font-semibold rounded-xl transition-all duration-200 bg-white text-blue-600 shadow-sm";
+                registerTabBtn.className = "py-2.5 text-sm font-semibold rounded-xl transition-all duration-200 text-gray-500 hover:text-gray-700";
+            } else {
+                loginForm.classList.add('hidden');
+                registerForm.classList.remove('hidden');
+                
+                registerTabBtn.className = "py-2.5 text-sm font-semibold rounded-xl transition-all duration-200 bg-white text-emerald-600 shadow-sm";
+                loginTabBtn.className = "py-2.5 text-sm font-semibold rounded-xl transition-all duration-200 text-gray-500 hover:text-gray-700";
+            }
+        }
+    </script>
 </body>
 </html>
