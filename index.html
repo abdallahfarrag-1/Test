@@ -1,1 +1,434 @@
 
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Electricity Aswan</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+        body {
+            background-color: #f0f4f8;
+            color: #003366;
+            direction: rtl;
+            text-align: right;
+            padding: 10px;
+        }
+        .page {
+            display: none;
+            background: #ffffff;
+            padding: 15px;
+            margin: 0 auto;
+            max-width: 600px;
+        }
+        .page.active {
+            display: block;
+        }
+        /* Page 1 Style */
+        #page1 {
+            border: 2px solid #b0c4de;
+        }
+        .company-title {
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: #004080;
+            margin-bottom: 20px;
+        }
+        .tabs {
+            display: flex;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #004080;
+        }
+        .tab-btn {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            background: #e6f0fa;
+            cursor: pointer;
+            font-weight: bold;
+            color: #004080;
+            border: 1px solid #b0c4de;
+            border-bottom: none;
+        }
+        .tab-btn.active {
+            background: #ffffff;
+            border-bottom: 2px solid #ffffff;
+            margin-bottom: -2px;
+        }
+        .form-section {
+            display: none;
+        }
+        .form-section.active {
+            display: block;
+        }
+        .form-group {
+            margin-bottom: 12px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #b0c4de;
+            border-radius: 4px;
+        }
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 12px;
+        }
+        .btn {
+            width: 100%;
+            padding: 10px;
+            background-color: #004080;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .guest-btn {
+            width: 100%;
+            padding: 10px;
+            background-color: #e0e0e0;
+            color: #333333;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 15px;
+            text-align: center;
+        }
+
+        /* Page 2 Style */
+        #page2 {
+            border: 1px solid #004080;
+        }
+        .top-fixed-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #b0c4de;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+        .menu-btn {
+            font-size: 20px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            color: #004080;
+        }
+        .user-phone {
+            font-size: 14px;
+            color: #004080;
+        }
+        .search-container {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+        .search-top-row {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+        }
+        .search-btn-icon {
+            background-color: #004080;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .search-input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #b0c4de;
+            border-radius: 4px;
+        }
+        .grid-2x2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .grid-box {
+            border: 1px solid #b0c4de;
+            padding: 20px;
+            text-align: center;
+            background-color: #ffffff;
+            cursor: pointer;
+            border-radius: 4px;
+            color: #004080;
+            font-weight: bold;
+        }
+        .back-btn {
+            background-color: #004080;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+        .horizontal-item {
+            border: 1px solid #b0c4de;
+            padding: 12px;
+            margin-bottom: 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            background-color: #ffffff;
+            text-align: center;
+            font-weight: bold;
+            color: #004080;
+        }
+        .split-section {
+            border: 1px solid #b0c4de;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            background-color: #ffffff;
+        }
+        .split-section h3 {
+            margin-bottom: 8px;
+            color: #004080;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- الصفحة الأولى -->
+    <div id="page1" class="page active">
+        <div class="company-title">Electricity Aswan</div>
+        <div class="tabs">
+            <div class="tab-btn active" onclick="switchTab('login')">تسجيل الدخول</div>
+            <div class="tab-btn" onclick="switchTab('register')">إنشاء حساب</div>
+        </div>
+
+        <!-- تسجيل الدخول -->
+        <div id="loginSection" class="form-section active">
+            <div class="form-group">
+                <label>رقم الهاتف</label>
+                <input type="text">
+            </div>
+            <div class="form-group">
+                <label>رمز المرور</label>
+                <input type="password">
+            </div>
+            <div class="checkbox-group">
+                <input type="checkbox" id="remember">
+                <label for="remember">تذكرنى</label>
+            </div>
+            <button class="btn" onclick="goToPage2('01234567891')">تسجيل الدخول</button>
+        </div>
+
+        <!-- إنشاء حساب -->
+        <div id="registerSection" class="form-section">
+            <div class="form-group">
+                <label>اسم الفنى</label>
+                <input type="text">
+            </div>
+            <div class="form-group">
+                <label>اسم المحل</label>
+                <input type="text">
+            </div>
+            <div class="form-group">
+                <label>عنوان المحل</label>
+                <input type="text">
+            </div>
+            <div class="form-group">
+                <label>رقم الهاتف</label>
+                <input type="text">
+            </div>
+            <div class="form-group">
+                <label>رمز المرور</label>
+                <input type="password">
+            </div>
+            <button class="btn" onclick="goToPage2('01234567891')">إنشاء حساب</button>
+        </div>
+
+        <div class="guest-btn" onclick="goToPage2('زائر')">الدخول كزائر</div>
+    </div>
+
+    <!-- الصفحة الثانية -->
+    <div id="page2" class="page">
+        <!-- الجزء الثابت فى الأعلى -->
+        <div class="top-fixed-bar">
+            <button class="menu-btn">&#9776;</button>
+            <div class="company-title" style="margin-bottom:0; font-size:18px;">Electricity Aswan</div>
+            <div id="userPhoneDisplay" class="user-phone"></div>
+        </div>
+
+        <div class="search-container">
+            <div class="search-top-row">
+                <button class="search-btn-icon">بحث بالصوت</button>
+                <button class="search-btn-icon">بحث بالكاميرا</button>
+            </div>
+            <input type="text" class="search-input" placeholder="ابحث">
+        </div>
+
+        <!-- المحتوى الديناميكي -->
+        <div id="mainContent">
+            <!-- ٤ مربعات رئيسية -->
+            <div id="homeGrid" class="grid-2x2">
+                <div class="grid-box" onclick="showBrands()">الماركات</div>
+                <div class="grid-box">التوافقات</div>
+                <div class="grid-box">تنبيهات بعد التركيب</div>
+                <div class="grid-box">التواصل مع الشركة</div>
+            </div>
+
+            <!-- قائمة الماركات (13 ماركة) -->
+            <div id="brandsView" style="display: none;">
+                <button class="back-btn" onclick="showHome()">عودة</button>
+                <div class="grid-2x2">
+                    <div class="grid-box" onclick="showModels('Apple')">Apple</div>
+                    <div class="grid-box" onclick="showModels('Samsung')">Samsung</div>
+                    <div class="grid-box" onclick="showModels('Xiaomi')">Xiaomi</div>
+                    <div class="grid-box" onclick="showModels('Redmi')">Redmi</div>
+                    <div class="grid-box" onclick="showModels('Infinix')">Infinix</div>
+                    <div class="grid-box" onclick="showModels('Oppo')">Oppo</div>
+                    <div class="grid-box" onclick="showModels('Realme')">Realme</div>
+                    <div class="grid-box" onclick="showModels('Huawei')">Huawei</div>
+                    <div class="grid-box" onclick="showModels('Vivo')">Vivo</div>
+                    <div class="grid-box" onclick="showModels('Honor')">Honor</div>
+                    <div class="grid-box" onclick="showModels('Itel')">Itel</div>
+                    <div class="grid-box" onclick="showModels('Nokia')">Nokia</div>
+                    <div class="grid-box" onclick="showModels('Techno')">Techno</div>
+                </div>
+            </div>
+
+            <!-- قائمة الموديلات -->
+            <div id="modelsView" style="display: none;">
+                <button class="back-btn" onclick="showBrands()">عودة للماركات</button>
+                <div id="modelsList"></div>
+            </div>
+
+            <!-- قائمة قطع الغيار -->
+            <div id="sparesView" style="display: none;">
+                <button class="back-btn" onclick="showModelsBack()">عودة للموديلات</button>
+                <div class="horizontal-item" onclick="showPartDetail('شاشة')">شاشة</div>
+                <div class="horizontal-item" onclick="showPartDetail('بطارية')">بطارية</div>
+                <div class="horizontal-item" onclick="showPartDetail('ضهرية')">ضهرية</div>
+                <div class="horizontal-item" onclick="showPartDetail('فلاتة ربط')">فلاتة ربط</div>
+                <div class="horizontal-item" onclick="showPartDetail('فلاتة باور')">فلاتة باور</div>
+                <div class="horizontal-item" onclick="showPartDetail('فلاتة شحن')">فلاتة شحن</div>
+                <div class="horizontal-item" onclick="showPartDetail('فريم')">فريم</div>
+                <div class="horizontal-item" onclick="showPartDetail('ميدل')">ميدل</div>
+                <div class="horizontal-item" onclick="showPartDetail('سماعة داخلية مكالمات')">سماعة داخلية مكالمات</div>
+                <div class="horizontal-item" onclick="showPartDetail('سماعة خارجية مكبر الصوت')">سماعة خارجية مكبر الصوت</div>
+                <div class="horizontal-item" onclick="showPartDetail('سوكيت')">سوكيت</div>
+                <div class="horizontal-item" onclick="showPartDetail('ايسيهات')">ايسيهات</div>
+            </div>
+
+            <!-- تفاصيل قطعة الغيار -->
+            <div id="partDetailView" style="display: none;">
+                <button class="back-btn" onclick="showSpares()">عودة لقطع الغيار</button>
+                <div class="split-section">
+                    <h3>شراء المنتج</h3>
+                    <p>تفاصيل وسعر الشراء للمنتج هنا...</p>
+                </div>
+                <div class="split-section">
+                    <h3>التوافقات</h3>
+                    <p>معلومات التوافقات هنا...</p>
+                </div>
+                <div class="split-section">
+                    <h3>تنبيهات بعد التركيب</h3>
+                    <p>تعليمات وتنبيهات ما بعد التركيب هنا...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(tab) {
+            const loginBtn = document.querySelectorAll('.tab-btn')[0];
+            const registerBtn = document.querySelectorAll('.tab-btn')[1];
+            const loginSec = document.getElementById('loginSection');
+            const registerSec = document.getElementById('registerSection');
+
+            if (tab === 'login') {
+                loginBtn.classList.add('active');
+                registerBtn.classList.remove('active');
+                loginSec.classList.add('active');
+                registerSec.classList.remove('active');
+            } else {
+                registerBtn.classList.add('active');
+                loginBtn.classList.remove('active');
+                registerSec.classList.add('active');
+                loginSec.classList.remove('active');
+            }
+        }
+
+        function goToPage2(phone) {
+            document.getElementById('page1').classList.remove('active');
+            document.getElementById('page2').classList.add('active');
+            document.getElementById('userPhoneDisplay').innerText = phone;
+            showHome();
+        }
+
+        function hideAllViews() {
+            document.getElementById('homeGrid').style.display = 'none';
+            document.getElementById('brandsView').style.display = 'none';
+            document.getElementById('modelsView').style.display = 'none';
+            document.getElementById('sparesView').style.display = 'none';
+            document.getElementById('partDetailView').style.display = 'none';
+        }
+
+        function showHome() {
+            hideAllViews();
+            document.getElementById('homeGrid').style.display = 'grid';
+        }
+
+        function showBrands() {
+            hideAllViews();
+            document.getElementById('brandsView').style.display = 'block';
+        }
+
+        function showModels(brandName) {
+            hideAllViews();
+            const modelsList = document.getElementById('modelsList');
+            modelsList.innerHTML = '';
+            
+            // محاكاة موديلات لكل ماركة
+            for (let i = 1; i <= 3; i++) {
+                const modelDiv = document.createElement('div');
+                modelDiv.className = 'horizontal-item';
+                modelDiv.innerText = `${brandName} - موديل ${i}`;
+                modelDiv.onclick = function() { showSpares(); };
+                modelsList.appendChild(modelDiv);
+            }
+            
+            document.getElementById('modelsView').style.display = 'block';
+        }
+
+        function showSpares() {
+            hideAllViews();
+            document.getElementById('sparesView').style.display = 'block';
+        }
+
+        function showModelsBack() {
+            document.getElementById('modelsView').style.display = 'block';
+            document.getElementById('sparesView').style.display = 'none';
+        }
+
+        function showPartDetail(partName) {
+            hideAllViews();
+            document.getElementById('partDetailView').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
