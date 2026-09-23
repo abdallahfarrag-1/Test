@@ -225,6 +225,11 @@
         function getHeaderTemplate() {
             return `
                 <div class="border-b border-gray-100 pb-4 mb-4 flex-shrink-0">
+                    <!-- اسم الشركة في الأعلى بمفرده تماماً -->
+                    <div class="text-center mb-3">
+                        <h1 class="text-2xl sm:text-3xl font-bold text-gray-800 tracking-wide">Electricity Aswan</h1>
+                    </div>
+
                     <div class="flex items-center justify-between mb-4">
                         <!-- بطاقة القائمة المنسدلة على اليمين -->
                         <div class="relative">
@@ -234,9 +239,6 @@
                                 <option value="logout">تسجيل الخروج</option>
                             </select>
                         </div>
-
-                        <!-- اسم الشركة -->
-                        <h1 class="text-xl sm:text-2xl font-bold text-gray-800 tracking-wide">Electricity Aswan</h1>
 
                         <!-- بطاقة شفافة برقم الهاتف أو زائر على اليسار -->
                         <div class="bg-blue-50/60 border border-blue-100 px-3.5 py-2 rounded-xl text-blue-700 text-xs sm:text-sm font-semibold shadow-sm">
@@ -282,26 +284,26 @@
                              alt="Banner" class="w-full h-36 sm:h-48 object-cover rounded-2xl shadow-md">
                     </div>
 
-                    <!-- البطاقات الأربعة الرئيسية بتصميم أفقي متسلسل -->
-                    <div class="space-y-3 pb-4">
-                        <div onclick="renderBrandsScreen()" class="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white p-4.5 rounded-2xl shadow-md cursor-pointer transition-all flex items-center justify-between">
-                            <span class="font-bold text-base sm:text-lg">الماركات</span>
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                    <!-- البطاقات الأربعة الرئيسية المكبرة بتصميم أفقي متسلسل -->
+                    <div class="space-y-3.5 pb-4">
+                        <div onclick="renderBrandsScreen()" class="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white p-5 sm:p-6 rounded-2xl shadow-md cursor-pointer transition-all flex items-center justify-between">
+                            <span class="font-bold text-lg sm:text-xl">الماركات</span>
+                            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
                         </div>
 
-                        <div onclick="alert('قسم التوافقات')" class="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white p-4.5 rounded-2xl shadow-md cursor-pointer transition-all flex items-center justify-between">
-                            <span class="font-bold text-base sm:text-lg">التوافقات</span>
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                        <div onclick="alert('قسم التوافقات')" class="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white p-5 sm:p-6 rounded-2xl shadow-md cursor-pointer transition-all flex items-center justify-between">
+                            <span class="font-bold text-lg sm:text-xl">التوافقات</span>
+                            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
                         </div>
 
-                        <div onclick="alert('تنبيهات بعد التركيب')" class="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white p-4.5 rounded-2xl shadow-md cursor-pointer transition-all flex items-center justify-between">
-                            <span class="font-bold text-base sm:text-lg">تنبيهات بعد التركيب</span>
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                        <div onclick="alert('تنبيهات بعد التركيب')" class="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white p-5 sm:p-6 rounded-2xl shadow-md cursor-pointer transition-all flex items-center justify-between">
+                            <span class="font-bold text-lg sm:text-xl">تنبيهات بعد التركيب</span>
+                            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
                         </div>
 
-                        <div onclick="alert('للتواصل مع الشركة')" class="w-full bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white p-4.5 rounded-2xl shadow-md cursor-pointer transition-all flex items-center justify-between">
-                            <span class="font-bold text-base sm:text-lg">التواصل مع الشركة</span>
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                        <div onclick="alert('للتواصل مع الشركة')" class="w-full bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white p-5 sm:p-6 rounded-2xl shadow-md cursor-pointer transition-all flex items-center justify-between">
+                            <span class="font-bold text-lg sm:text-xl">التواصل مع الشركة</span>
+                            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
                         </div>
                     </div>
                 </div>
@@ -313,8 +315,9 @@
         // ================= 3. شاشة الماركات (بطاقات أفقية كاملة) =================
         function renderBrandsScreen() {
             let brandsHtml = brandsData.map(brand => `
-                <div onclick="renderModelsScreen('${brand}')" class="w-full bg-gray-50 hover:bg-blue-50 border border-gray-200 hover:border-blue-300 p-4 rounded-2xl shadow-sm text-center font-bold text-gray-700 hover:text-blue-600 cursor-pointer transition-all text-sm sm:text-base">
-                    ${brand}
+                <div onclick="renderModelsScreen('${brand}')" class="w-full bg-gray-50 hover:bg-blue-50 border border-gray-200 hover:border-blue-300 p-4 rounded-2xl shadow-sm flex items-center justify-between cursor-pointer transition-all text-sm sm:text-base">
+                    <span class="font-bold text-gray-700 hover:text-blue-600">${brand}</span>
+                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
                 </div>
             `).join('');
 
@@ -335,7 +338,7 @@
         }
 
 
-        // ================= 4. شاشة الموديلات (بطاقات أفقية من قاعدة البيانات) =================
+        // ================= 4. شاشة الموديلات (بطاقات أفقية مع محاذاة يمين وسهم يسار) =================
         async function renderModelsScreen(brand) {
             selectedBrand = brand;
             
@@ -367,8 +370,11 @@
             let modelsHtml = "";
             if (models.length > 0) {
                 modelsHtml = models.map(m => `
-                    <div onclick="renderPartsScreen('${m.device_name} (${m.model_code})')" class="w-full bg-gray-50 hover:bg-blue-50 border border-gray-200 hover:border-blue-300 p-4 rounded-2xl shadow-sm text-center font-bold text-gray-700 hover:text-blue-600 cursor-pointer transition-all text-sm sm:text-base">
-                        ${m.device_name} <span class="text-xs text-gray-400 font-normal">(${m.model_code})</span>
+                    <div onclick="renderPartsScreen('${m.device_name} (${m.model_code})')" class="w-full bg-gray-50 hover:bg-blue-50 border border-gray-200 hover:border-blue-300 p-4 rounded-2xl shadow-sm flex items-center justify-between cursor-pointer transition-all text-sm sm:text-base">
+                        <span class="font-bold text-gray-700 hover:text-blue-600">
+                            ${m.device_name} <span class="text-xs text-gray-400 font-normal">(${m.model_code})</span>
+                        </span>
+                        <svg class="w-5 h-5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
                     </div>
                 `).join('');
             } else {
@@ -391,13 +397,14 @@
         }
 
 
-        // ================= 5. شاشة قطع الغيار (بطاقات أفقية) =================
+        // ================= 5. شاشة قطع الغيار (بطاقات أفقية مع محاذاة يمين وسهم يسار) =================
         function renderPartsScreen(model) {
             selectedModel = model;
 
             let partsHtml = sparePartsList.map(part => `
-                <div onclick="renderProductDetailScreen('${part}')" class="w-full bg-gray-50 hover:bg-emerald-50 border border-gray-200 hover:border-emerald-300 p-4 rounded-2xl shadow-sm text-center font-bold text-gray-700 hover:text-emerald-600 cursor-pointer transition-all text-sm sm:text-base">
-                    ${part}
+                <div onclick="renderProductDetailScreen('${part}')" class="w-full bg-gray-50 hover:bg-emerald-50 border border-gray-200 hover:border-emerald-300 p-4 rounded-2xl shadow-sm flex items-center justify-between cursor-pointer transition-all text-sm sm:text-base">
+                    <span class="font-bold text-gray-700 hover:text-emerald-600">${part}</span>
+                    <svg class="w-5 h-5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
                 </div>
             `).join('');
 
