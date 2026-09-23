@@ -3,186 +3,177 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>النظام المتكامل لإدارة قطع الغيار والتوافقات</title>
+    <title>النظام المتكامل لقطع الغيار</title>
     <!-- تضمين مكتبة Supabase JS -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        :root {
-            --primary-color: #2563eb;
-            --secondary-color: #1e40af;
-            --bg-color: #f8fafc;
-            --card-bg: #ffffff;
-            --text-color: #1e293b;
-            --border-radius: 12px;
-        }
-
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
+            font-family: 'Cairo', Tahoma, sans-serif;
+            background-color: #f4f6f9;
+            color: #333;
             margin: 0;
             padding: 20px;
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1100px;
             margin: 0 auto;
         }
 
         h1 {
             text-align: center;
-            color: var(--primary-color);
+            color: #2c3e50;
+            margin-bottom: 25px;
+        }
+
+        /* تنسيق البطاقات الأفقية (إصلاح الحجم والتناسق مع الحفاظ على التصميم القديم) */
+        .cards-wrapper {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
             margin-bottom: 30px;
         }
 
-        /* تنسيق البطاقات الأفقية (تم ضبط الحجم والوضوح هنا) */
-        .cards-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 20px;
-            margin-bottom: 40px;
-        }
-
-        .horizontal-card {
-            background-color: var(--card-bg);
-            padding: 20px;
-            border-radius: var(--border-radius);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        .card-item {
+            background: #ffffff;
+            padding: 18px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.08);
             display: flex;
             align-items: center;
             justify-content: space-between;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
             cursor: pointer;
-            border-right: 5px solid var(--primary-color);
+            border-right: 4px solid #3498db;
+            transition: 0.2s;
         }
 
-        .horizontal-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        .card-item:hover {
+            background-color: #f8fafc;
+            transform: translateY(-2px);
         }
 
-        .horizontal-card h3 {
+        .card-item h3 {
             margin: 0;
-            font-size: 1.1rem;
-            color: var(--secondary-color);
+            font-size: 1rem;
+            color: #2c3e50;
         }
 
-        .horizontal-card .icon {
-            font-size: 1.5rem;
-            color: var(--primary-color);
-        }
-
-        /* قسم البحث والعرض */
-        .section-box {
-            background-color: var(--card-bg);
-            padding: 25px;
-            border-radius: var(--border-radius);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            margin-bottom: 30px;
-        }
-
-        .section-box h2 {
-            margin-top: 0;
+        .card-item span {
             font-size: 1.3rem;
-            color: var(--primary-color);
-            border-bottom: 2px solid #e2e8f0;
-            padding-bottom: 10px;
+        }
+
+        /* الأقسام الأساسية */
+        .section-card {
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+        }
+
+        .section-card h2 {
+            margin-top: 0;
+            font-size: 1.2rem;
+            color: #3498db;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 8px;
         }
 
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 12px;
         }
 
         label {
             display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
+            margin-bottom: 5px;
+            font-weight: bold;
+            font-size: 0.95rem;
         }
 
         select, input {
             width: 100%;
-            padding: 12px;
-            border: 1px solid #cbd5e1;
-            border-radius: 8px;
-            font-size: 1rem;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 0.95rem;
             box-sizing: border-box;
         }
 
         button {
-            background-color: var(--primary-color);
+            background-color: #3498db;
             color: white;
             border: none;
-            padding: 12px 20px;
-            border-radius: 8px;
+            padding: 10px 15px;
+            border-radius: 6px;
             font-size: 1rem;
             cursor: pointer;
             width: 100%;
-            transition: background-color 0.2s;
         }
 
         button:hover {
-            background-color: var(--secondary-color);
+            background-color: #2980b9;
         }
 
-        /* جدول النتائج */
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px;
+            margin-top: 15px;
         }
 
         th, td {
-            padding: 12px;
+            padding: 10px;
             text-align: right;
-            border-bottom: 1px solid #e2e8f0;
+            border-bottom: 1px solid #ddd;
+            font-size: 0.9rem;
         }
 
         th {
-            background-color: #f1f5f9;
-            color: var(--secondary-color);
+            background-color: #f8f9fa;
+            color: #2c3e50;
         }
 
-        .alert-box {
-            background-color: #fffbeb;
-            border: 1px solid #fef3c7;
-            padding: 15px;
-            border-radius: 8px;
-            color: #92400e;
-            line-height: 1.6;
+        .alert-text {
+            background: #fff3cd;
+            border: 1px solid #ffeeba;
+            padding: 12px;
+            border-radius: 6px;
+            color: #856404;
+            font-size: 0.9rem;
+            line-height: 1.5;
         }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <h1>نظام إدارة قطع الغيار والتوافقات</h1>
+        <h1>النظام المتكامل لإدارة قطع الغيار</h1>
 
         <!-- البطاقات الأفقية (الماركات، التوافقات، تنبيهات بعد التركيب، التواصل مع الشركة) -->
-        <div class="cards-container">
-            <div class="horizontal-card" onclick="scrollToSection('brands-section')">
+        <div class="cards-wrapper">
+            <div class="card-item" onclick="scrollToSec('brands-sec')">
                 <h3>الماركات المتاحة</h3>
-                <span class="icon">📱</span>
+                <span>📱</span>
             </div>
-            <div class="horizontal-card" onclick="scrollToSection('compatibility-section')">
+            <div class="card-item" onclick="scrollToSec('compat-sec')">
                 <h3>التوافقات والبحث</h3>
-                <span class="icon">🔍</span>
+                <span>🔍</span>
             </div>
-            <div class="horizontal-card" onclick="scrollToSection('alerts-section')">
+            <div class="card-item" onclick="scrollToSec('alerts-sec')">
                 <h3>تنبيهات بعد التركيب</h3>
-                <span class="icon">⚠️</span>
+                <span>⚠️</span>
             </div>
-            <div class="horizontal-card" onclick="scrollToSection('contact-section')">
+            <div class="card-item" onclick="scrollToSec('contact-sec')">
                 <h3>التواصل مع الشركة</h3>
-                <span class="icon">📞</span>
+                <span>📞</span>
             </div>
         </div>
 
-        <!-- قسم التوافقات والبحث (مربوط بقاعدة البيانات) -->
-        <div id="compatibility-section" class="section-box">
-            <h2>بحث توافقات الموديلات</h2>
+        <!-- قسم التوافقات (مربوط بقاعدة البيانات) -->
+        <div id="compat-sec" class="section-card">
+            <h2>بحث التوافقات والموديلات</h2>
             <div class="form-group">
-                <label for="brandSelect">اختر الماركة:</label>
-                <select id="brandSelect" onchange="loadModels()">
+                <label>اختر الماركة:</label>
+                <select id="brandSelect" onchange="loadModelsFromDB()">
                     <option value="">-- اختر الماركة --</option>
                     <option value="samsung_models">Samsung</option>
                     <option value="iphone_models">Apple (iPhone)</option>
@@ -201,44 +192,37 @@
             </div>
 
             <div class="form-group">
-                <label for="modelSelect">اختر الجهاز / الموديل:</label>
+                <label>اختر الموديل:</label>
                 <select id="modelSelect">
                     <option value="">-- اختر الماركة أولاً --</option>
                 </select>
             </div>
 
-            <button onclick="searchCompatibility()">بحث وتتبع البيانات</button>
-
-            <div id="resultsArea" style="margin-top: 20px;"></div>
+            <button onclick="performSearch()">بحث الآن</button>
+            <div id="searchResults" style="margin-top: 15px;"></div>
         </div>
 
         <!-- قسم الماركات -->
-        <div id="brands-section" class="section-box">
-            <h2>قائمة الماركات المسجلة</h2>
-            <div id="brandsList" style="display: flex; gap: 10px; flex-wrap: wrap;">
-                <!-- سيتم تعبئتها ديناميكياً من قاعدة البيانات -->
+        <div id="brands-sec" class="section-card">
+            <h2>الماركات المسجلة</h2>
+            <div id="brandsContainer" style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <!-- يتم تعبئتها من قاعدة البيانات -->
             </div>
         </div>
 
         <!-- قسم تنبيهات بعد التركيب -->
-        <div id="alerts-section" class="section-box">
-            <h2>تنبيهات وإرشادات بعد التركيب</h2>
-            <div class="alert-box">
-                <p><strong>1. اختبار الشاشة:</strong> تأكد من فحص اللمس والألوان جيداً قبل إزالة اللزقة النهائية وضمان عدم وجود بكسرات ميتة.</p>
-                <p><strong>2. الصمغ أو اللصق:</strong> يرجى ترك الجهاز مكبوساً باللصق المخصص لمدة لا تقل عن ساعتين لضمان ثبات الشاشة أو الظهرية تماماً.</p>
-                <p><strong>3. البطاريات:</strong> يُفضل تفريغ شحن البطارية الجديدة حتى 20% ثم شحنها كاملاً لـ 100% لتنشيط الخلايا بالشكل الأمثل.</p>
+        <div id="alerts-sec" class="section-card">
+            <h2>تنبيهات بعد التركيب</h2>
+            <div class="alert-text">
+                <p>• تأكد من اختبار الشاشة واللمس قبل التثبيت النهائي.</p>
+                <p>• اترك اللاصق لمدة كافية لضمان ثبات القطعة.</p>
             </div>
         </div>
 
         <!-- قسم التواصل مع الشركة -->
-        <div id="contact-section" class="section-box">
-            <h2>التواصل والدعم الفني</h2>
-            <p>لأي استفسارات تقنية، طلب قطع غيار خاصة، أو مشاكل تتعلق بالضمان، يمكنك التواصل معنا عبر الوسائل التالية:</p>
-            <ul>
-                <li><strong>الهاتف / واتساب:</strong> 01000000000</li>
-                <li><strong>البريد الإلكتروني:</strong> support@company.com</li>
-                <li><strong>العنوان الرئيسي:</strong> القاهرة، مصر</li>
-            </ul>
+        <div id="contact-sec" class="section-card">
+            <h2>التواصل مع الشركة</h2>
+            <p>للدعم الفني والاستفسارات: 01000000000 | support@company.com</p>
         </div>
     </div>
 
@@ -246,16 +230,14 @@
         // إعدادات اتصال Supabase
         const SUPABASE_URL = 'https://byiayomtcwqlgrknvgcz.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_buMxNAI5pVKhgLa_KlcHoQ_Tf_jN6Ks';
-        
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // التنقل السلس عند الضغط على البطاقات
-        function scrollToSection(sectionId) {
-            document.getElementById(sectionId).scrollIntoView({ behavior: 'smooth' });
+        function scrollToSec(id) {
+            document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
         }
 
-        // جلب الماركات أو الموديلات عند تغيير القائمة
-        async function loadModels() {
+        // جلب الموديلات بناءً على الجدول المختار في Supabase
+        async function loadModelsFromDB() {
             const tableName = document.getElementById('brandSelect').value;
             const modelSelect = document.getElementById('modelSelect');
             modelSelect.innerHTML = '<option value="">-- جاري التحميل... --</option>';
@@ -266,98 +248,74 @@
             }
 
             try {
-                const { data, error } = await _supabase
-                    .from(tableName)
-                    .select('id, device_name, model_code')
-                    .order('device_name', { ascending: true });
-
+                const { data, error } = await _supabase.from(tableName).select('device_name, model_code');
                 if (error) throw error;
 
-                modelSelect.innerHTML = '<option value="">-- اختر الجهاز / الموديل --</option>';
+                modelSelect.innerHTML = '<option value="">-- اختر الموديل --</option>';
                 data.forEach(item => {
                     const opt = document.createElement('option');
                     opt.value = item.model_code;
-                    opt.textContent = `${item.device_name} (Code: ${item.model_code})`;
+                    opt.textContent = `${item.device_name} (${item.model_code})`;
                     modelSelect.appendChild(opt);
                 });
             } catch (err) {
                 console.error(err);
-                modelSelect.innerHTML = '<option value="">-- حدث خطأ في تحميل البيانات --</option>';
+                modelSelect.innerHTML = '<option value="">-- خطأ في تحميل البيانات --</option>';
             }
         }
 
-        // تنفيذ البحث وإظهار النتيجة
-        async function searchCompatibility() {
+        // تنفيذ البحث من قاعدة البيانات
+        async function performSearch() {
             const tableName = document.getElementById('brandSelect').value;
             const modelCode = document.getElementById('modelSelect').value;
-            const resultsArea = document.getElementById('resultsArea');
+            const resultsDiv = document.getElementById('searchResults');
 
             if (!tableName || !modelCode) {
-                alert('الرجاء اختيار الماركة والموديل أولاً');
+                alert('الرجاء اختيار الماركة والموديل');
                 return;
             }
 
-            resultsArea.innerHTML = '<p>جاري البحث في قاعدة البيانات...</p>';
+            resultsDiv.innerHTML = '<p>جاري البحث...</p>';
 
             try {
-                const { data, error } = await _supabase
-                    .from(tableName)
-                    .select('*')
-                    .eq('model_code', modelCode);
-
+                const { data, error } = await _supabase.from(tableName).select('*').eq('model_code', modelCode);
                 if (error) throw error;
 
                 if (data && data.length > 0) {
-                    let html = `
-                        <table>
-                            <thead>
-                               <tr>
-                                   <th>اسم الجهاز</th>
-                                   <th>كود الموديل</th>
-                                   <th>الحالة</th>
-                               </tr>
-                            </thead>
-                            <tbody>
-                    `;
+                    let html = `<table><tr><th>اسم الجهاز</th><th>الكود</th><th>الحالة</th></tr>`;
                     data.forEach(row => {
-                        html += `
-                            <tr>
-                                <td>${row.device_name}</td>
-                                <td>${row.model_code}</td>
-                                <td><span style="color: green; font-weight: bold;">متوفر ومطابق</span></td>
-                            </tr>
-                        `;
+                        html += `<tr><td>${row.device_name}</td><td>${row.model_code}</td><td style="color:green; font-weight:bold;">متوفر</td></tr>`;
                     });
-                    html += `</tbody></table>`;
-                    resultsArea.innerHTML = html;
+                    html += `</table>`;
+                    resultsDiv.innerHTML = html;
                 } else {
-                    resultsArea.innerHTML = '<p style="color: red;">لم يتم العثور على نتائج مطابقة.</p>';
+                    resultsDiv.innerHTML = '<p style="color:red;">لا توجد نتائج مطابقة.</p>';
                 }
             } catch (err) {
                 console.error(err);
-                resultsArea.innerHTML = '<p style="color: red;">حدث خطأ أثناء جلب النتائج من قاعدة البيانات.</p>';
+                resultsDiv.innerHTML = '<p style="color:red;">حدث خطأ أثناء الاتصال بقاعدة البيانات.</p>';
             }
         }
 
-        // جلب قائمة الماركات الرئيسية عند تحميل الصفحة لتعبئة القسم الخاص بها
-        async function fetchBrandsList() {
+        // جلب الماركات لتعبئتها في القسم المخصص
+        async function loadBrandsList() {
             try {
                 const { data, error } = await _supabase.from('brands').select('brand_name');
                 if (error) throw error;
-                const brandsListDiv = document.getElementById('brandsList');
-                brandsListDiv.innerHTML = '';
+                const container = document.getElementById('brandsContainer');
+                container.innerHTML = '';
                 data.forEach(b => {
                     const span = document.createElement('span');
-                    span.style.cssText = 'background: #e2e8f0; padding: 8px 15px; border-radius: 20px; font-weight: 600; font-size: 0.9rem;';
+                    span.style.cssText = 'background: #eef2f7; padding: 6px 12px; border-radius: 15px; font-size: 0.85rem; font-weight: bold;';
                     span.textContent = b.brand_name;
-                    brandsListDiv.appendChild(span);
+                    container.appendChild(span);
                 });
             } catch (e) {
-                console.error('Error fetching brands:', e);
+                console.error(e);
             }
         }
 
-        window.onload = fetchBrandsList;
+        window.onload = loadBrandsList;
     </script>
 </body>
 </html>
