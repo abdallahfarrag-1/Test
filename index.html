@@ -58,10 +58,19 @@
             display: flex;
             justify-content: space-between;
             gap: 40px;
+            direction: rtl;
         }
 
         .form-section {
             flex: 1;
+        }
+
+        .form-section.login {
+            order: 1;
+        }
+
+        .form-section.register {
+            order: 2;
         }
 
         .form-section h3 {
@@ -102,6 +111,9 @@
                 flex-direction: column;
                 gap: 20px;
             }
+            .form-section.login, .form-section.register {
+                order: unset;
+            }
         }
     </style>
 </head>
@@ -117,7 +129,19 @@
         <hr class="divider">
 
         <div class="forms-container">
-            <div class="form-section">
+            <div class="form-section login">
+                <h3>تسجيل الدخول</h3>
+                <div class="input-group">
+                    <label>رقم الهاتف</label>
+                    <input type="text">
+                </div>
+                <div class="input-group">
+                    <label>رمز المرور</label>
+                    <input type="password">
+                </div>
+            </div>
+
+            <div class="form-section register">
                 <h3>إنشاء حساب</h3>
                 <div class="input-group">
                     <label>الاسم</label>
@@ -131,18 +155,6 @@
                     <label>عنوان المحل</label>
                     <input type="text">
                 </div>
-                <div class="input-group">
-                    <label>رقم الهاتف</label>
-                    <input type="text">
-                </div>
-                <div class="input-group">
-                    <label>رمز المرور</label>
-                    <input type="password">
-                </div>
-            </div>
-
-            <div class="form-section">
-                <h3>تسجيل الدخول</h3>
                 <div class="input-group">
                     <label>رقم الهاتف</label>
                     <input type="text">
