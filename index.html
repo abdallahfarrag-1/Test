@@ -3,241 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Toshka Water Stations</title>
-    <!-- استيراد خط عريض ومريح للعين -->
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
-    <!-- مكتبة أيقونات FontAwesome لأيقونة العين -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+    <title>تسجيل الدخول</title>
     <style>
-        * {
-            box-sizing: border-box;
+        body {
             margin: 0;
             padding: 0;
-            font-family: 'Cairo', sans-serif;
-        }
-
-        body {
-            background-color: #f4f7f6;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
-
-        /* شريط العنوان العلوي */
-        .header {
-            background-color: #1a365d; /* أزرق غامق */
-            color: white;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 15px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        }
-
-        .status-badge {
-            background-color: rgba(255, 255, 255, 0.15);
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 13px;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .status-dot {
-            color: #2ecc71; /* أخضر */
-            font-size: 10px;
-        }
-
-        .header-title {
-            font-size: 17px;
-            font-weight: 600;
-        }
-
-        .header-img {
-            width: 35px;
-            height: 35px;
-            border-radius: 4px;
-            object-fit: cover;
-        }
-
-        /* محتوى الصفحة الرئيسي */
-        .main-container {
-            flex: 1;
+            background-color: #f4f4f9;
+            font-family: Arial, sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 20px;
+            height: 100vh;
         }
-
-        /* البطاقة الرئيسية */
         .card {
-            background: white;
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             width: 100%;
-            max-width: 400px;
-            padding: 25px;
-            border-radius: 16px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            max-width: 350px;
+            box-sizing: border-box;
+        }
+        .card h2 {
+            margin-bottom: 20px;
             text-align: center;
+            color: #333333;
         }
-
-        /* صورة المحطة داخل البطاقة */
-        .station-img {
-            width: 100%;
-            height: 140px;
-            object-fit: cover;
-            border-radius: 10px;
-            margin-bottom: 20px;
-        }
-
-        /* عنوان النموذج */
-        .form-title {
-            color: #1a365d;
-            font-size: 22px;
-            font-weight: 700;
-            margin-bottom: 20px;
-        }
-
-        /* حقول الإدخال */
-        .input-group {
+        .form-group {
             margin-bottom: 15px;
-            position: relative;
-            text-align: right;
         }
-
-        .input-field {
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555555;
+        }
+        .form-group input {
             width: 100%;
-            padding: 12px 15px;
-            border: 1px solid #dcdde1;
-            border-radius: 8px;
-            font-size: 14px;
-            outline: none;
-            transition: border-color 0.3s;
-        }
-
-        .input-field:focus {
-            border-color: #3182ce;
-        }
-
-        /* تنسيق حقل كلمة المرور مع أيقونة العين */
-        .password-container {
-            position: relative;
-        }
-
-        .toggle-password {
-            position: absolute;
-            left: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            cursor: pointer;
-            color: #718096;
-        }
-
-        /* خيارات إضافية (تذكرني) */
-        .options-group {
-            display: flex;
-            justify-content: flex-start;
-            align-items: center;
-            margin-bottom: 20px;
-            font-size: 14px;
-            color: #4a5568;
-            gap: 8px;
-        }
-
-        .options-group input[type="checkbox"] {
-            width: 16px;
-            height: 16px;
-            cursor: pointer;
-        }
-
-        /* زر الدخول */
-        .submit-btn {
-            width: 100%;
-            background-color: #3182ce;
-            color: white;
-            border: none;
-            padding: 12px;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        .submit-btn:hover {
-            background-color: #2b6cb0;
-        }
-
-        /* التذييل */
-        .footer-text {
-            margin-top: 20px;
-            font-size: 11px;
-            color: #a0aec0;
+            padding: 10px;
+            border: 1px solid #cccccc;
+            border-radius: 6px;
+            box-sizing: border-box;
         }
     </style>
 </head>
 <body>
 
-    <!-- شريط العنوان العلوي -->
-    <header class="header">
-        <div class="status-badge">
-            <i class="fa-solid fa-circle status-dot"></i>
-            <span>متصل</span>
+    <div class="card">
+        <h2>تسجيل الدخول</h2>
+        <div class="form-group">
+            <label for="phone">رقم الهاتف</label>
+            <input type="text" id="phone">
         </div>
-        <div class="header-title">Toshka Water Stations</div>
-        <img src="https://images.unsplash.com/photo-1584467735811-62868bc44949?w=100" alt="station" class="header-img">
-    </header>
-
-    <!-- محتوى الصفحة -->
-    <div class="main-container">
-        <div class="card">
-            <!-- صورة المحطة -->
-            <img src="https://images.unsplash.com/photo-1584467735811-62868bc44949?w=500" alt="Toshka Station" class="station-img">
-            
-            <!-- عنوان النموذج -->
-            <h2 class="form-title">تسجيل الدخول</h2>
-
-            <form>
-                <!-- اسم المستخدم -->
-                <div class="input-group">
-                    <input type="text" class="input-field" value="عبدالله فراج" placeholder="اسم المستخدم">
-                </div>
-
-                <!-- كلمة المرور -->
-                <div class="input-group password-container">
-                    <input type="password" id="password" class="input-field" value="1234" placeholder="كلمة المرور">
-                    <i class="fa-solid fa-eye toggle-password" id="togglePassword"></i>
-                </div>
-
-                <!-- خيارات إضافية -->
-                <div class="options-group">
-                    <input type="checkbox" id="remember" checked>
-                    <label for="remember">تذكرني</label>
-                </div>
-
-                <!-- زر الإجراء -->
-                <button type="submit" class="submit-btn">دخول</button>
-            </form>
-
-            <!-- التذييل -->
-            <div class="footer-text">
-                Implemented by Ahmed Salah Ibrahim 2025 V1.6.4.8[span_0](start_span)[span_0](end_span)
-            </div>
+        <div class="form-group">
+            <label for="password">رمز المرور</label>
+            <input type="password" id="password">
         </div>
     </div>
-
-    <!-- كود بسيط لتفعيل أيقونة إظهار/إخفاء كلمة المرور -->
-    <script>
-        const togglePassword = document.querySelector('#togglePassword');
-        const password = document.querySelector('#password');
-
-        togglePassword.addEventListener('click', function () {
-            const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
-            password.setAttribute('type', type);
-            this.classList.toggle('fa-eye-slash');
-        });
-    </script>
 
 </body>
 </html>
