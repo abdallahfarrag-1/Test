@@ -3,60 +3,155 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تسجيل الدخول</title>
+    <title>Electricity Aswan</title>
     <style>
         body {
             margin: 0;
             padding: 0;
-            background-color: #f4f4f9;
+            background-color: #f4f4f4;
             font-family: Arial, sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
         }
-        .card {
+
+        .main-card {
             background-color: #ffffff;
+            width: 100%;
+            max-width: 900px;
             padding: 30px;
             border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 350px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             box-sizing: border-box;
         }
-        .card h2 {
-            margin-bottom: 20px;
+
+        .company-name {
             text-align: center;
-            color: #333333;
+            font-size: 26px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 20px;
         }
-        .form-group {
+
+        .company-image {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .company-image img {
+            width: 120px;
+            height: 120px;
+            object-fit: contain;
+            border-radius: 50%;
+            background-color: #eaeaea;
+        }
+
+        .divider {
+            border: none;
+            height: 1px;
+            background-color: #e0e0e0;
+            margin-bottom: 30px;
+        }
+
+        .forms-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 40px;
+        }
+
+        .form-section {
+            flex: 1;
+        }
+
+        .form-section h3 {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 20px;
+            text-align: right;
+        }
+
+        .input-group {
             margin-bottom: 15px;
         }
-        .form-group label {
+
+        .input-group label {
             display: block;
             margin-bottom: 5px;
-            color: #555555;
+            font-size: 14px;
+            color: #555;
         }
-        .form-group input {
+
+        .input-group input {
             width: 100%;
             padding: 10px;
-            border: 1px solid #cccccc;
+            background-color: #ffffff;
+            border: 1px solid #ccc;
             border-radius: 6px;
             box-sizing: border-box;
+            outline: none;
+            font-size: 14px;
+        }
+
+        .input-group input:focus {
+            border-color: #007bff;
+        }
+
+        @media (max-width: 768px) {
+            .forms-container {
+                flex-direction: column;
+                gap: 20px;
+            }
         }
     </style>
 </head>
 <body>
 
-    <div class="card">
-        <h2>تسجيل الدخول</h2>
-        <div class="form-group">
-            <label for="phone">رقم الهاتف</label>
-            <input type="text" id="phone">
+    <div class="main-card">
+        <div class="company-name">Electricity Aswan</div>
+        
+        <div class="company-image">
+            <img src="https://via.placeholder.com/120" alt="صورة الشركة">
         </div>
-        <div class="form-group">
-            <label for="password">رمز المرور</label>
-            <input type="password" id="password">
+
+        <hr class="divider">
+
+        <div class="forms-container">
+            <div class="form-section">
+                <h3>إنشاء حساب</h3>
+                <div class="input-group">
+                    <label>الاسم</label>
+                    <input type="text">
+                </div>
+                <div class="input-group">
+                    <label>اسم المحل</label>
+                    <input type="text">
+                </div>
+                <div class="input-group">
+                    <label>عنوان المحل</label>
+                    <input type="text">
+                </div>
+                <div class="input-group">
+                    <label>رقم الهاتف</label>
+                    <input type="text">
+                </div>
+                <div class="input-group">
+                    <label>رمز المرور</label>
+                    <input type="password">
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h3>تسجيل الدخول</h3>
+                <div class="input-group">
+                    <label>رقم الهاتف</label>
+                    <input type="text">
+                </div>
+                <div class="input-group">
+                    <label>رمز المرور</label>
+                    <input type="password">
+                </div>
+            </div>
         </div>
     </div>
 
