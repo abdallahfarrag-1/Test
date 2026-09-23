@@ -1,358 +1,465 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Electricity Aswan</title>
-<!-- تضمين Tailwind CSS للتنسيق -->
-<script src="[https://cdn.tailwindcss.com](https://cdn.tailwindcss.com)"></script>
-<!-- تضمين مكتبة Supabase للاتصال بقاعدة البيانات -->
-<script src="[https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2](https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2)"></script>
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap');
-body {
-font-family: 'Cairo', sans-serif;
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Electricity Aswan</title>
+    <!-- تضمين Tailwind CSS للتنسيق -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- تضمين مكتبة Supabase للاتصال بقاعدة البيانات -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap');
+        body {
+            font-family: 'Cairo', sans-serif;
+        }
+    </style>
 </head>
 <body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen p-2 sm:p-4 flex items-center justify-center">
-<!-- البطاقة البيضاء الرئيسية - ملء الشاشة (Full Screen Card) -->
-<div class="bg-white w-full h-[96vh] sm:h-[94vh] rounded-3xl shadow-2xl p-4 sm:p-8 flex flex-col justify-between transition-all duration-300 overflow-hidden">
-<!-- حاوية الشاشات الديناميكية -->
-<div id="appContainer" class="flex-1 flex flex-col overflow-hidden"></div>
-</div>
-<!-- كود الجافاسكريبت لإدارة النظام والصفحات والتنقل الأفقي -->
-<script>
-// إعدادات اتصال Supabase
-const SUPABASE_URL = 'https://byiayomtcwqlgrknvgcz.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_buMxNAI5pVKhgLa_KlcHoQ_Tf_jN6Ks';
-const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-let currentUserRole = "زائر";
-let selectedBrand = "";
-let selectedModel = "";
-let selectedPart = "";
-// قائمة الماركات المطلوبة تماماً (من قاعدة البيانات أو الثابتة)
-const brandsData = [
-"Apple", "Samsung", "Xiaomi", "Redmi", "Infinix",
-"Oppo", "Realme", "Huawei", "Vivo", "Honor", "Techno", "itel", "Nokia"
-];
-// قطع الغيار المطلوبة
-const sparePartsList = [
-"شاشة", "بطارية", "ضهرية", "فلاتة ربط", "فلاتة باور",
-"فلاتة شحن", "فريم", "ميدل", "سماعة داخلية مكالمات",
-"سماعة خارجية مكبر الصوت", "سوكيت", "ايسيهات"
-];
-// ================= 1. واجهة تسجيل الدخول (الصفحة الأولى) =================
-function renderLoginScreen() {
-const html = `
-<div class="flex-1 overflow-y-auto px-2">
-<div class="max-w-xl mx-auto w-full py-4">
-<div class="text-center mb-6">
-<h1 class="text-2xl sm:text-3xl font-bold text-gray-800 tracking-wide">Electricity Aswan</h1>
-</div>
-<!-- الصورة المستطيلة بحواف دائرية ذات ظلال -->
-<div class="mb-6">
-<img src="[https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?auto=format&fit=crop&w=800&q=80](https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?auto=format&fit=crop&w=800&q=80)" 
-alt="Banner" class="w-full h-40 sm:h-52 object-cover rounded-2xl shadow-md">
-</div>
-<!-- أزرار التبديل بين (تسجيل الدخول) و (إنشاء حساب) -->
-<div class="grid grid-cols-2 gap-2 bg-gray-100 p-1.5 rounded-2xl mb-6">
-<button onclick="switchTab('login')" id="loginTabBtn" 
-class="py-2.5 text-sm font-semibold rounded-xl transition-all duration-200 bg-white text-blue-600 shadow-sm">
-تسجيل الدخول
-</button>
-<button onclick="switchTab('register')" id="registerTabBtn" 
-class="py-2.5 text-sm font-semibold rounded-xl transition-all duration-200 text-gray-500 hover:text-gray-700">
-إنشاء حساب
-</button>
-</div>
-<!-- خانة تسجيل الدخول -->
-<div id="loginFormContainer">
-<form onsubmit="handleLoginSubmit(event)" class="space-y-4">
-<div>
-<label class="block text-xs font-semibold text-gray-600 mb-1">رقم الهاتف</label>
-<input type="text" id="loginPhone" required
-class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-gray-50">
-</div>
-<div>
-<label class="block text-xs font-semibold text-gray-600 mb-1">رمز المرور</label>
-<input type="password" id="loginPassword" required
-class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-gray-50">
-</div>
-<div class="flex items-center justify-between text-sm">
-<label class="flex items-center space-x-2 space-x-reverse cursor-pointer">
-<input type="checkbox" class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
-<span class="text-gray-600 text-xs">تذكرني</span>
-</label>
-</div>
-<button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl shadow-lg shadow-blue-500/35 transition-all text-sm">
-تسجيل الدخول
-</button>
-</form>
-</div>
-<!-- خانة إنشاء حساب (مخفية افتراضياً) -->
-<div id="registerFormContainer" class="hidden">
-<form onsubmit="handleRegisterSubmit(event)" class="space-y-3.5">
-<div>
-<label class="block text-xs font-semibold text-gray-600 mb-1">الاسم</label>
-<input type="text" id="regOwnerName" required class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-gray-50">
-</div>
-<div>
-<label class="block text-xs font-semibold text-gray-600 mb-1">اسم المحل</label>
-<input type="text" id="regShopName" required class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-gray-50">
-</div>
-<div>
-<label class="block text-xs font-semibold text-gray-600 mb-1">عنوان المحل</label>
-<input type="text" id="regShopAddress" required class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-gray-50">
-</div>
-<div>
-<label class="block text-xs font-semibold text-gray-600 mb-1">رقم الهاتف</label>
-<input type="text" id="regPhone" required class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-gray-50">
-</div>
-<div>
-<label class="block text-xs font-semibold text-gray-600 mb-1">رمز المرور</label>
-<input type="password" id="regPassword" required class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-gray-50">
-</div>
-<button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl shadow-lg shadow-emerald-500/35 transition-all text-sm mt-2">
-إنشاء الحساب
-</button>
-</form>
-</div>
-<div class="relative my-6">
-<div class="absolute inset-0 flex items-center"><div class="w-full border-t border-gray-200"></div></div>
-<div class="relative flex justify-center text-xs uppercase"><span class="bg-white px-2 text-gray-400">أو</span></div>
-</div>
-<!-- زر الدخول كزائر -->
-<div>
-<button onclick="loginAsVisitor()" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 rounded-xl transition-all text-sm border border-gray-200">
-الدخول كزائر
-</button>
-</div>
-</div>
-</div>
-`;
-document.getElementById('appContainer').innerHTML = html;
-}
-// التبديل بين نموذج تسجيل الدخول وإنشاء الحساب
-function switchTab(tab) {
-const loginForm = document.getElementById('loginFormContainer');
-const registerForm = document.getElementById('registerFormContainer');
-const loginTabBtn = document.getElementById('loginTabBtn');
-const registerTabBtn = document.getElementById('registerTabBtn');
-if (tab === 'login') {
-loginForm.classList.remove('hidden');
-registerForm.classList.add('hidden');
-loginTabBtn.className = "py-2.5 text-sm font-semibold rounded-xl transition-all duration-200 bg-white text-blue-600 shadow-sm";
-registerTabBtn.className = "py-2.5 text-sm font-semibold rounded-xl transition-all duration-200 text-gray-500 hover:text-gray-700";
-} else {
-loginForm.classList.add('hidden');
-registerForm.classList.remove('hidden');
-registerTabBtn.className = "py-2.5 text-sm font-semibold rounded-xl transition-all duration-200 bg-white text-emerald-600 shadow-sm";
-loginTabBtn.className = "py-2.5 text-sm font-semibold rounded-xl transition-all duration-200 text-gray-500 hover:text-gray-700";
-}
-}
-async function handleLoginSubmit(e) {
-e.preventDefault();
-const phone = document.getElementById('loginPhone').value.trim();
-const password = document.getElementById('loginPassword').value.trim();
-const { data, error } = await supabaseClient
-.from('users')
-.select('*')
-.eq('phone_number', phone)
-.eq('password', password)
-.single();
-if (error || !data) {
-alert('خطأ في رقم الهاتف أو رمز المرور!');
-return;
-}
-currentUserRole = data.phone_number;
-renderMainDashboard();
-}
-async function handleRegisterSubmit(e) {
-e.preventDefault();
-const owner_name = document.getElementById('regOwnerName').value.trim();
-const shop_name = document.getElementById('regShopName').value.trim();
-const shop_address = document.getElementById('regShopAddress').value.trim();
-const phone_number = document.getElementById('regPhone').value.trim();
-const password = document.getElementById('regPassword').value.trim();
-const { data, error } = await supabaseClient
-.from('users')
-.insert([{ owner_name, shop_name, shop_address, phone_number, password }])
-.select();
-if (error) {
-alert('حدث خطأ أثناء إنشاء الحساب أو الرقم مسجل مسبقاً: ' + error.message);
-return;
-}
-alert('تم إنشاء الحساب بنجاح!');
-currentUserRole = phone_number;
-renderMainDashboard();
-}
-function loginAsVisitor() {
-currentUserRole = "زائر";
-renderMainDashboard();
-}
-// ================= قالب الجزء الثابت المتكرر في أعلى كل الصفحات الداخلية =================
-function getHeaderTemplate() {
-return `
-<div class="border-b border-gray-100 pb-4 mb-4 flex-shrink-0">
-<div class="flex items-center justify-between mb-4">
-<!-- بطاقة القائمة المنسدلة على اليمين -->
-<div class="relative">
-<select onchange="handleMenuChange(this)" class="bg-gray-50 border border-gray-200 text-gray-700 text-xs sm:text-sm rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer shadow-sm">
-<option value="" disabled selected>القائمة</option>
-<option value="home">الرئيسية</option>
-<option value="logout">تسجيل الخروج</option>
-</select>
-</div>
-<!-- اسم الشركة -->
-<h1 class="text-xl sm:text-2xl font-bold text-gray-800 tracking-wide">Electricity Aswan</h1>
-<!-- بطاقة شفافة برقم الهاتف أو زائر على اليسار -->
-<div class="bg-blue-50/60 border border-blue-100 px-3.5 py-2 rounded-xl text-blue-700 text-xs sm:text-sm font-semibold shadow-sm">
-${currentUserRole}
-</div>
-</div>
-<!-- أدوات البحث (صوت، كاميرا، كتابة تحتوي على كلمة ابحث) -->
-<div class="flex items-center gap-2">
-<div class="flex-1 relative">
-<input type="text" placeholder="ابحث" 
-class="w-full bg-gray-50 border border-gray-200 text-gray-700 text-xs sm:text-sm rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm">
-</div>
-<button onclick="alert('جارِ الاستماع للصوت...فعل ميكروفون المتصفح')" class="bg-gray-50 hover:bg-gray-100 border border-gray-200 p-3 rounded-xl text-gray-600 transition-all shadow-sm" title="بحث صوتي">
-<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path></svg>
-</button>
-<button onclick="alert('جارِ فتح الكاميرا للمسح الضوئي...')" class="bg-gray-50 hover:bg-gray-100 border border-gray-200 p-3 rounded-xl text-gray-600 transition-all shadow-sm" title="بحث بالكاميرا">
-<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-</button>
-</div>
-</div>
-`;
-}
-function handleMenuChange(select) {
-if (select.value === 'logout') {
-renderLoginScreen();
-} else if (select.value === 'home') {
-renderMainDashboard();
-}
-select.value = "";
-}
-// ================= 2. الصفحة الرئيسية (بعد الدخول) وتحتوي على البطاقات الأربعة =================
-function renderMainDashboard() {
-const html = `
-${getHeaderTemplate()}
-<div class="flex-1 overflow-y-auto space-y-4 px-1">
-<div class="mb-4">
-<img src="[https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?auto=format&fit=crop&w=800&q=80](https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?auto=format&fit=crop&w=800&q=80)" 
-alt="Banner" class="w-full h-36 sm:h-48 object-cover rounded-2xl shadow-md">
-</div>
-<!-- البطاقات الأربعة الرئيسية بتصميم أفقي متسلسل -->
-<div class="space-y-3 pb-4">
-<div onclick="renderBrandsScreen()" class="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white p-4.5 rounded-2xl shadow-md cursor-pointer transition-all flex items-center justify-between">
-<span class="font-bold text-base sm:text-lg">الماركات</span>
-<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
-</div>
-<div onclick="alert('قسم التوافقات')" class="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white p-4.5 rounded-2xl shadow-md cursor-pointer transition-all flex items-center justify-between">
-<span class="font-bold text-base sm:text-lg">التوافقات</span>
-<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
-</div>
-<div onclick="alert('تنبيهات بعد التركيب')" class="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white p-4.5 rounded-2xl shadow-md cursor-pointer transition-all flex items-center justify-between">
-<span class="font-bold text-base sm:text-lg">تنبيهات بعد التركيب</span>
-<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
-</div>
-<div onclick="alert('للتواصل مع الشركة')" class="w-full bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white p-4.5 rounded-2xl shadow-md cursor-pointer transition-all flex items-center justify-between">
-<span class="font-bold text-base sm:text-lg">التواصل مع الشركة</span>
-<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
-</div>
-</div>
-</div>
-`;
-document.getElementById('appContainer').innerHTML = html;
-}
-// ================= 3. شاشة الماركات (بطاقات أفقية كاملة) =================
-function renderBrandsScreen() {
-let brandsHtml = brandsData.map(brand => <div onclick="renderModelsScreen('${brand}')" class="w-full bg-gray-50 hover:bg-blue-50 border border-gray-200 hover:border-blue-300 p-4 rounded-2xl shadow-sm text-center font-bold text-gray-700 hover:text-blue-600 cursor-pointer transition-all text-sm sm:text-base"> ${brand} </div>).join('');
-const html = ${getHeaderTemplate()} <div class="flex items-center justify-between mb-4 flex-shrink-0"> <button onclick="renderMainDashboard()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all"> ← عودة للرئيسية </button> <h2 class="text-sm sm:text-base font-bold text-gray-800">اختر الماركة</h2> </div> <!-- بطاقات أفقية تحت بعضها البعض --> <div class="flex-1 overflow-y-auto space-y-3 p-1"> ${brandsHtml} </div>;
-document.getElementById('appContainer').innerHTML = html;
-}
-// ================= 4. شاشة الموديلات (بطاقات أفقية من قاعدة البيانات) =================
-async function renderModelsScreen(brand) {
-selectedBrand = brand;
-// تحديد اسم جدول الموديلات بناءً على الماركة المختارة
-let tableName = "";
-const b = brand.toLowerCase();
-if (b.includes('samsung')) tableName = 'samsung_models';
-else if (b.includes('iphone') || b.includes('apple')) tableName = 'iphone_models';
-else if (b.includes('honor')) tableName = 'honor_models';
-else if (b.includes('huawei')) tableName = 'huawei_models';
-else if (b.includes('itel')) tableName = 'itel_models';
-else if (b.includes('nokia')) tableName = 'nokia_models';
-else if (b.includes('vivo')) tableName = 'vivo_models';
-else if (b.includes('techno') || b.includes('tecno')) tableName = 'tecno_models';
-else if (b.includes('oppo')) tableName = 'oppo_models';
-else if (b.includes('realme')) tableName = 'realme_models';
-else if (b.includes('redmi')) tableName = 'redmi_models';
-else if (b.includes('xiaomi') || b.includes('poco')) tableName = 'xiaomi_poco_models';
-else if (b.includes('infinix')) tableName = 'infinix_models';
-let models = [];
-if (tableName) {
-const { data, error } = await supabaseClient.from(tableName).select('device_name, model_code');
-if (!error && data) {
-models = data;
-}
-}
-let modelsHtml = "";
-if (models.length > 0) {
-modelsHtml = models.map(m => <div onclick="renderPartsScreen('${m.device_name} (${m.model_code})')" class="w-full bg-gray-50 hover:bg-blue-50 border border-gray-200 hover:border-blue-300 p-4 rounded-2xl shadow-sm text-center font-bold text-gray-700 hover:text-blue-600 cursor-pointer transition-all text-sm sm:text-base"> ${m.device_name} <span class="text-xs text-gray-400 font-normal">(${m.model_code})</span> </div>).join('');
-} else {
-modelsHtml = <div class="text-center text-gray-500 py-6">لا توجد موديلات متاحة حالياً لهذه الماركة</div>;
-}
-const html = ${getHeaderTemplate()} <div class="flex items-center justify-between mb-4 flex-shrink-0"> <button onclick="renderBrandsScreen()" class="bg-blue-50 hover:bg-blue-100 text-blue-600 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all border border-blue-200"> ↩ عودة للماركات (${brand}) </button> <h2 class="text-xs sm:text-sm font-bold text-gray-800">موديلات ${brand}</h2> </div> <div class="flex-1 overflow-y-auto space-y-3 p-1"> ${modelsHtml} </div>;
-document.getElementById('appContainer').innerHTML = html;
-}
-// ================= 5. شاشة قطع الغيار (بطاقات أفقية) =================
-function renderPartsScreen(model) {
-selectedModel = model;
-let partsHtml = sparePartsList.map(part => <div onclick="renderProductDetailScreen('${part}')" class="w-full bg-gray-50 hover:bg-emerald-50 border border-gray-200 hover:border-emerald-300 p-4 rounded-2xl shadow-sm text-center font-bold text-gray-700 hover:text-emerald-600 cursor-pointer transition-all text-sm sm:text-base"> ${part} </div>).join('');
-const html = ${getHeaderTemplate()} <div class="flex items-center justify-between mb-4 flex-shrink-0"> <button onclick="renderModelsScreen('${selectedBrand}')" class="bg-blue-50 hover:bg-blue-100 text-blue-600 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all border border-blue-200"> ↩ عودة للموديلات </button> <h2 class="text-xs sm:text-sm font-bold text-gray-800">${selectedBrand} - ${model}</h2> </div> <div class="flex-1 overflow-y-auto space-y-3 p-1"> ${partsHtml} </div>;
-document.getElementById('appContainer').innerHTML = html;
-}
-// ================= 6. صفحة المنتج النهائية المقسمة إلى 3 أقسام =================
-function renderProductDetailScreen(part) {
-selectedPart = part;
-const html = `
-{getHeaderTemplate()}
-<div class="flex items-center justify-between mb-4 flex-shrink-0">
-<button onclick="renderPartsScreen('${selectedModel}')" class="bg-blue-50 hover:bg-blue-100 text-blue-600 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all border border-blue-200">
-↩ عودة لقطع الغيار
-</button>
-<h2 class="text-xs sm:text-sm font-bold text-gray-800">{part} (${selectedModel})</h2>
-</div>
-<div class="flex-1 overflow-y-auto space-y-4 p-1">
-<!-- شراء المنتج -->
-<div class="bg-blue-50/70 border border-blue-100 p-4.5 rounded-2xl shadow-sm">
-<h3 class="font-bold text-blue-800 mb-2 text-sm sm:text-base">🛒 شراء المنتج</h3>
-<p class="text-xs sm:text-sm text-gray-600 mb-3">القطعة متوفرة بالضمان الكامل.</p>
-<button onclick="alert('تمت إضافة الطلب بنجاح!')" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl text-xs sm:text-sm shadow-md transition-all">
-شراء المنتج / اطلب الآن
-</button>
-</div>
-<!-- التوافقات -->
-<div class="bg-emerald-50/70 border border-emerald-100 p-4.5 rounded-2xl shadow-sm">
-<h3 class="font-bold text-emerald-800 mb-2 text-sm sm:text-base">🔗 التوافقات</h3>
-<p class="text-xs sm:text-sm text-gray-600">هذه القطعة متوافقة مع الإصدارات والنسخ المتطابقة من الماركة.</p>
-</div>
-<!-- تنبيهات بعد التركيب -->
-<div class="bg-amber-50/70 border border-amber-100 p-4.5 rounded-2xl shadow-sm">
-<h3 class="font-bold text-amber-800 mb-2 text-sm sm:text-base">⚠️ تنبيهات بعد التركيب</h3>
-<p class="text-xs sm:text-sm text-gray-600">يُرجى التجربة الفورية قبل التثبيت النهائي وإزالة اللزقات.</p>
-</div>
-</div>
-`;
-document.getElementById('appContainer').innerHTML = html;
-}
-// التشغيل المبدئي
-window.onload = function() {
-renderLoginScreen();
-};
-</script>
+
+    <!-- البطاقة البيضاء الرئيسية - ملء الشاشة (Full Screen Card) -->
+    <div class="bg-white w-full h-[96vh] sm:h-[94vh] rounded-3xl shadow-2xl p-4 sm:p-8 flex flex-col justify-between transition-all duration-300 overflow-hidden">
+        
+        <!-- حاوية الشاشات الديناميكية -->
+        <div id="appContainer" class="flex-1 flex flex-col overflow-hidden"></div>
+
+    </div>
+
+    <!-- كود الجافاسكريبت لإدارة النظام والصفحات والتنقل الأفقي -->
+    <script>
+        // إعدادات اتصال Supabase
+        const SUPABASE_URL = 'https://byiayomtcwqlgrknvgcz.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_buMxNAI5pVKhgLa_KlcHoQ_Tf_jN6Ks';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        let currentUserRole = "زائر";
+        let selectedBrand = "";
+        let selectedModel = "";
+        let selectedPart = "";
+
+        // قائمة الماركات المطلوبة تماماً (من قاعدة البيانات أو الثابتة)
+        const brandsData = [
+            "Apple", "Samsung", "Xiaomi", "Redmi", "Infinix", 
+            "Oppo", "Realme", "Huawei", "Vivo", "Honor", "Techno", "itel", "Nokia"
+        ];
+
+        // قطع الغيار المطلوبة
+        const sparePartsList = [
+            "شاشة", "بطارية", "ضهرية", "فلاتة ربط", "فلاتة باور", 
+            "فلاتة شحن", "فريم", "ميدل", "سماعة داخلية مكالمات", 
+            "سماعة خارجية مكبر الصوت", "سوكيت", "ايسيهات"
+        ];
+
+        // ================= 1. واجهة تسجيل الدخول (الصفحة الأولى) =================
+        function renderLoginScreen() {
+            const html = `
+                <div class="flex-1 overflow-y-auto px-2">
+                    <div class="max-w-xl mx-auto w-full py-4">
+                        <div class="text-center mb-6">
+                            <h1 class="text-2xl sm:text-3xl font-bold text-gray-800 tracking-wide">Electricity Aswan</h1>
+                        </div>
+
+                        <!-- الصورة المستطيلة بحواف دائرية ذات ظلال -->
+                        <div class="mb-6">
+                            <img src="https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?auto=format&fit=crop&w=800&q=80" 
+                                 alt="Banner" class="w-full h-40 sm:h-52 object-cover rounded-2xl shadow-md">
+                        </div>
+
+                        <!-- أزرار التبديل بين (تسجيل الدخول) و (إنشاء حساب) -->
+                        <div class="grid grid-cols-2 gap-2 bg-gray-100 p-1.5 rounded-2xl mb-6">
+                            <button onclick="switchTab('login')" id="loginTabBtn" 
+                                    class="py-2.5 text-sm font-semibold rounded-xl transition-all duration-200 bg-white text-blue-600 shadow-sm">
+                                تسجيل الدخول
+                            </button>
+                            <button onclick="switchTab('register')" id="registerTabBtn" 
+                                    class="py-2.5 text-sm font-semibold rounded-xl transition-all duration-200 text-gray-500 hover:text-gray-700">
+                                إنشاء حساب
+                            </button>
+                        </div>
+
+                        <!-- خانة تسجيل الدخول -->
+                        <div id="loginFormContainer">
+                            <form onsubmit="handleLoginSubmit(event)" class="space-y-4">
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-600 mb-1">رقم الهاتف</label>
+                                    <input type="text" id="loginPhone" required
+                                           class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-gray-50">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-600 mb-1">رمز المرور</label>
+                                    <input type="password" id="loginPassword" required
+                                           class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-gray-50">
+                                </div>
+                                
+                                <div class="flex items-center justify-between text-sm">
+                                    <label class="flex items-center space-x-2 space-x-reverse cursor-pointer">
+                                        <input type="checkbox" class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                                        <span class="text-gray-600 text-xs">تذكرني</span>
+                                    </label>
+                                </div>
+
+                                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl shadow-lg shadow-blue-500/35 transition-all text-sm">
+                                    تسجيل الدخول
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- خانة إنشاء حساب (مخفية افتراضياً) -->
+                        <div id="registerFormContainer" class="hidden">
+                            <form onsubmit="handleRegisterSubmit(event)" class="space-y-3.5">
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-600 mb-1">الاسم</label>
+                                    <input type="text" id="regOwnerName" required class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-gray-50">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-600 mb-1">اسم المحل</label>
+                                    <input type="text" id="regShopName" required class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-gray-50">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-600 mb-1">عنوان المحل</label>
+                                    <input type="text" id="regShopAddress" required class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-gray-50">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-600 mb-1">رقم الهاتف</label>
+                                    <input type="text" id="regPhone" required class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-gray-50">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-600 mb-1">رمز المرور</label>
+                                    <input type="password" id="regPassword" required class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-gray-50">
+                                </div>
+
+                                <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl shadow-lg shadow-emerald-500/35 transition-all text-sm mt-2">
+                                    إنشاء الحساب
+                                </button>
+                            </form>
+                        </div>
+
+                        <div class="relative my-6">
+                            <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-gray-200"></div></div>
+                            <div class="relative flex justify-center text-xs uppercase"><span class="bg-white px-2 text-gray-400">أو</span></div>
+                        </div>
+
+                        <!-- زر الدخول كزائر -->
+                        <div>
+                            <button onclick="loginAsVisitor()" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 rounded-xl transition-all text-sm border border-gray-200">
+                                الدخول كزائر
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.getElementById('appContainer').innerHTML = html;
+        }
+
+        // التبديل بين نموذج تسجيل الدخول وإنشاء الحساب
+        function switchTab(tab) {
+            const loginForm = document.getElementById('loginFormContainer');
+            const registerForm = document.getElementById('registerFormContainer');
+            const loginTabBtn = document.getElementById('loginTabBtn');
+            const registerTabBtn = document.getElementById('registerTabBtn');
+
+            if (tab === 'login') {
+                loginForm.classList.remove('hidden');
+                registerForm.classList.add('hidden');
+                loginTabBtn.className = "py-2.5 text-sm font-semibold rounded-xl transition-all duration-200 bg-white text-blue-600 shadow-sm";
+                registerTabBtn.className = "py-2.5 text-sm font-semibold rounded-xl transition-all duration-200 text-gray-500 hover:text-gray-700";
+            } else {
+                loginForm.classList.add('hidden');
+                registerForm.classList.remove('hidden');
+                registerTabBtn.className = "py-2.5 text-sm font-semibold rounded-xl transition-all duration-200 bg-white text-emerald-600 shadow-sm";
+                loginTabBtn.className = "py-2.5 text-sm font-semibold rounded-xl transition-all duration-200 text-gray-500 hover:text-gray-700";
+            }
+        }
+
+        async function handleLoginSubmit(e) {
+            e.preventDefault();
+            const phone = document.getElementById('loginPhone').value.trim();
+            const password = document.getElementById('loginPassword').value.trim();
+
+            const { data, error } = await supabaseClient
+                .from('users')
+                .select('*')
+                .eq('phone_number', phone)
+                .eq('password', password)
+                .single();
+
+            if (error || !data) {
+                alert('خطأ في رقم الهاتف أو رمز المرور!');
+                return;
+            }
+
+            currentUserRole = data.phone_number;
+            renderMainDashboard();
+        }
+
+        async function handleRegisterSubmit(e) {
+            e.preventDefault();
+            const owner_name = document.getElementById('regOwnerName').value.trim();
+            const shop_name = document.getElementById('regShopName').value.trim();
+            const shop_address = document.getElementById('regShopAddress').value.trim();
+            const phone_number = document.getElementById('regPhone').value.trim();
+            const password = document.getElementById('regPassword').value.trim();
+
+            const { data, error } = await supabaseClient
+                .from('users')
+                .insert([{ owner_name, shop_name, shop_address, phone_number, password }])
+                .select();
+
+            if (error) {
+                alert('حدث خطأ أثناء إنشاء الحساب أو الرقم مسجل مسبقاً: ' + error.message);
+                return;
+            }
+
+            alert('تم إنشاء الحساب بنجاح!');
+            currentUserRole = phone_number;
+            renderMainDashboard();
+        }
+
+        function loginAsVisitor() {
+            currentUserRole = "زائر";
+            renderMainDashboard();
+        }
+
+
+        // ================= قالب الجزء الثابت المتكرر في أعلى كل الصفحات الداخلية =================
+        function getHeaderTemplate() {
+            return `
+                <div class="border-b border-gray-100 pb-4 mb-4 flex-shrink-0">
+                    <div class="flex items-center justify-between mb-4">
+                        <!-- بطاقة القائمة المنسدلة على اليمين -->
+                        <div class="relative">
+                            <select onchange="handleMenuChange(this)" class="bg-gray-50 border border-gray-200 text-gray-700 text-xs sm:text-sm rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer shadow-sm">
+                                <option value="" disabled selected>القائمة</option>
+                                <option value="home">الرئيسية</option>
+                                <option value="logout">تسجيل الخروج</option>
+                            </select>
+                        </div>
+
+                        <!-- اسم الشركة -->
+                        <h1 class="text-xl sm:text-2xl font-bold text-gray-800 tracking-wide">Electricity Aswan</h1>
+
+                        <!-- بطاقة شفافة برقم الهاتف أو زائر على اليسار -->
+                        <div class="bg-blue-50/60 border border-blue-100 px-3.5 py-2 rounded-xl text-blue-700 text-xs sm:text-sm font-semibold shadow-sm">
+                            ${currentUserRole}
+                        </div>
+                    </div>
+
+                    <!-- أدوات البحث (صوت، كاميرا، كتابة تحتوي على كلمة ابحث) -->
+                    <div class="flex items-center gap-2">
+                        <div class="flex-1 relative">
+                            <input type="text" placeholder="ابحث" 
+                                   class="w-full bg-gray-50 border border-gray-200 text-gray-700 text-xs sm:text-sm rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm">
+                        </div>
+                        <button onclick="alert('جارِ الاستماع للصوت...فعل ميكروفون المتصفح')" class="bg-gray-50 hover:bg-gray-100 border border-gray-200 p-3 rounded-xl text-gray-600 transition-all shadow-sm" title="بحث صوتي">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path></svg>
+                        </button>
+                        <button onclick="alert('جارِ فتح الكاميرا للمسح الضوئي...')" class="bg-gray-50 hover:bg-gray-100 border border-gray-200 p-3 rounded-xl text-gray-600 transition-all shadow-sm" title="بحث بالكاميرا">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function handleMenuChange(select) {
+            if (select.value === 'logout') {
+                renderLoginScreen();
+            } else if (select.value === 'home') {
+                renderMainDashboard();
+            }
+            select.value = "";
+        }
+
+
+        // ================= 2. الصفحة الرئيسية (بعد الدخول) وتحتوي على البطاقات الأربعة =================
+        function renderMainDashboard() {
+            const html = `
+                ${getHeaderTemplate()}
+
+                <div class="flex-1 overflow-y-auto space-y-4 px-1">
+                    <div class="mb-4">
+                        <img src="https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?auto=format&fit=crop&w=800&q=80" 
+                             alt="Banner" class="w-full h-36 sm:h-48 object-cover rounded-2xl shadow-md">
+                    </div>
+
+                    <!-- البطاقات الأربعة الرئيسية بتصميم أفقي متسلسل -->
+                    <div class="space-y-3 pb-4">
+                        <div onclick="renderBrandsScreen()" class="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white p-4.5 rounded-2xl shadow-md cursor-pointer transition-all flex items-center justify-between">
+                            <span class="font-bold text-base sm:text-lg">الماركات</span>
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                        </div>
+
+                        <div onclick="alert('قسم التوافقات')" class="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white p-4.5 rounded-2xl shadow-md cursor-pointer transition-all flex items-center justify-between">
+                            <span class="font-bold text-base sm:text-lg">التوافقات</span>
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                        </div>
+
+                        <div onclick="alert('تنبيهات بعد التركيب')" class="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white p-4.5 rounded-2xl shadow-md cursor-pointer transition-all flex items-center justify-between">
+                            <span class="font-bold text-base sm:text-lg">تنبيهات بعد التركيب</span>
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                        </div>
+
+                        <div onclick="alert('للتواصل مع الشركة')" class="w-full bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white p-4.5 rounded-2xl shadow-md cursor-pointer transition-all flex items-center justify-between">
+                            <span class="font-bold text-base sm:text-lg">التواصل مع الشركة</span>
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.getElementById('appContainer').innerHTML = html;
+        }
+
+
+        // ================= 3. شاشة الماركات (بطاقات أفقية كاملة) =================
+        function renderBrandsScreen() {
+            let brandsHtml = brandsData.map(brand => `
+                <div onclick="renderModelsScreen('${brand}')" class="w-full bg-gray-50 hover:bg-blue-50 border border-gray-200 hover:border-blue-300 p-4 rounded-2xl shadow-sm text-center font-bold text-gray-700 hover:text-blue-600 cursor-pointer transition-all text-sm sm:text-base">
+                    ${brand}
+                </div>
+            `).join('');
+
+            const html = `
+                ${getHeaderTemplate()}
+                <div class="flex items-center justify-between mb-4 flex-shrink-0">
+                    <button onclick="renderMainDashboard()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all">
+                        ← عودة للرئيسية
+                    </button>
+                    <h2 class="text-sm sm:text-base font-bold text-gray-800">اختر الماركة</h2>
+                </div>
+                <!-- بطاقات أفقية تحت بعضها البعض -->
+                <div class="flex-1 overflow-y-auto space-y-3 p-1">
+                    ${brandsHtml}
+                </div>
+            `;
+            document.getElementById('appContainer').innerHTML = html;
+        }
+
+
+        // ================= 4. شاشة الموديلات (بطاقات أفقية من قاعدة البيانات) =================
+        async function renderModelsScreen(brand) {
+            selectedBrand = brand;
+            
+            // تحديد اسم جدول الموديلات بناءً على الماركة المختارة
+            let tableName = "";
+            const b = brand.toLowerCase();
+            if (b.includes('samsung')) tableName = 'samsung_models';
+            else if (b.includes('iphone') || b.includes('apple')) tableName = 'iphone_models';
+            else if (b.includes('honor')) tableName = 'honor_models';
+            else if (b.includes('huawei')) tableName = 'huawei_models';
+            else if (b.includes('itel')) tableName = 'itel_models';
+            else if (b.includes('nokia')) tableName = 'nokia_models';
+            else if (b.includes('vivo')) tableName = 'vivo_models';
+            else if (b.includes('techno') || b.includes('tecno')) tableName = 'tecno_models';
+            else if (b.includes('oppo')) tableName = 'oppo_models';
+            else if (b.includes('realme')) tableName = 'realme_models';
+            else if (b.includes('redmi')) tableName = 'redmi_models';
+            else if (b.includes('xiaomi') || b.includes('poco')) tableName = 'xiaomi_poco_models';
+            else if (b.includes('infinix')) tableName = 'infinix_models';
+
+            let models = [];
+            if (tableName) {
+                const { data, error } = await supabaseClient.from(tableName).select('device_name, model_code');
+                if (!error && data) {
+                    models = data;
+                }
+            }
+
+            let modelsHtml = "";
+            if (models.length > 0) {
+                modelsHtml = models.map(m => `
+                    <div onclick="renderPartsScreen('${m.device_name} (${m.model_code})')" class="w-full bg-gray-50 hover:bg-blue-50 border border-gray-200 hover:border-blue-300 p-4 rounded-2xl shadow-sm text-center font-bold text-gray-700 hover:text-blue-600 cursor-pointer transition-all text-sm sm:text-base">
+                        ${m.device_name} <span class="text-xs text-gray-400 font-normal">(${m.model_code})</span>
+                    </div>
+                `).join('');
+            } else {
+                modelsHtml = `<div class="text-center text-gray-500 py-6">لا توجد موديلات متاحة حالياً لهذه الماركة</div>`;
+            }
+
+            const html = `
+                ${getHeaderTemplate()}
+                <div class="flex items-center justify-between mb-4 flex-shrink-0">
+                    <button onclick="renderBrandsScreen()" class="bg-blue-50 hover:bg-blue-100 text-blue-600 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all border border-blue-200">
+                        ↩ عودة للماركات (${brand})
+                    </button>
+                    <h2 class="text-xs sm:text-sm font-bold text-gray-800">موديلات ${brand}</h2>
+                </div>
+                <div class="flex-1 overflow-y-auto space-y-3 p-1">
+                    ${modelsHtml}
+                </div>
+            `;
+            document.getElementById('appContainer').innerHTML = html;
+        }
+
+
+        // ================= 5. شاشة قطع الغيار (بطاقات أفقية) =================
+        function renderPartsScreen(model) {
+            selectedModel = model;
+
+            let partsHtml = sparePartsList.map(part => `
+                <div onclick="renderProductDetailScreen('${part}')" class="w-full bg-gray-50 hover:bg-emerald-50 border border-gray-200 hover:border-emerald-300 p-4 rounded-2xl shadow-sm text-center font-bold text-gray-700 hover:text-emerald-600 cursor-pointer transition-all text-sm sm:text-base">
+                    ${part}
+                </div>
+            `).join('');
+
+            const html = `
+                ${getHeaderTemplate()}
+                <div class="flex items-center justify-between mb-4 flex-shrink-0">
+                    <button onclick="renderModelsScreen('${selectedBrand}')" class="bg-blue-50 hover:bg-blue-100 text-blue-600 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all border border-blue-200">
+                        ↩ عودة للموديلات
+                    </button>
+                    <h2 class="text-xs sm:text-sm font-bold text-gray-800">${selectedBrand} - ${model}</h2>
+                </div>
+                <div class="flex-1 overflow-y-auto space-y-3 p-1">
+                    ${partsHtml}
+                </div>
+            `;
+            document.getElementById('appContainer').innerHTML = html;
+        }
+
+
+        // ================= 6. صفحة المنتج النهائية المقسمة إلى 3 أقسام =================
+        function renderProductDetailScreen(part) {
+            selectedPart = part;
+
+            const html = `
+                ${getHeaderTemplate()}
+                <div class="flex items-center justify-between mb-4 flex-shrink-0">
+                    <button onclick="renderPartsScreen('${selectedModel}')" class="bg-blue-50 hover:bg-blue-100 text-blue-600 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all border border-blue-200">
+                        ↩ عودة لقطع الغيار
+                    </button>
+                    <h2 class="text-xs sm:text-sm font-bold text-gray-800">${part} (${selectedModel})</h2>
+                </div>
+
+                <div class="flex-1 overflow-y-auto space-y-4 p-1">
+                    <!-- شراء المنتج -->
+                    <div class="bg-blue-50/70 border border-blue-100 p-4.5 rounded-2xl shadow-sm">
+                        <h3 class="font-bold text-blue-800 mb-2 text-sm sm:text-base">🛒 شراء المنتج</h3>
+                        <p class="text-xs sm:text-sm text-gray-600 mb-3">القطعة متوفرة بالضمان الكامل.</p>
+                        <button onclick="alert('تمت إضافة الطلب بنجاح!')" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl text-xs sm:text-sm shadow-md transition-all">
+                            شراء المنتج / اطلب الآن
+                        </button>
+                    </div>
+
+                    <!-- التوافقات -->
+                    <div class="bg-emerald-50/70 border border-emerald-100 p-4.5 rounded-2xl shadow-sm">
+                        <h3 class="font-bold text-emerald-800 mb-2 text-sm sm:text-base">🔗 التوافقات</h3>
+                        <p class="text-xs sm:text-sm text-gray-600">هذه القطعة متوافقة مع الإصدارات والنسخ المتطابقة من الماركة.</p>
+                    </div>
+
+                    <!-- تنبيهات بعد التركيب -->
+                    <div class="bg-amber-50/70 border border-amber-100 p-4.5 rounded-2xl shadow-sm">
+                        <h3 class="font-bold text-amber-800 mb-2 text-sm sm:text-base">⚠️ تنبيهات بعد التركيب</h3>
+                        <p class="text-xs sm:text-sm text-gray-600">يُرجى التجربة الفورية قبل التثبيت النهائي وإزالة اللزقات.</p>
+                    </div>
+                </div>
+            `;
+            document.getElementById('appContainer').innerHTML = html;
+        }
+
+        // التشغيل المبدئي
+        window.onload = function() {
+            renderLoginScreen();
+        };
+    </script>
 </body>
 </html>
