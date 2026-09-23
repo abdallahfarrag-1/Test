@@ -4,367 +4,305 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Electricity Aswan</title>
-    <style>
-        :root {
-            --primary-color: #00b4d8;
-            --primary-dark: #0077b6;
-            --bg-color: #f8f9fa;
-            --card-bg: #ffffff;
-            --text-color: #212529;
-            --text-muted: #6c757d;
-            --border-color: #dee2e6;
-            --radius: 12px;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
-
-        .app-container {
-            width: 100%;
-            max-width: 420px;
-            background-color: var(--card-bg);
-            min-height: 100vh;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-        }
-
-        @media (min-width: 421px) {
-            .app-container {
-                min-height: 800px;
-                border-radius: 24px;
-                border: 1px solid var(--border-color);
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        skyBlue: '#0284c7',
+                        skyLight: '#e0f2fe',
+                        bgLight: '#f8fafc',
+                    }
+                }
             }
         }
-
-        .screen {
-            display: none;
-            flex-direction: column;
-            height: 100%;
-            padding: 24px;
-            flex: 1;
-            overflow-y: auto;
-        }
-
-        .screen.active {
-            display: flex;
-        }
-
-        h1.company-title {
-            color: var(--primary-dark);
-            text-align: center;
-            margin-bottom: 24px;
-            font-size: 24px;
-        }
-
-        .tabs {
-            display: flex;
-            margin-bottom: 20px;
-            border-bottom: 2px solid var(--border-color);
-        }
-
-        .tab {
-            flex: 1;
-            text-align: center;
-            padding: 10px;
-            cursor: pointer;
-            font-weight: 600;
-            color: var(--text-muted);
-            border-bottom: 2px solid transparent;
-            margin-bottom: -2px;
-        }
-
-        .tab.active {
-            color: var(--primary-dark);
-            border-bottom-color: var(--primary-dark);
-        }
-
-        .form-group {
-            margin-bottom: 16px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 6px;
-            font-size: 14px;
-            font-weight: 500;
-        }
-
-        input[type="text"],
-        input[type="password"],
-        input[type="tel"] {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius);
-            background-color: var(--bg-color);
-            font-size: 14px;
-            outline: none;
-            transition: border-color 0.2s;
-        }
-
-        input:focus {
-            border-color: var(--primary-color);
-        }
-
-        .form-options {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            font-size: 14px;
-        }
-
-        .checkbox-container {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-        }
-
-        .btn {
-            width: 100%;
-            padding: 12px;
-            border: none;
-            border-radius: var(--radius);
-            background-color: var(--primary-color);
-            color: white;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.2s;
-            margin-bottom: 12px;
-            text-align: center;
-        }
-
-        .btn:hover {
-            background-color: var(--primary-dark);
-        }
-
-        .btn-outline {
-            background-color: transparent;
-            border: 1px solid var(--primary-color);
-            color: var(--primary-dark);
-        }
-
-        .btn-outline:hover {
-            background-color: var(--bg-color);
-        }
-
-        .app-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .phone-display {
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--text-muted);
-        }
-
-        .menu-btn {
-            background: none;
-            border: none;
-            font-size: 20px;
-            cursor: pointer;
-            color: var(--text-color);
-        }
-
-        .search-container {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 24px;
-            align-items: center;
-        }
-
-        .search-input-wrapper {
-            position: relative;
-            flex: 1;
-        }
-
-        .search-input-wrapper input {
-            padding-right: 12px;
-        }
-
-        .search-action-btn {
-            background: var(--bg-color);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius);
-            width: 44px;
-            height: 44px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            font-size: 16px;
-        }
-
-        .grid-container {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 16px;
-        }
-
-        .grid-card {
-            background-color: var(--bg-color);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius);
-            padding: 24px 16px;
-            text-align: center;
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            min-height: 120px;
-        }
-
-        .grid-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-            border-color: var(--primary-color);
-        }
-
-        .grid-card span {
-            font-weight: 600;
-            font-size: 14px;
-        }
+    </script>
+    <style>
+        body { font-family: system-ui, -apple-system, sans-serif; }
     </style>
 </head>
-<body>
+<body class="bg-bgLight text-slate-800 min-h-screen flex flex-col items-center justify-center p-0 m-0">
 
-    <div class="app-container">
-        <!-- الصفحة الأولى -->
-        <div id="screen1" class="screen active">
-            <h1 class="company-title">Electricity Aswan</h1>
-            
-            <div class="tabs">
-                <div class="tab active" onclick="switchTab('login')">تسجيل الدخول</div>
-                <div class="tab" onclick="switchTab('register')">إنشاء حساب</div>
+    <!-- App Container -->
+    <div id="app" class="w-full max-w-md bg-white min-h-screen shadow-lg flex flex-col relative overflow-hidden">
+
+        <!-- ================= PAGE 1: AUTH ================= -->
+        <div id="page-auth" class="flex flex-col flex-1 p-6 justify-center">
+            <h1 class="text-3xl font-bold text-skyBlue text-center mb-8">Electricity Aswan</h1>
+
+            <!-- Tabs Switcher -->
+            <div class="flex mb-6 bg-skyLight p-1 rounded-xl">
+                <button onclick="switchAuthTab('login')" id="tab-login-btn" class="flex-1 py-2 text-center font-bold rounded-lg bg-white text-skyBlue shadow-sm transition">تسجيل الدخول</button>
+                <button onclick="switchAuthTab('register')" id="tab-register-btn" class="flex-1 py-2 text-center font-bold rounded-lg text-slate-600 transition">إنشاء حساب</button>
             </div>
 
-            <!-- نموذج تسجيل الدخول -->
-            <div id="loginForm" class="auth-form">
-                <div class="form-group">
-                    <label>رقم الهاتف</label>
-                    <input type="tel" id="loginPhone" placeholder="">
+            <!-- Login Form -->
+            <div id="form-login" class="flex flex-col gap-4">
+                <div>
+                    <label class="block text-sm font-medium mb-1 text-slate-600">رقم الهاتف</label>
+                    <input type="text" id="login-phone" class="w-full bg-bgLight border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-skyBlue">
                 </div>
-                <div class="form-group">
-                    <label>رمز المرور</label>
-                    <input type="password" id="loginPassword" placeholder="">
+                <div>
+                    <label class="block text-sm font-medium mb-1 text-slate-600">رمز المرور</label>
+                    <input type="password" id="login-pass" class="w-full bg-bgLight border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:border-skyBlue">
                 </div>
-                <div class="form-options">
-                    <label class="checkbox-container">
-                        <input type="checkbox"> تذكرنى
+                <div class="flex items-center justify-between my-2">
+                    <label class="flex items-center gap-2 text-sm cursor-pointer">
+                        <input type="checkbox" class="accent-skyBlue w-4 h-4 rounded"> تذكرنى
                     </label>
                 </div>
-                <button class="btn" onclick="goToScreen2()">دخول</button>
-                <button class="btn btn-outline" onclick="goToScreen2()">الدخول كزائر</button>
+                <button onclick="handleLogin()" class="w-full bg-skyBlue text-white font-bold py-3 rounded-xl shadow-md hover:bg-sky-600 transition">تسجيل الدخول</button>
+                <div class="text-center my-2 text-slate-400 text-sm">او</div>
+                <button onclick="enterAsGuest()" class="w-full bg-skyLight text-skyBlue font-bold py-3 rounded-xl hover:bg-sky-200 transition">الدخول كزائر</button>
             </div>
 
-            <!-- نموذج إنشاء حساب -->
-            <div id="registerForm" class="auth-form" style="display: none;">
-                <div class="form-group">
-                    <label>اسم الفنى</label>
-                    <input type="text" id="regTechName" placeholder="">
+            <!-- Register Form -->
+            <div id="form-register" class="flex flex-col gap-3 hidden">
+                <div>
+                    <label class="block text-xs font-medium mb-1 text-slate-600">اسم الفنى</label>
+                    <input type="text" id="reg-tech-name" class="w-full bg-bgLight border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-skyBlue">
                 </div>
-                <div class="form-group">
-                    <label>اسم المحل</label>
-                    <input type="text" id="regShopName" placeholder="">
+                <div>
+                    <label class="block text-xs font-medium mb-1 text-slate-600">اسم المحل</label>
+                    <input type="text" id="reg-shop-name" class="w-full bg-bgLight border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-skyBlue">
                 </div>
-                <div class="form-group">
-                    <label>عنوان المحل</label>
-                    <input type="text" id="regShopAddress" placeholder="">
+                <div>
+                    <label class="block text-xs font-medium mb-1 text-slate-600">عنوان المحل</label>
+                    <input type="text" id="reg-shop-address" class="w-full bg-bgLight border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-skyBlue">
                 </div>
-                <div class="form-group">
-                    <label>رقم الهاتف</label>
-                    <input type="tel" id="regPhone" placeholder="">
+                <div>
+                    <label class="block text-xs font-medium mb-1 text-slate-600">رقم الهاتف</label>
+                    <input type="text" id="reg-phone" class="w-full bg-bgLight border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-skyBlue">
                 </div>
-                <div class="form-group">
-                    <label>رمز المرور</label>
-                    <input type="password" id="regPassword" placeholder="">
+                <div>
+                    <label class="block text-xs font-medium mb-1 text-slate-600">رمز المرور</label>
+                    <input type="password" id="reg-pass" class="w-full bg-bgLight border border-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-skyBlue">
                 </div>
-                <button class="btn" onclick="goToScreen2()">تسجيل حساب جديد</button>
+                <button onclick="handleRegister()" class="w-full bg-skyBlue text-white font-bold py-3 rounded-xl shadow-md hover:bg-sky-600 transition mt-2">إنشاء حساب</button>
             </div>
         </div>
 
-        <!-- الصفحة الثانية -->
-        <div id="screen2" class="screen">
-            <div class="app-header">
-                <div class="phone-display" id="displayPhone">01234567890</div>
-                <h2 style="font-size: 18px; color: var(--primary-dark);">Electricity Aswan</h2>
-                <button class="menu-btn" onclick="alert('القائمة المنسدلة')">&#9776;</button>
-            </div>
+        <!-- ================= PAGE 2: HOME / DASHBOARD ================= -->
+        <div id="page-home" class="flex flex-col flex-1 hidden bg-bgLight">
+            
+            <!-- Fixed Header -->
+            <header class="bg-white px-4 py-3 flex items-center justify-between shadow-sm sticky top-0 z-20">
+                <button onclick="toggleMenu()" class="text-slate-700 focus:outline-none p-1">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+                <h2 class="font-bold text-skyBlue text-base">Electricity Aswan</h2>
+                <span id="header-phone" class="text-xs font-semibold text-slate-600">01234567890</span>
+            </header>
 
-            <div class="search-container">
-                <div class="search-input-wrapper">
-                    <input type="text" placeholder="ابحث">
+            <!-- Search & Content Area -->
+            <div class="p-4 flex flex-col gap-4 flex-1 overflow-y-auto">
+                
+                <!-- Search Bar -->
+                <div class="flex items-center bg-white border border-slate-200 rounded-xl px-3 py-2 shadow-sm gap-2">
+                    <button class="text-slate-400 hover:text-skyBlue">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                    </button>
+                    <button class="text-slate-400 hover:text-skyBlue">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 100-6 3 3 0 000 6z"/></svg>
+                    </button>
+                    <input type="text" placeholder="ابحث" class="w-full bg-transparent text-sm focus:outline-none text-right">
                 </div>
-                <button class="search-action-btn" onclick="alert('بحث بالكاميرا')" title="البحث بالكاميرا">📷</button>
-                <button class="search-action-btn" onclick="alert('بحث بالصوت')" title="البحث بالصوت">🎤</button>
-            </div>
 
-            <div class="grid-container">
-                <div class="grid-card" onclick="alert('الماركات')">
-                    <span>الماركات</span>
+                <!-- 4 Main Grid Cards -->
+                <div class="grid grid-cols-2 gap-3" id="main-grid">
+                    <div onclick="selectMainCategory('الماركات')" class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex flex-col items-center justify-center cursor-pointer hover:border-skyBlue transition text-center">
+                        <span class="font-bold text-slate-700">الماركات</span>
+                    </div>
+                    <div onclick="selectMainCategory('التوافقات')" class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex flex-col items-center justify-center cursor-pointer hover:border-skyBlue transition text-center">
+                        <span class="font-bold text-slate-700">التوافقات</span>
+                    </div>
+                    <div onclick="selectMainCategory('تنبيهات بعد التركيب')" class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex flex-col items-center justify-center cursor-pointer hover:border-skyBlue transition text-center">
+                        <span class="font-bold text-slate-700">تنبيهات بعد التركيب</span>
+                    </div>
+                    <div onclick="selectMainCategory('التواصل مع الشركة')" class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex flex-col items-center justify-center cursor-pointer hover:border-skyBlue transition text-center">
+                        <span class="font-bold text-slate-700">التواصل مع الشركة</span>
+                    </div>
                 </div>
-                <div class="grid-card" onclick="alert('التوافقات')">
-                    <span>التوافقات</span>
+
+                <!-- Dynamic Sub-view Container -->
+                <div id="sub-view-container" class="hidden flex flex-col gap-3">
+                    <button onclick="goBackHome()" class="self-start text-xs font-bold text-skyBlue bg-skyLight px-3 py-1.5 rounded-lg">← عودة</button>
+                    <div id="sub-view-title" class="font-bold text-lg text-slate-800"></div>
+                    <div id="sub-view-content" class="flex flex-col gap-2"></div>
                 </div>
-                <div class="grid-card" onclick="alert('تنبيهات بعد التركيب')">
-                    <span>تنبيهات بعد التركيب</span>
+
+            </div>
+        </div>
+
+        <!-- ================= PAGE 3: PRODUCT DETAILS ================= -->
+        <div id="page-product" class="flex flex-col flex-1 hidden bg-bgLight">
+            <header class="bg-white px-4 py-3 flex items-center justify-between shadow-sm sticky top-0 z-20">
+                <button onclick="goBackToParts()" class="text-skyBlue font-bold text-sm">← عودة</button>
+                <h2 id="product-header-title" class="font-bold text-skyBlue text-base">تفاصيل المنتج</h2>
+                <div class="w-6"></div>
+            </header>
+
+            <div class="p-4 flex flex-col gap-4 flex-1 overflow-y-auto">
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
+                    <h3 class="font-bold text-skyBlue mb-2">شراء المنتج</h3>
+                    <p class="text-sm text-slate-600 mb-4">متوفر الآن للطلب والشحن المباشر.</p>
+                    <button class="w-full bg-skyBlue text-white font-bold py-2.5 rounded-xl shadow-md hover:bg-sky-600 transition text-sm">إتمام الشراء</button>
                 </div>
-                <div class="grid-card" onclick="alert('التواصل مع الشركة')">
-                    <span>التواصل مع الشركة</span>
+                
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
+                    <h3 class="font-bold text-skyBlue mb-2">التوافقات</h3>
+                    <p class="text-sm text-slate-600">متوافق مع الإصدارات المذكورة والموديلات الشبيهة.</p>
+                </div>
+
+                <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
+                    <h3 class="font-bold text-skyBlue mb-2">تنبيهات بعد التركيب</h3>
+                    <p class="text-sm text-slate-600">يرجى التجربة قبل اللصق وضمان عدم نزع اللاصق الأصلي إلا بعد التأكد التتام من كفاءة القطعة.</p>
                 </div>
             </div>
         </div>
+
     </div>
 
+    <!-- JavaScript Logic -->
     <script>
-        function switchTab(tab) {
-            const loginTab = document.querySelectorAll('.tab')[0];
-            const registerTab = document.querySelectorAll('.tab')[1];
-            const loginForm = document.getElementById('loginForm');
-            const registerForm = document.getElementById('registerForm');
+        const brands = [
+            "Apple", "Samsung", "Xiaomi", "Redmi", "Infinix", "Oppo", 
+            "Realme", "Huawei", "Vivo", "Honor", "Itel", "Nokia", "Techno"
+        ];
+
+        const spareParts = [
+            "شاشة", "بطارية", "ضهرية", "فلاتة ربط", "فلاتة باور", 
+            "فلاتة شحن", "فريم", "ميدل", "سماعة داخلية مكالمات", 
+            "سماعة خارجية مكبر الصوت", "سوكيت", "ايسيهات"
+        ];
+
+        function switchAuthTab(tab) {
+            const loginBtn = document.getElementById('tab-login-btn');
+            const registerBtn = document.getElementById('tab-register-btn');
+            const loginForm = document.getElementById('form-login');
+            const registerForm = document.getElementById('form-register');
 
             if (tab === 'login') {
-                loginTab.classList.add('active');
-                registerTab.classList.remove('active');
-                loginForm.style.display = 'block';
-                registerForm.style.display = 'none';
+                loginBtn.className = "flex-1 py-2 text-center font-bold rounded-lg bg-white text-skyBlue shadow-sm transition";
+                registerBtn.className = "flex-1 py-2 text-center font-bold rounded-lg text-slate-600 transition";
+                loginForm.classList.remove('hidden');
+                registerForm.classList.add('hidden');
             } else {
-                registerTab.classList.add('active');
-                loginTab.classList.remove('active');
-                registerForm.style.display = 'block';
-                loginForm.style.display = 'none';
+                registerBtn.className = "flex-1 py-2 text-center font-bold rounded-lg bg-white text-skyBlue shadow-sm transition";
+                loginBtn.className = "flex-1 py-2 text-center font-bold rounded-lg text-slate-600 transition";
+                registerForm.classList.remove('hidden');
+                loginForm.classList.add('hidden');
             }
         }
 
-        function goToScreen2() {
-            const phoneInput = document.getElementById('loginPhone').value || document.getElementById('regPhone').value || '01234567890';
-            document.getElementById('displayPhone').innerText = phoneInput;
+        function handleLogin() {
+            const phone = document.getElementById('login-phone').value;
+            if(phone) document.getElementById('header-phone').innerText = phone;
+            goToHome();
+        }
+
+        function handleRegister() {
+            const phone = document.getElementById('reg-phone').value;
+            if(phone) document.getElementById('header-phone').innerText = phone;
+            goToHome();
+        }
+
+        function enterAsGuest() {
+            document.getElementById('header-phone').innerText = "زائر";
+            goToHome();
+        }
+
+        function goToHome() {
+            document.getElementById('page-auth').classList.add('hidden');
+            document.getElementById('page-home').classList.remove('hidden');
+            document.getElementById('page-product').classList.add('hidden');
+        }
+
+        function goBackHome() {
+            document.getElementById('main-grid').classList.remove('hidden');
+            document.getElementById('sub-view-container').classList.add('hidden');
+        }
+
+        function toggleMenu() {
+            alert("قائمة منسدلة");
+        }
+
+        function selectMainCategory(category) {
+            if (category === 'الماركات') {
+                document.getElementById('main-grid').classList.add('hidden');
+                const container = document.getElementById('sub-view-container');
+                container.classList.remove('hidden');
+                document.getElementById('sub-view-title').innerText = "الماركات";
+                
+                const content = document.getElementById('sub-view-content');
+                content.innerHTML = '';
+                
+                // Grid of 2 columns
+                const grid = document.createElement('div');
+                grid.className = "grid grid-cols-2 gap-2";
+                
+                brands.forEach(brand => {
+                    const btn = document.createElement('div');
+                    btn.className = "bg-white p-4 rounded-xl shadow-sm border border-slate-100 text-center font-bold text-slate-700 cursor-pointer hover:border-skyBlue transition";
+                    btn.innerText = brand;
+                    btn.onclick = () => openModels(brand);
+                    grid.appendChild(btn);
+                });
+                content.appendChild(grid);
+            } else {
+                alert(category);
+            }
+        }
+
+        function openModels(brandName) {
+            const content = document.getElementById('sub-view-content');
+            document.getElementById('sub-view-title').innerText = `موديلات ${brandName}`;
+            content.innerHTML = '';
+
+            // Horizontal scrolling or list representing horizontal selection
+            const scrollContainer = document.createElement('div');
+            scrollContainer.className = "flex overflow-x-auto gap-3 py-2";
             
-            document.getElementById('screen1').classList.remove('active');
-            document.getElementById('screen2').classList.add('active');
+            for(let i = 1; i <= 5; i++) {
+                const item = document.createElement('div');
+                item.className = "min-w-[120px] bg-white p-4 rounded-xl shadow-sm border border-slate-100 text-center font-bold text-slate-700 cursor-pointer hover:border-skyBlue shrink-0";
+                item.innerText = `${brandName} ${i * 10}`;
+                item.onclick = () => openSpareParts(`${brandName} ${i * 10}`);
+                scrollContainer.appendChild(item);
+            }
+            content.appendChild(scrollContainer);
+        }
+
+        function openSpareParts(modelName) {
+            const content = document.getElementById('sub-view-content');
+            document.getElementById('sub-view-title').innerText = `قطع غيار ${modelName}`;
+            content.innerHTML = '';
+
+            const scrollContainer = document.createElement('div');
+            scrollContainer.className = "flex overflow-x-auto gap-3 py-2";
+
+            spareParts.forEach(part => {
+                const item = document.createElement('div');
+                item.className = "min-w-[140px] bg-white p-4 rounded-xl shadow-sm border border-slate-100 text-center font-bold text-slate-700 cursor-pointer hover:border-skyBlue shrink-0";
+                item.innerText = part;
+                item.onclick = () => openProductDetails(part);
+                scrollContainer.appendChild(item);
+            });
+            content.appendChild(scrollContainer);
+        }
+
+        function openProductDetails(partName) {
+            document.getElementById('page-home').classList.add('hidden');
+            document.getElementById('page-product').classList.remove('hidden');
+            document.getElementById('product-header-title').innerText = partName;
+        }
+
+        function goBackToParts() {
+            document.getElementById('page-product').classList.add('hidden');
+            document.getElementById('page-home').classList.remove('hidden');
         }
     </script>
 </body>
