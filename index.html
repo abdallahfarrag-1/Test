@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Electricity Aswan - تسجيل الدخول</title>
+    <title>Electricity Aswan</title>
     <style>
         * {
             box-sizing: border-box;
@@ -30,6 +30,7 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
             padding: 30px;
             overflow: hidden;
+            position: relative;
         }
 
         .app-title {
@@ -176,64 +177,202 @@
         .guest-btn:hover {
             background-color: #e0f7fa;
         }
+
+        /* الصفحة الثانية */
+        .page-two {
+            display: none;
+        }
+
+        .page-two.active {
+            display: block;
+        }
+
+        .header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .menu-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #00b4d8;
+        }
+
+        .page-two-title {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #00b4d8;
+            font-size: 20px;
+            font-weight: bold;
+            text-align: center;
+            width: max-content;
+        }
+
+        .user-phone-display {
+            font-size: 14px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 45px;
+            right: 0;
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            display: none;
+            z-index: 10;
+            width: 150px;
+        }
+
+        .dropdown-menu.show {
+            display: block;
+        }
+
+        .dropdown-item {
+            padding: 10px 15px;
+            font-size: 14px;
+            color: #333;
+            cursor: pointer;
+            border-bottom: 1px solid #eee;
+        }
+
+        .dropdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown-item:hover {
+            background-color: #f0f8fa;
+            color: #00b4d8;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .grid-card {
+            background-color: #f8f9fa;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 20px 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+        }
+
+        .grid-card:hover {
+            background-color: #e0f7fa;
+            border-color: #00b4d8;
+            transform: translateY(-2px);
+        }
+
+        .grid-card span {
+            color: #333;
+            font-size: 15px;
+            font-weight: 600;
+        }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <h1 class="app-title">Electricity Aswan</h1>
+        <!-- الصفحة الأولى: تسجيل الدخول / إنشاء حساب -->
+        <div id="page-one">
+            <h1 class="app-title">Electricity Aswan</h1>
 
-        <div class="tabs">
-            <button class="tab-btn active" onclick="switchTab('login')">تسجيل الدخول</button>
-            <button class="tab-btn" onclick="switchTab('register')">إنشاء حساب</button>
+            <div class="tabs">
+                <button class="tab-btn active" onclick="switchTab('login')">تسجيل الدخول</button>
+                <button class="tab-btn" onclick="switchTab('register')">إنشاء حساب</button>
+            </div>
+
+            <!-- تسجيل الدخول -->
+            <div id="login-section" class="form-section active">
+                <div class="input-group">
+                    <label for="login-phone">رقم الهاتف</label>
+                    <input type="tel" id="login-phone" placeholder="">
+                </div>
+                <div class="input-group">
+                    <label for="login-pass">رمز المرور</label>
+                    <input type="password" id="login-pass" placeholder="">
+                </div>
+                <div class="options-row">
+                    <label class="remember-me">
+                        <input type="checkbox" id="remember"> تذكرنى
+                    </label>
+                </div>
+                <button class="submit-btn" onclick="handleLogin()">تسجيل الدخول</button>
+            </div>
+
+            <!-- إنشاء حساب -->
+            <div id="register-section" class="form-section">
+                <div class="input-group">
+                    <label for="reg-tech-name">اسم الفنى</label>
+                    <input type="text" id="reg-tech-name" placeholder="">
+                </div>
+                <div class="input-group">
+                    <label for="reg-shop-name">اسم المحل</label>
+                    <input type="text" id="reg-shop-name" placeholder="">
+                </div>
+                <div class="input-group">
+                    <label for="reg-shop-address">عنوان المحل</label>
+                    <input type="text" id="reg-shop-address" placeholder="">
+                </div>
+                <div class="input-group">
+                    <label for="reg-phone">رقم الهاتف</label>
+                    <input type="tel" id="reg-phone" placeholder="">
+                </div>
+                <div class="input-group">
+                    <label for="reg-pass">رمز المرور</label>
+                    <input type="password" id="reg-pass" placeholder="">
+                </div>
+                <button class="submit-btn" onclick="handleRegister()">إنشاء حساب</button>
+            </div>
+
+            <div class="divider">او</div>
+
+            <button class="guest-btn" onclick="handleGuest()">الدخول كزائر</button>
         </div>
 
-        <!-- تسجيل الدخول -->
-        <div id="login-section" class="form-section active">
-            <div class="input-group">
-                <label for="login-phone">رقم الهاتف</label>
-                <input type="tel" id="login-phone" placeholder="أدخل رقم الهاتف">
+        <!-- الصفحة الثانية -->
+        <div id="page-two" class="page-two">
+            <div class="header-row">
+                <div style="position: relative;">
+                    <button class="menu-btn" onclick="toggleMenu()">☰</button>
+                    <div id="dropdown-menu" class="dropdown-menu">
+                        <div class="dropdown-item" onclick="logout()">تسجيل الخروج</div>
+                    </div>
+                </div>
+                <div class="page-two-title">Electricity Aswan</div>
+                <div class="user-phone-display" id="display-phone"></div>
             </div>
-            <div class="input-group">
-                <label for="login-pass">رمز المرور</label>
-                <input type="password" id="login-pass" placeholder="أدخل رمز المرور">
+
+            <div class="grid-container">
+                <div class="grid-card" onclick="handleCardClick('الماركات')">
+                    <span>الماركات</span>
+                </div>
+                <div class="grid-card" onclick="handleCardClick('التوافقات')">
+                    <span>التوافقات</span>
+                </div>
+                <div class="grid-card" onclick="handleCardClick('تنبيهات بعد التركيب')">
+                    <span>تنبيهات بعد التركيب</span>
+                </div>
+                <div class="grid-card" onclick="handleCardClick('التواصل مع الشركة')">
+                    <span>التواصل مع الشركة</span>
+                </div>
             </div>
-            <div class="options-row">
-                <label class="remember-me">
-                    <input type="checkbox" id="remember"> تذكرنى
-                </label>
-            </div>
-            <button class="submit-btn" onclick="handleLogin()">تسجيل الدخول</button>
         </div>
-
-        <!-- إنشاء حساب -->
-        <div id="register-section" class="form-section">
-            <div class="input-group">
-                <label for="reg-tech-name">اسم الفنى</label>
-                <input type="text" id="reg-tech-name" placeholder="أدخل اسم الفنى">
-            </div>
-            <div class="input-group">
-                <label for="reg-shop-name">اسم المحل</label>
-                <input type="text" id="reg-shop-name" placeholder="أدخل اسم المحل">
-            </div>
-            <div class="input-group">
-                <label for="reg-shop-address">عنوان المحل</label>
-                <input type="text" id="reg-shop-address" placeholder="أدخل عنوان المحل">
-            </div>
-            <div class="input-group">
-                <label for="reg-phone">رقم الهاتف</label>
-                <input type="tel" id="reg-phone" placeholder="أدخل رقم الهاتف">
-            </div>
-            <div class="input-group">
-                <label for="reg-pass">رمز المرور</label>
-                <input type="password" id="reg-pass" placeholder="أدخل رمز المرور">
-            </div>
-            <button class="submit-btn" onclick="handleRegister()">إنشاء حساب</button>
-        </div>
-
-        <div class="divider">او</div>
-
-        <button class="guest-btn" onclick="handleGuest()">الدخول كزائر</button>
     </div>
 
     <script>
@@ -255,16 +394,51 @@
             }
         }
 
+        function showPageTwo(phone) {
+            document.getElementById('page-one').style.display = 'none';
+            document.getElementById('page-two').classList.add('active');
+            document.getElementById('display-phone').innerText = phone || 'زائر';
+        }
+
         function handleLogin() {
-            // تنفيذ كود تسجيل الدخول لاحقاً مع قاعدة البيانات
+            const phone = document.getElementById('login-phone').value;
+            showPageTwo(phone);
         }
 
         function handleRegister() {
-            // تنفيذ كود إنشاء الحساب لاحقاً مع قاعدة البيانات
+            const phone = document.getElementById('reg-phone').value;
+            showPageTwo(phone);
         }
 
         function handleGuest() {
-            // تنفيذ الدخول كزائر لاحقاً
+            showPageTwo('زائر');
+        }
+
+        function toggleMenu() {
+            const menu = document.getElementById('dropdown-menu');
+            menu.classList.toggle('show');
+        }
+
+        function logout() {
+            document.getElementById('page-two').classList.remove('active');
+            document.getElementById('page-one').style.display = 'block';
+            document.getElementById('dropdown-menu').classList.remove('show');
+        }
+
+        function handleCardClick(sectionName) {
+            // تفاعل المربعات الأربعة لاحقاً
+        }
+
+        window.onclick = function(event) {
+            if (!event.target.matches('.menu-btn')) {
+                const dropdowns = document.getElementsByClassName("dropdown-menu");
+                for (let i = 0; i < dropdowns.length; i++) {
+                    const openDropdown = dropdowns[i];
+                    if (openDropdown.classList.contains('show')) {
+                        openDropdown.classList.remove('show');
+                    }
+                }
+            }
         }
     </script>
 </body>
