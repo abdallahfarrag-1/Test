@@ -63,7 +63,7 @@
             return styles[index % 3];
         }
 
-        // قائمة الماركات المطلوبة تماماً (من قاعدة البيانات أو الثابتة)
+        // قائمة الماركات المطلوبة تماماً
         const brandsData = [
             "Apple", "Samsung", "Xiaomi", "Redmi", "Infinix", 
             "Oppo", "Realme", "Huawei", "Vivo", "Honor", "Techno", "itel", "Nokia"
@@ -245,7 +245,6 @@
             renderMainDashboard();
         }
 
-
         // ================= قالب الجزء الثابت المتكرر في أعلى كل الصفحات الداخلية =================
         function getHeaderTemplate() {
             return `
@@ -293,7 +292,6 @@
             select.value = "";
         }
 
-
         // ================= 2. الصفحة الرئيسية =================
         function renderMainDashboard() {
             const html = `
@@ -331,8 +329,7 @@
             document.getElementById('appContainer').innerHTML = html;
         }
 
-
-        // ================= 3. شاشة الماركات (مع الألوان الدورية) =================
+        // ================= 3. شاشة الماركات =================
         function renderBrandsScreen() {
             let brandsHtml = brandsData.map((brand, index) => {
                 const style = getRotatingCardStyle(index);
@@ -359,47 +356,105 @@
             document.getElementById('appContainer').innerHTML = html;
         }
 
-
-        // ================= 4. شاشة الموديلات (مع الألوان الدورية) =================
+        // ================= 4. شاشة الموديلات (مع مطابقة أسماء الجداول والأعمدة الجديدة) =================
         async function renderModelsScreen(brand) {
             selectedBrand = brand;
             
             let tableName = "";
-            let nameColumn = "device_name";
-            let codeColumn = "model_code";
+            let nameColumn = "";
+            let codeColumn = "";
+            let compatColumn = "";
             
             const b = brand.toLowerCase();
             if (b.includes('samsung')) {
                 tableName = 'samsung_models';
-                nameColumn = 'phone_name';
-                codeColumn = 'phone_code';
+                nameColumn = 'samsung_phone_name';
+                codeColumn = 'samsung_phone_code';
+                compatColumn = 'samsung_screen_compatibility';
             }
-            else if (b.includes('iphone') || b.includes('apple')) tableName = 'iphone_models';
-            else if (b.includes('honor')) tableName = 'honor_models';
-            else if (b.includes('huawei')) tableName = 'huawei_models';
-            else if (b.includes('itel')) tableName = 'itel_models';
-            else if (b.includes('nokia')) tableName = 'nokia_models';
-            else if (b.includes('vivo')) tableName = 'vivo_models';
-            else if (b.includes('techno') || b.includes('tecno')) tableName = 'tecno_models';
-            else if (b.includes('oppo')) tableName = 'oppo_models';
-            else if (b.includes('realme')) tableName = 'realme_models';
-            else if (b.includes('redmi')) tableName = 'redmi_models';
-            else if (b.includes('xiaomi') || b.includes('poco')) tableName = 'xiaomi_poco_models';
-            else if (b.includes('infinix')) tableName = 'infinix_models';
+            else if (b.includes('iphone') || b.includes('apple')) {
+                tableName = 'apple_models';
+                nameColumn = 'apple_phone_name';
+                codeColumn = 'apple_phone_code';
+                compatColumn = 'apple_screen_compatibility';
+            }
+            else if (b.includes('honor')) {
+                tableName = 'honor_models';
+                nameColumn = 'phone_name';
+                codeColumn = 'model_code';
+                compatColumn = 'screen_compatibility';
+            }
+            else if (b.includes('huawei')) {
+                tableName = 'huawei_models';
+                nameColumn = 'phone_name';
+                codeColumn = 'model_code';
+                compatColumn = 'screen_compatibility';
+            }
+            else if (b.includes('itel')) {
+                tableName = 'itel_models';
+                nameColumn = 'phone_name';
+                codeColumn = 'model_code';
+                compatColumn = 'screen_compatibility';
+            }
+            else if (b.includes('nokia')) {
+                tableName = 'nokia_models';
+                nameColumn = 'phone_name';
+                codeColumn = 'model_code';
+                compatColumn = 'screen_compatibility';
+            }
+            else if (b.includes('vivo')) {
+                tableName = 'vivo_models';
+                nameColumn = 'phone_name';
+                codeColumn = 'model_code';
+                compatColumn = 'screen_compatibility';
+            }
+            else if (b.includes('techno') || b.includes('tecno')) {
+                tableName = 'tecno_models';
+                nameColumn = 'phone_name';
+                codeColumn = 'model_code';
+                compatColumn = 'screen_compatibility';
+            }
+            else if (b.includes('oppo')) {
+                tableName = 'oppo_models';
+                nameColumn = 'phone_name';
+                codeColumn = 'model_code';
+                compatColumn = 'screen_compatibility';
+            }
+            else if (b.includes('realme')) {
+                tableName = 'realme_models';
+                nameColumn = 'phone_name';
+                codeColumn = 'model_code';
+                compatColumn = 'screen_compatibility';
+            }
+            else if (b.includes('redmi')) {
+                tableName = 'redmi_models';
+                nameColumn = 'phone_name';
+                codeColumn = 'model_code';
+                compatColumn = 'screen_compatibility';
+            }
+            else if (b.includes('xiaomi') || b.includes('poco')) {
+                tableName = 'xiaomi_poco_models';
+                nameColumn = 'phone_name';
+                codeColumn = 'model_code';
+                compatColumn = 'screen_compatibility';
+            }
+            else if (b.includes('infinix')) {
+                tableName = 'infinix_models';
+                nameColumn = 'phone_name';
+                codeColumn = 'model_code';
+                compatColumn = 'screen_compatibility';
+            }
 
             let models = [];
             if (tableName) {
-                let queryFields = `${nameColumn}, ${codeColumn}`;
-                if (tableName === 'samsung_models') {
-                    queryFields += `, screen_compatibility`;
-                }
+                let queryFields = `${nameColumn}, ${codeColumn}, ${compatColumn}`;
 
                 const { data, error } = await supabaseClient.from(tableName).select(queryFields);
                 if (!error && data) {
                     models = data.map(item => ({
                         device_name: item[nameColumn],
                         model_code: item[codeColumn],
-                        screen_compatibility: item.screen_compatibility || null
+                        screen_compatibility: item[compatColumn] || null
                     }));
                 }
             }
@@ -419,7 +474,7 @@
                     `;
                 }).join('');
             } else {
-                modelsHtml = `<div class="text-center text-gray-500 py-6">لا توجد موديلات متاحة حالياً لهذه الماركة</div>`;
+                modelsHtml = `<div class="text-center text-gray-500 py-6">لا توجد موديلات متاحة حالياً لهذه الماركة أو لم يتم ربط الجدول بعد</div>`;
             }
 
             const html = `
@@ -446,8 +501,7 @@
             renderPartsScreen(selectedModel);
         }
 
-
-        // ================= 5. شاشة قطع الغيار (مع الألوان الدورية) =================
+        // ================= 5. شاشة قطع الغيار =================
         function renderPartsScreen(model) {
             selectedModel = model;
 
@@ -475,7 +529,6 @@
             `;
             document.getElementById('appContainer').innerHTML = html;
         }
-
 
         // ================= 6. صفحة المنتج النهائية =================
         function renderProductDetailScreen(part) {
