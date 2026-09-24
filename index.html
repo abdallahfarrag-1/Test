@@ -38,6 +38,31 @@
         let selectedPart = "";
         let selectedModelCode = ""; // حفظ كود الموديل لجلب التوافقات بدقة
 
+        // دالة مساعدة لإرجاع الألوان بالترتيب (أزرق، أخضر، بني)
+        function getRotatingCardStyle(index) {
+            const styles = [
+                {
+                    bg: "bg-blue-50/80 hover:bg-blue-100",
+                    border: "border-blue-200",
+                    text: "text-blue-800",
+                    icon: "text-blue-500"
+                },
+                {
+                    bg: "bg-emerald-50/80 hover:bg-emerald-100",
+                    border: "border-emerald-200",
+                    text: "text-emerald-800",
+                    icon: "text-emerald-500"
+                },
+                {
+                    bg: "bg-amber-50/80 hover:bg-amber-100",
+                    border: "border-amber-200",
+                    text: "text-amber-800",
+                    icon: "text-amber-500"
+                }
+            ];
+            return styles[index % 3];
+        }
+
         // قائمة الماركات المطلوبة تماماً (من قاعدة البيانات أو الثابتة)
         const brandsData = [
             "Apple", "Samsung", "Xiaomi", "Redmi", "Infinix", 
@@ -152,7 +177,6 @@
             document.getElementById('appContainer').innerHTML = html;
         }
 
-        // التبديل بين نموذج تسجيل الدخول وإنشاء الحساب
         function switchTab(tab) {
             const loginForm = document.getElementById('loginFormContainer');
             const registerForm = document.getElementById('registerFormContainer');
@@ -226,13 +250,11 @@
         function getHeaderTemplate() {
             return `
                 <div class="border-b border-gray-100 pb-4 mb-4 flex-shrink-0">
-                    <!-- اسم الشركة في الأعلى بمفرده تماماً -->
                     <div class="text-center mb-3">
                         <h1 class="text-2xl sm:text-3xl font-bold text-gray-800 tracking-wide">Electricity Aswan</h1>
                     </div>
 
                     <div class="flex items-center justify-between mb-4">
-                        <!-- بطاقة القائمة المنسدلة على اليمين -->
                         <div class="relative">
                             <select onchange="handleMenuChange(this)" class="bg-gray-50 border border-gray-200 text-gray-700 text-xs sm:text-sm rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer shadow-sm">
                                 <option value="" disabled selected>القائمة</option>
@@ -241,13 +263,11 @@
                             </select>
                         </div>
 
-                        <!-- بطاقة شفافة برقم الهاتف أو زائر على اليسار -->
                         <div class="bg-blue-50/60 border border-blue-100 px-3.5 py-2 rounded-xl text-blue-700 text-xs sm:text-sm font-semibold shadow-sm">
                             ${currentUserRole}
                         </div>
                     </div>
 
-                    <!-- أدوات البحث (صوت، كاميرا، كتابة تحتوي على كلمة ابحث) -->
                     <div class="flex items-center gap-2">
                         <div class="flex-1 relative">
                             <input type="text" placeholder="ابحث" 
@@ -274,7 +294,7 @@
         }
 
 
-        // ================= 2. الصفحة الرئيسية (بعد الدخول) وتحتوي على البطاقات الأربعة =================
+        // ================= 2. الصفحة الرئيسية =================
         function renderMainDashboard() {
             const html = `
                 ${getHeaderTemplate()}
@@ -285,7 +305,6 @@
                              alt="Banner" class="w-full h-36 sm:h-48 object-cover rounded-2xl shadow-md">
                     </div>
 
-                    <!-- البطاقات الأربعة الرئيسية المكبرة بتصميم أفقي متسلسل -->
                     <div class="space-y-3.5 pb-4">
                         <div onclick="renderBrandsScreen()" class="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white p-5 sm:p-6 rounded-2xl shadow-md cursor-pointer transition-all flex items-center justify-between">
                             <span class="font-bold text-lg sm:text-xl">الماركات</span>
@@ -313,14 +332,17 @@
         }
 
 
-        // ================= 3. شاشة الماركات (خلفية بلون أزرق خفيف معبأ) =================
+        // ================= 3. شاشة الماركات (مع الألوان الدورية) =================
         function renderBrandsScreen() {
-            let brandsHtml = brandsData.map(brand => `
-                <div onclick="renderModelsScreen('${brand}')" class="w-full bg-blue-50/80 hover:bg-blue-100 border border-blue-200 p-4 rounded-2xl shadow-sm flex items-center justify-between cursor-pointer transition-all text-sm sm:text-base">
-                    <span class="font-bold text-gray-800">${brand}</span>
-                    <svg class="w-5 h-5 text-blue-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
-                </div>
-            `).join('');
+            let brandsHtml = brandsData.map((brand, index) => {
+                const style = getRotatingCardStyle(index);
+                return `
+                    <div onclick="renderModelsScreen('${brand}')" class="w-full ${style.bg} border ${style.border} p-4 rounded-2xl shadow-sm flex items-center justify-between cursor-pointer transition-all text-sm sm:text-base">
+                        <span class="font-bold text-gray-800">${brand}</span>
+                        <svg class="w-5 h-5 ${style.icon} flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                    </div>
+                `;
+            }).join('');
 
             const html = `
                 ${getHeaderTemplate()}
@@ -330,7 +352,6 @@
                     </button>
                     <h2 class="text-sm sm:text-base font-bold text-gray-800">اختر الماركة</h2>
                 </div>
-                <!-- بطاقات أفقية تحت بعضها البعض -->
                 <div class="flex-1 overflow-y-auto space-y-3 p-1">
                     ${brandsHtml}
                 </div>
@@ -339,11 +360,10 @@
         }
 
 
-        // ================= 4. شاشة الموديلات (خلفية بلون أزرق خفيف معبأ) =================
+        // ================= 4. شاشة الموديلات (مع الألوان الدورية) =================
         async function renderModelsScreen(brand) {
             selectedBrand = brand;
             
-            // تحديد اسم جدول الموديلات بناءً على الماركة المختارة
             let tableName = "";
             let nameColumn = "device_name";
             let codeColumn = "model_code";
@@ -369,7 +389,6 @@
 
             let models = [];
             if (tableName) {
-                // في سامسونج نجلب أيضا عمود screen_compatibility إذا وجد
                 let queryFields = `${nameColumn}, ${codeColumn}`;
                 if (tableName === 'samsung_models') {
                     queryFields += `, screen_compatibility`;
@@ -387,15 +406,15 @@
 
             let modelsHtml = "";
             if (models.length > 0) {
-                modelsHtml = models.map(m => {
-                    // تخزين كود الموديل والبيانات في خاصية عند الضغط
+                modelsHtml = models.map((m, index) => {
+                    const style = getRotatingCardStyle(index);
                     const escapedCompat = m.screen_compatibility ? encodeURIComponent(m.screen_compatibility) : '';
                     return `
-                        <div onclick="selectModelAndProceed('${m.device_name}', '${m.model_code}', '${escapedCompat}')" class="w-full bg-blue-50/80 hover:bg-blue-100 border border-blue-200 p-4 rounded-2xl shadow-sm flex items-center justify-between cursor-pointer transition-all text-sm sm:text-base">
+                        <div onclick="selectModelAndProceed('${m.device_name}', '${m.model_code}', '${escapedCompat}')" class="w-full ${style.bg} border ${style.border} p-4 rounded-2xl shadow-sm flex items-center justify-between cursor-pointer transition-all text-sm sm:text-base">
                             <span class="font-bold text-gray-800">
-                                ${m.device_name} <span class="text-xs text-blue-600/70 font-normal">(${m.model_code})</span>
+                                ${m.device_name} <span class="text-xs ${style.icon} font-normal">(${m.model_code})</span>
                             </span>
-                            <svg class="w-5 h-5 text-blue-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                            <svg class="w-5 h-5 ${style.icon} flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
                         </div>
                     `;
                 }).join('');
@@ -428,16 +447,19 @@
         }
 
 
-        // ================= 5. شاشة قطع الغيار (خلفية بلون أزرق خفيف معبأ) =================
+        // ================= 5. شاشة قطع الغيار (مع الألوان الدورية) =================
         function renderPartsScreen(model) {
             selectedModel = model;
 
-            let partsHtml = sparePartsList.map(part => `
-                <div onclick="renderProductDetailScreen('${part}')" class="w-full bg-blue-50/80 hover:bg-blue-100 border border-blue-200 p-4 rounded-2xl shadow-sm flex items-center justify-between cursor-pointer transition-all text-sm sm:text-base">
-                    <span class="font-bold text-gray-800">${part}</span>
-                    <svg class="w-5 h-5 text-blue-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
-                </div>
-            `).join('');
+            let partsHtml = sparePartsList.map((part, index) => {
+                const style = getRotatingCardStyle(index);
+                return `
+                    <div onclick="renderProductDetailScreen('${part}')" class="w-full ${style.bg} border ${style.border} p-4 rounded-2xl shadow-sm flex items-center justify-between cursor-pointer transition-all text-sm sm:text-base">
+                        <span class="font-bold text-gray-800">${part}</span>
+                        <svg class="w-5 h-5 ${style.icon} flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                    </div>
+                `;
+            }).join('');
 
             const html = `
                 ${getHeaderTemplate()}
@@ -455,11 +477,10 @@
         }
 
 
-        // ================= 6. صفحة المنتج النهائية المقسمة إلى 3 أقسام (مع ربط توافقات الشاشات) =================
+        // ================= 6. صفحة المنتج النهائية =================
         function renderProductDetailScreen(part) {
             selectedPart = part;
 
-            // تحديد محتوى قسم التوافقات بناءً على ما إذا كانت القطعة "شاشة" ومتاحة في الجدول
             let compatibilityText = "هذه القطعة متوافقة مع الإصدارات والنسخ المتطابقة من الماركة.";
             if (part === "شاشة") {
                 if (currentScreenCompatibility) {
@@ -469,7 +490,6 @@
                         compatibilityText = `الموديلات المتوافقة مع هذه الشاشة: ${currentScreenCompatibility}`;
                     }
                 } else {
-                    // إذا لم تكن مسجلة في قاعدة بيانات سامسونج الجديدة أو جدول آخر
                     compatibilityText = "لا توجد توافقات مسجلة لهذه الشاشة حالياً.";
                 }
             }
@@ -484,7 +504,6 @@
                 </div>
 
                 <div class="flex-1 overflow-y-auto space-y-5 p-1">
-                    <!-- شراء المنتج (مكبر) -->
                     <div class="bg-blue-50/70 border border-blue-100 p-6 sm:p-7 rounded-2xl shadow-sm">
                         <h3 class="font-bold text-blue-800 mb-3 text-base sm:text-lg">🛒 شراء المنتج</h3>
                         <p class="text-sm sm:text-base text-gray-600 mb-4">القطعة متوفرة بالضمان الكامل.</p>
@@ -493,13 +512,11 @@
                         </button>
                     </div>
 
-                    <!-- التوافقات (مكبر ومعطيات حقيقية من قاعدة البيانات للشاشات) -->
                     <div class="bg-emerald-50/70 border border-emerald-100 p-6 sm:p-7 rounded-2xl shadow-sm">
                         <h3 class="font-bold text-emerald-800 mb-3 text-base sm:text-lg">🔗 التوافقات</h3>
                         <p class="text-sm sm:text-base text-gray-600 font-medium">${compatibilityText}</p>
                     </div>
 
-                    <!-- تنبيهات بعد التركيب (مكبر) -->
                     <div class="bg-amber-50/70 border border-amber-100 p-6 sm:p-7 rounded-2xl shadow-sm">
                         <h3 class="font-bold text-amber-800 mb-3 text-base sm:text-lg">⚠️ تنبيهات بعد التركيب</h3>
                         <p class="text-sm sm:text-base text-gray-600">يُرجى التجربة الفورية قبل التثبيت النهائي وإزالة اللزقات.</p>
