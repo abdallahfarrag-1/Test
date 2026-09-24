@@ -42,9 +42,24 @@
         // دالة مساعدة لإرجاع الألوان بالترتيب (أزرق، أخضر، بني)
         function getRotatingCardStyle(index) {
             const styles = [
-                { bg: "bg-blue-50/80 hover:bg-blue-100", border: "border-blue-200", text: "text-blue-800", icon: "text-blue-500" },
-                { bg: "bg-emerald-50/80 hover:bg-emerald-100", border: "border-emerald-200", text: "text-emerald-800", icon: "text-emerald-500" },
-                { bg: "bg-amber-50/80 hover:bg-amber-100", border: "border-amber-200", text: "text-amber-800", icon: "text-amber-500" }
+                {
+                    bg: "bg-blue-50/80 hover:bg-blue-100",
+                    border: "border-blue-200",
+                    text: "text-blue-800",
+                    icon: "text-blue-500"
+                },
+                {
+                    bg: "bg-emerald-50/80 hover:bg-emerald-100",
+                    border: "border-emerald-200",
+                    text: "text-emerald-800",
+                    icon: "text-emerald-500"
+                },
+                {
+                    bg: "bg-amber-50/80 hover:bg-amber-100",
+                    border: "border-amber-200",
+                    text: "text-amber-800",
+                    icon: "text-amber-500"
+                }
             ];
             return styles[index % 3];
         }
@@ -77,32 +92,59 @@
                         </div>
 
                         <div class="grid grid-cols-2 gap-2 bg-gray-100 p-1.5 rounded-2xl mb-6">
-                            <button onclick="switchTab('login')" id="loginTabBtn" class="py-2.5 text-sm font-semibold rounded-xl transition-all duration-200 bg-white text-blue-600 shadow-sm">تسجيل الدخول</button>
-                            <button onclick="switchTab('register')" id="registerTabBtn" class="py-2.5 text-sm font-semibold rounded-xl transition-all duration-200 text-gray-500 hover:text-gray-700">إنشاء حساب</button>
+                            <button onclick="switchTab('login')" id="loginTabBtn" 
+                                    class="py-2.5 text-sm font-semibold rounded-xl transition-all duration-200 bg-white text-blue-600 shadow-sm">
+                                تسجيل الدخول
+                            </button>
+                            <button onclick="switchTab('register')" id="registerTabBtn" 
+                                    class="py-2.5 text-sm font-semibold rounded-xl transition-all duration-200 text-gray-500 hover:text-gray-700">
+                                إنشاء حساب
+                            </button>
                         </div>
 
                         <div id="loginFormContainer">
                             <form onsubmit="handleLoginSubmit(event)" class="space-y-4">
                                 <div>
                                     <label class="block text-xs font-semibold text-gray-600 mb-1">رقم الهاتف</label>
-                                    <input type="text" id="loginPhone" required class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-gray-50">
+                                    <input type="text" id="loginPhone" required
+                                           class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-gray-50">
                                 </div>
                                 <div>
                                     <label class="block text-xs font-semibold text-gray-600 mb-1">رمز المرور</label>
-                                    <input type="password" id="loginPassword" required class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-gray-50">
+                                    <input type="password" id="loginPassword" required
+                                           class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-gray-50">
                                 </div>
-                                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl shadow-lg shadow-blue-500/35 transition-all text-sm">تسجيل الدخول</button>
+                                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl shadow-lg shadow-blue-500/35 transition-all text-sm">
+                                    تسجيل الدخول
+                                </button>
                             </form>
                         </div>
 
                         <div id="registerFormContainer" class="hidden">
                             <form onsubmit="handleRegisterSubmit(event)" class="space-y-3.5">
-                                <div><label class="block text-xs font-semibold text-gray-600 mb-1">الاسم</label><input type="text" id="regOwnerName" required class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm bg-gray-50"></div>
-                                <div><label class="block text-xs font-semibold text-gray-600 mb-1">اسم المحل</label><input type="text" id="regShopName" required class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm bg-gray-50"></div>
-                                <div><label class="block text-xs font-semibold text-gray-600 mb-1">عنوان المحل</label><input type="text" id="regShopAddress" required class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm bg-gray-50"></div>
-                                <div><label class="block text-xs font-semibold text-gray-600 mb-1">رقم الهاتف</label><input type="text" id="regPhone" required class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm bg-gray-50"></div>
-                                <div><label class="block text-xs font-semibold text-gray-600 mb-1">رمز المرور</label><input type="password" id="regPassword" required class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm bg-gray-50"></div>
-                                <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl shadow-lg shadow-emerald-500/35 transition-all text-sm mt-2">إنشاء الحساب</button>
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-600 mb-1">الاسم</label>
+                                    <input type="text" id="regOwnerName" required class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-gray-50">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-600 mb-1">اسم المحل</label>
+                                    <input type="text" id="regShopName" required class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-gray-50">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-600 mb-1">عنوان المحل</label>
+                                    <input type="text" id="regShopAddress" required class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-gray-50">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-600 mb-1">رقم الهاتف</label>
+                                    <input type="text" id="regPhone" required class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-gray-50">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-600 mb-1">رمز المرور</label>
+                                    <input type="password" id="regPassword" required class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-gray-50">
+                                </div>
+                                <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl shadow-lg shadow-emerald-500/35 transition-all text-sm mt-2">
+                                    إنشاء الحساب
+                                </button>
                             </form>
                         </div>
 
@@ -112,7 +154,9 @@
                         </div>
 
                         <div>
-                            <button onclick="loginAsVisitor()" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 rounded-xl transition-all text-sm border border-gray-200">الدخول كزائر</button>
+                            <button onclick="loginAsVisitor()" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 rounded-xl transition-all text-sm border border-gray-200">
+                                الدخول كزائر
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -144,11 +188,18 @@
             const phone = document.getElementById('loginPhone').value.trim();
             const password = document.getElementById('loginPassword').value.trim();
 
-            const { data, error } = await supabaseClient.from('users').select('*').eq('phone_number', phone).eq('password', password).single();
+            const { data, error } = await supabaseClient
+                .from('users')
+                .select('*')
+                .eq('phone_number', phone)
+                .eq('password', password)
+                .single();
+
             if (error || !data) {
                 alert('خطأ في رقم الهاتف أو رمز المرور!');
                 return;
             }
+
             currentUserRole = data.phone_number;
             renderMainDashboard();
         }
@@ -161,11 +212,16 @@
             const phone_number = document.getElementById('regPhone').value.trim();
             const password = document.getElementById('regPassword').value.trim();
 
-            const { data, error } = await supabaseClient.from('users').insert([{ owner_name, shop_name, shop_address, phone_number, password }]).select();
+            const { data, error } = await supabaseClient
+                .from('users')
+                .insert([{ owner_name, shop_name, shop_address, phone_number, password }])
+                .select();
+
             if (error) {
                 alert('حدث خطأ أثناء إنشاء الحساب أو الرقم مسجل مسبقاً: ' + error.message);
                 return;
             }
+
             alert('تم إنشاء الحساب بنجاح!');
             currentUserRole = phone_number;
             renderMainDashboard();
@@ -176,11 +232,13 @@
             renderMainDashboard();
         }
 
-        // ================= القالب الثابت للأعلى =================
         function getHeaderTemplate() {
             return `
                 <div class="border-b border-gray-100 pb-4 mb-4 flex-shrink-0">
-                    <div class="text-center mb-3"><h1 class="text-2xl sm:text-3xl font-bold text-gray-800 tracking-wide">Electricity Aswan</h1></div>
+                    <div class="text-center mb-3">
+                        <h1 class="text-2xl sm:text-3xl font-bold text-gray-800 tracking-wide">Electricity Aswan</h1>
+                    </div>
+
                     <div class="flex items-center justify-between mb-4">
                         <div class="relative">
                             <select onchange="handleMenuChange(this)" class="bg-gray-50 border border-gray-200 text-gray-700 text-xs sm:text-sm rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer shadow-sm">
@@ -189,26 +247,37 @@
                                 <option value="logout">تسجيل الخروج</option>
                             </select>
                         </div>
-                        <div class="bg-blue-50/60 border border-blue-100 px-3.5 py-2 rounded-xl text-blue-700 text-xs sm:text-sm font-semibold shadow-sm">${currentUserRole}</div>
+                        <div class="bg-blue-50/60 border border-blue-100 px-3.5 py-2 rounded-xl text-blue-700 text-xs sm:text-sm font-semibold shadow-sm">
+                            ${currentUserRole}
+                        </div>
                     </div>
                 </div>
             `;
         }
 
         function handleMenuChange(select) {
-            if (select.value === 'logout') renderLoginScreen();
-            else if (select.value === 'home') renderMainDashboard();
+            if (select.value === 'logout') {
+                renderLoginScreen();
+            } else if (select.value === 'home') {
+                renderMainDashboard();
+            }
             select.value = "";
         }
 
-        // ================= 2. الرئيسية =================
+        // ================= 2. الصفحة الرئيسية =================
         function renderMainDashboard() {
             const html = `
                 ${getHeaderTemplate()}
                 <div class="flex-1 overflow-y-auto space-y-4 px-1">
-                    <div class="mb-4"><img src="https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?auto=format&fit=crop&w=800&q=80" alt="Banner" class="w-full h-36 sm:h-48 object-cover rounded-2xl shadow-md"></div>
+                    <div class="mb-4">
+                        <img src="https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?auto=format&fit=crop&w=800&q=80" 
+                             alt="Banner" class="w-full h-36 sm:h-48 object-cover rounded-2xl shadow-md">
+                    </div>
                     <div class="space-y-3.5 pb-4">
-                        <div onclick="renderBrandsScreen()" class="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white p-5 rounded-2xl shadow-md cursor-pointer flex items-center justify-between"><span class="font-bold text-lg">الماركات</span><svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg></div>
+                        <div onclick="renderBrandsScreen()" class="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white p-5 sm:p-6 rounded-2xl shadow-md cursor-pointer transition-all flex items-center justify-between">
+                            <span class="font-bold text-lg sm:text-xl">الماركات</span>
+                            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                        </div>
                     </div>
                 </div>
             `;
@@ -230,73 +299,80 @@
             const html = `
                 ${getHeaderTemplate()}
                 <div class="flex items-center justify-between mb-4 flex-shrink-0">
-                    <button onclick="renderMainDashboard()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all">← عودة للرئيسية</button>
+                    <button onclick="renderMainDashboard()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all">
+                        ← عودة للرئيسية
+                    </button>
                     <h2 class="text-sm sm:text-base font-bold text-gray-800">اختر الماركة</h2>
                 </div>
-                <div class="flex-1 overflow-y-auto space-y-3 p-1">${brandsHtml}</div>
+                <div class="flex-1 overflow-y-auto space-y-3 p-1">
+                    ${brandsHtml}
+                </div>
             `;
             document.getElementById('appContainer').innerHTML = html;
         }
 
-        // ================= 4. شاشة الموديلات (الربط المباشر والدقيق حسب اسم الماركة) =================
+        // ================= 4. شاشة الموديلات (محدثة حسب الجداول الجديدة) =================
         async function renderModelsScreen(brand) {
             selectedBrand = brand;
             
             let tableName = "";
-            let nameCol = "";
-            let codeCol = "";
-            let compatCol = "";
-
+            let nameColumn = "";
+            let codeColumn = "";
+            let compatColumn = "";
+            
             const b = brand.toLowerCase();
-
-            // تخصيص اسم الجدول والأعمدة لكل ماركة بدقة مطلقة
             if (b.includes('samsung')) {
                 tableName = 'samsung_models';
-                nameCol = 'samsung_phone_name';
-                codeCol = 'samsung_phone_code';
-                compatCol = 'samsung_screen_compatibility';
-            } else if (b.includes('apple') || b.includes('iphone')) {
-                tableName = 'apple_models';
-                nameCol = 'apple_phone_name';
-                codeCol = 'apple_phone_code';
-                compatCol = 'apple_screen_compatibility';
-            } else if (b.includes('nokia')) {
-                tableName = 'nokia_models';
-                nameCol = 'nokia_phone_name'; // تم التحديث بناءً على ملاحظتك الدقيقة
-                codeCol = 'model_code';
-                compatCol = 'screen_compatibility';
-            } else if (b.includes('vivo')) {
-                tableName = 'vivo_models';
-                nameCol = 'vivo_phone_name'; // تم التحديث بناءً على ملاحظتك الدقيقة
-                codeCol = 'model_code';
-                compatCol = 'screen_compatibility';
-            } else {
-                // باقي الماركات القياسية
-                tableName = `${b}_models`; 
-                nameCol = 'phone_name';
-                codeCol = 'model_code';
-                compatCol = 'screen_compatibility';
+                nameColumn = 'samsung_phone_name';
+                codeColumn = 'samsung_phone_code';
+                compatColumn = 'samsung_screen_compatibility';
             }
+            else if (b.includes('iphone') || b.includes('apple')) {
+                tableName = 'apple_models';
+                nameColumn = 'apple_phone_name';
+                codeColumn = 'apple_phone_code';
+                compatColumn = 'apple_screen_compatibility';
+            }
+            else if (b.includes('vivo')) {
+                tableName = 'vivo_models';
+                nameColumn = 'vivo_phone_name';
+                codeColumn = 'vivo_phone_code';
+                compatColumn = 'vivo_screen_compatibility';
+            }
+            else if (b.includes('nokia')) {
+                tableName = 'nokia_models';
+                nameColumn = 'nokia_phone_name';
+                codeColumn = 'nokia_phone_code';
+                compatColumn = 'nokia_screen_compatibility';
+            }
+            // بقية الماركات الافتراضية
+            else if (b.includes('honor')) tableName = 'honor_models';
+            else if (b.includes('huawei')) tableName = 'huawei_models';
+            else if (b.includes('itel')) tableName = 'itel_models';
+            else if (b.includes('techno') || b.includes('tecno')) tableName = 'tecno_models';
+            else if (b.includes('oppo')) tableName = 'oppo_models';
+            else if (b.includes('realme')) tableName = 'realme_models';
+            else if (b.includes('redmi')) tableName = 'redmi_models';
+            else if (b.includes('xiaomi') || b.includes('poco')) tableName = 'xiaomi_poco_models';
+            else if (b.includes('infinix')) tableName = 'infinix_models';
 
             let models = [];
-            
-            try {
-                // جلب الأعمدة المحددة من جدول Supabase
-                const { data, error } = await supabaseClient
-                    .from(tableName)
-                    .select(`${nameCol}, ${codeCol}, ${compatCol}`);
+            if (tableName) {
+                // إذا لم يتم تعريف أسماء الأعمدة الخاصة صراحةً للماركات الأخرى، نستخدم الافتراضية
+                if (!nameColumn) nameColumn = "device_name";
+                if (!codeColumn) codeColumn = "model_code";
+                if (!compatColumn) compatColumn = "screen_compatibility";
 
-                if (error) {
-                    console.error("خطأ Supabase للجدول " + tableName + ":", error.message);
-                } else if (data) {
+                let queryFields = `${nameColumn}, ${codeColumn}, ${compatColumn}`;
+
+                const { data, error } = await supabaseClient.from(tableName).select(queryFields);
+                if (!error && data) {
                     models = data.map(item => ({
-                        device_name: item[nameCol] || "غير محدد",
-                        model_code: item[codeCol] || "",
-                        screen_compatibility: item[compatCol] || null
+                        device_name: item[nameColumn],
+                        model_code: item[codeColumn],
+                        screen_compatibility: item[compatColumn] || null
                     }));
                 }
-            } catch (err) {
-                console.error("استثناء أثناء الاتصال بقاعدة البيانات:", err);
             }
 
             let modelsHtml = "";
@@ -314,16 +390,20 @@
                     `;
                 }).join('');
             } else {
-                modelsHtml = `<div class="text-center text-red-500 py-6 font-semibold">لا توجد بيانات متاحة في جدول (${tableName}) أو أن اسم الجدول/الأعمدة غير مطابق بقاعدة البيانات. تأكد من فتح F12 لمعرفة الخطأ.</div>`;
+                modelsHtml = `<div class="text-center text-gray-500 py-6">لا توجد موديلات متاحة حالياً لهذه الماركة</div>`;
             }
 
             const html = `
                 ${getHeaderTemplate()}
                 <div class="flex items-center justify-between mb-4 flex-shrink-0">
-                    <button onclick="renderBrandsScreen()" class="bg-blue-50 hover:bg-blue-100 text-blue-600 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all border border-blue-200">↩ عودة للماركات</button>
+                    <button onclick="renderBrandsScreen()" class="bg-blue-50 hover:bg-blue-100 text-blue-600 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all border border-blue-200">
+                        ↩ عودة للماركات (${brand})
+                    </button>
                     <h2 class="text-xs sm:text-sm font-bold text-gray-800">موديلات ${brand}</h2>
                 </div>
-                <div class="flex-1 overflow-y-auto space-y-3 p-1">${modelsHtml}</div>
+                <div class="flex-1 overflow-y-auto space-y-3 p-1">
+                    ${modelsHtml}
+                </div>
             `;
             document.getElementById('appContainer').innerHTML = html;
         }
@@ -338,6 +418,7 @@
         // ================= 5. شاشة قطع الغيار =================
         function renderPartsScreen(model) {
             selectedModel = model;
+
             let partsHtml = sparePartsList.map((part, index) => {
                 const style = getRotatingCardStyle(index);
                 return `
@@ -349,25 +430,32 @@
             }).join('');
 
             const html = `
-                ${getHeaderTechHeader ? getHeaderTemplate() : getHeaderTemplate()}
+                ${getHeaderTemplate()}
                 <div class="flex items-center justify-between mb-4 flex-shrink-0">
-                    <button onclick="renderModelsScreen('${selectedBrand}')" class="bg-blue-50 hover:bg-blue-100 text-blue-600 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all border border-blue-200">↩ عودة للموديلات</button>
+                    <button onclick="renderModelsScreen('${selectedBrand}')" class="bg-blue-50 hover:bg-blue-100 text-blue-600 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all border border-blue-200">
+                        ↩ عودة للموديلات
+                    </button>
                     <h2 class="text-xs sm:text-sm font-bold text-gray-800">${selectedBrand} - ${model}</h2>
                 </div>
-                <div class="flex-1 overflow-y-auto space-y-3 p-1">${partsHtml}</div>
+                <div class="flex-1 overflow-y-auto space-y-3 p-1">
+                    ${partsHtml}
+                </div>
             `;
             document.getElementById('appContainer').innerHTML = html;
         }
 
-        // ================= 6. صفحة تفاصيل المنتج =================
+        // ================= 6. صفحة المنتج النهائية =================
         function renderProductDetailScreen(part) {
             selectedPart = part;
+
             let compatibilityText = "هذه القطعة متوافقة مع الإصدارات والنسخ المتطابقة من الماركة.";
             if (part === "شاشة") {
                 if (currentScreenCompatibility) {
-                    compatibilityText = currentScreenCompatibility.toLowerCase() === 'none' 
-                        ? "هذه الشاشة غير متوافقة مع موديلات أخرى (خاصة بهذا الموديل فقط)." 
-                        : `الموديلات المتوافقة مع هذه الشاشة: ${currentScreenCompatibility}`;
+                    if (currentScreenCompatibility.toLowerCase() === 'none') {
+                        compatibilityText = "هذه الشاشة غير متوافقة مع موديلات أخرى (خاصة بهذا الموديل فقط).";
+                    } else {
+                        compatibilityText = `الموديلات المتوافقة مع هذه الشاشة: ${currentScreenCompatibility}`;
+                    }
                 } else {
                     compatibilityText = "لا توجد توافقات مسجلة لهذه الشاشة حالياً.";
                 }
@@ -376,24 +464,36 @@
             const html = `
                 ${getHeaderTemplate()}
                 <div class="flex items-center justify-between mb-4 flex-shrink-0">
-                    <button onclick="renderPartsScreen('${selectedModel}')" class="bg-blue-50 hover:bg-blue-100 text-blue-600 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all border border-blue-200">↩ عودة لقطع الغيار</button>
+                    <button onclick="renderPartsScreen('${selectedModel}')" class="bg-blue-50 hover:bg-blue-100 text-blue-600 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all border border-blue-200">
+                        ↩ عودة لقطع الغيار
+                    </button>
                     <h2 class="text-xs sm:text-sm font-bold text-gray-800">${part} (${selectedModel})</h2>
                 </div>
+
                 <div class="flex-1 overflow-y-auto space-y-5 p-1">
-                    <div class="bg-blue-50/70 border border-blue-100 p-6 rounded-2xl shadow-sm">
-                        <h3 class="font-bold text-blue-800 mb-3 text-base">🛒 شراء المنتج</h3>
-                        <p class="text-sm text-gray-600 mb-4">القطعة متوفرة بالضمان الكامل.</p>
-                        <button onclick="alert('تمت إضافة الطلب بنجاح!')" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl text-sm shadow-md transition-all">شراء المنتج / اطلب الآن</button>
+                    <div class="bg-blue-50/70 border border-blue-100 p-6 sm:p-7 rounded-2xl shadow-sm">
+                        <h3 class="font-bold text-blue-800 mb-3 text-base sm:text-lg">🛒 شراء المنتج</h3>
+                        <p class="text-sm sm:text-base text-gray-600 mb-4">القطعة متوفرة بالضمان الكامل.</p>
+                        <button onclick="alert('تمت إضافة الطلب بنجاح!')" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl text-sm sm:text-base shadow-md transition-all">
+                            شراء المنتج / اطلب الآن
+                        </button>
                     </div>
-                    <div class="bg-emerald-50/70 border border-emerald-100 p-6 rounded-2xl shadow-sm">
-                        <h3 class="font-bold text-emerald-800 mb-3 text-base">🔗 التوافقات</h3>
-                        <p class="text-sm text-gray-600 font-medium">${compatibilityText}</p>
+
+                    <div class="bg-emerald-50/70 border border-emerald-100 p-6 sm:p-7 rounded-2xl shadow-sm">
+                        <h3 class="font-bold text-emerald-800 mb-3 text-base sm:text-lg">🔗 التوافقات</h3>
+                        <p class="text-sm sm:text-base text-gray-600 font-medium">${compatibilityText}</p>
+                    </div>
+
+                    <div class="bg-amber-50/70 border border-amber-100 p-6 sm:p-7 rounded-2xl shadow-sm">
+                        <h3 class="font-bold text-amber-800 mb-3 text-base sm:text-lg">⚠️ تنبيهات بعد التركيب</h3>
+                        <p class="text-sm sm:text-base text-gray-600">يُرجى التجربة الفورية قبل التثبيت النهائي وإزالة اللزقات.</p>
                     </div>
                 </div>
             `;
             document.getElementById('appContainer').innerHTML = html;
         }
 
+        // التشغيل المبدئي
         window.onload = function() {
             renderLoginScreen();
         };
