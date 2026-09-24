@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Electricity Aswan</title>
+    <!-- تضمين Tailwind CSS للتنسيق -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- تضمين مكتبة Supabase للاتصال بقاعدة البيانات -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap');
@@ -15,12 +17,15 @@
 </head>
 <body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen p-2 sm:p-4 flex items-center justify-center">
 
+    <!-- البطاقة البيضاء الرئيسية - ملء الشاشة (Full Screen Card) -->
     <div class="bg-white w-full h-[96vh] sm:h-[94vh] rounded-3xl shadow-2xl p-4 sm:p-8 flex flex-col justify-between transition-all duration-300 overflow-hidden">
         
+        <!-- حاوية الشاشات الديناميكية -->
         <div id="appContainer" class="flex-1 flex flex-col overflow-hidden"></div>
 
     </div>
 
+    <!-- كود الجافاسكريبت لإدارة النظام والصفحات والتنقل الأفقي -->
     <script>
         // إعدادات اتصال Supabase
         const SUPABASE_URL = 'https://byiayomtcwqlgrknvgcz.supabase.co';
@@ -54,11 +59,13 @@
                             <h1 class="text-2xl sm:text-3xl font-bold text-gray-800 tracking-wide">Electricity Aswan</h1>
                         </div>
 
+                        <!-- الصورة المستطيلة بحواف دائرية ذات ظلال -->
                         <div class="mb-6">
                             <img src="https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?auto=format&fit=crop&w=800&q=80" 
                                  alt="Banner" class="w-full h-40 sm:h-52 object-cover rounded-2xl shadow-md">
                         </div>
 
+                        <!-- أزرار التبديل بين (تسجيل الدخول) و (إنشاء حساب) -->
                         <div class="grid grid-cols-2 gap-2 bg-gray-100 p-1.5 rounded-2xl mb-6">
                             <button onclick="switchTab('login')" id="loginTabBtn" 
                                     class="py-2.5 text-sm font-semibold rounded-xl transition-all duration-200 bg-white text-blue-600 shadow-sm">
@@ -70,6 +77,7 @@
                             </button>
                         </div>
 
+                        <!-- خانة تسجيل الدخول -->
                         <div id="loginFormContainer">
                             <form onsubmit="handleLoginSubmit(event)" class="space-y-4">
                                 <div>
@@ -96,6 +104,7 @@
                             </form>
                         </div>
 
+                        <!-- خانة إنشاء حساب (مخفية افتراضياً) -->
                         <div id="registerFormContainer" class="hidden">
                             <form onsubmit="handleRegisterSubmit(event)" class="space-y-3.5">
                                 <div>
@@ -130,6 +139,7 @@
                             <div class="relative flex justify-center text-xs uppercase"><span class="bg-white px-2 text-gray-400">أو</span></div>
                         </div>
 
+                        <!-- زر الدخول كزائر -->
                         <div>
                             <button onclick="loginAsVisitor()" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 rounded-xl transition-all text-sm border border-gray-200">
                                 الدخول كزائر
@@ -215,11 +225,13 @@
         function getHeaderTemplate() {
             return `
                 <div class="border-b border-gray-100 pb-4 mb-4 flex-shrink-0">
+                    <!-- اسم الشركة في الأعلى بمفرده تماماً -->
                     <div class="text-center mb-3">
                         <h1 class="text-2xl sm:text-3xl font-bold text-gray-800 tracking-wide">Electricity Aswan</h1>
                     </div>
 
                     <div class="flex items-center justify-between mb-4">
+                        <!-- بطاقة القائمة المنسدلة على اليمين -->
                         <div class="relative">
                             <select onchange="handleMenuChange(this)" class="bg-gray-50 border border-gray-200 text-gray-700 text-xs sm:text-sm rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer shadow-sm">
                                 <option value="" disabled selected>القائمة</option>
@@ -228,11 +240,13 @@
                             </select>
                         </div>
 
+                        <!-- بطاقة شفافة برقم الهاتف أو زائر على اليسار -->
                         <div class="bg-blue-50/60 border border-blue-100 px-3.5 py-2 rounded-xl text-blue-700 text-xs sm:text-sm font-semibold shadow-sm">
                             ${currentUserRole}
                         </div>
                     </div>
 
+                    <!-- أدوات البحث (صوت، كاميرا، كتابة تحتوي على كلمة ابحث) -->
                     <div class="flex items-center gap-2">
                         <div class="flex-1 relative">
                             <input type="text" placeholder="ابحث" 
@@ -270,6 +284,7 @@
                              alt="Banner" class="w-full h-36 sm:h-48 object-cover rounded-2xl shadow-md">
                     </div>
 
+                    <!-- البطاقات الأربعة الرئيسية المكبرة بتصميم أفقي متسلسل -->
                     <div class="space-y-3.5 pb-4">
                         <div onclick="renderBrandsScreen()" class="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white p-5 sm:p-6 rounded-2xl shadow-md cursor-pointer transition-all flex items-center justify-between">
                             <span class="font-bold text-lg sm:text-xl">الماركات</span>
@@ -297,7 +312,7 @@
         }
 
 
-        // ================= 3. شاشة الماركات =================
+        // ================= 3. شاشة الماركات (خلفية بلون أزرق خفيف معبأ) =================
         function renderBrandsScreen() {
             let brandsHtml = brandsData.map(brand => `
                 <div onclick="renderModelsScreen('${brand}')" class="w-full bg-blue-50/80 hover:bg-blue-100 border border-blue-200 p-4 rounded-2xl shadow-sm flex items-center justify-between cursor-pointer transition-all text-sm sm:text-base">
@@ -314,6 +329,7 @@
                     </button>
                     <h2 class="text-sm sm:text-base font-bold text-gray-800">اختر الماركة</h2>
                 </div>
+                <!-- بطاقات أفقية تحت بعضها البعض -->
                 <div class="flex-1 overflow-y-auto space-y-3 p-1">
                     ${brandsHtml}
                 </div>
@@ -322,46 +338,33 @@
         }
 
 
-        // ================= 4. شاشة الموديلات =================
+        // ================= 4. شاشة الموديلات (تعتمد الآن على جدول phone_screen_compatibilities) =================
         async function renderModelsScreen(brand) {
             selectedBrand = brand;
             
-            let tableName = "";
-            const b = brand.toLowerCase();
-            if (b.includes('samsung')) tableName = 'samsung_models';
-            else if (b.includes('iphone') || b.includes('apple')) tableName = 'iphone_models';
-            else if (b.includes('honor')) tableName = 'honor_models';
-            else if (b.includes('huawei')) tableName = 'huawei_models';
-            else if (b.includes('itel')) tableName = 'itel_models';
-            else if (b.includes('nokia')) tableName = 'nokia_models';
-            else if (b.includes('vivo')) tableName = 'vivo_models';
-            else if (b.includes('techno') || b.includes('tecno')) tableName = 'tecno_models';
-            else if (b.includes('oppo')) tableName = 'oppo_models';
-            else if (b.includes('realme')) tableName = 'realme_models';
-            else if (b.includes('redmi')) tableName = 'redmi_models';
-            else if (b.includes('xiaomi') || b.includes('poco')) tableName = 'xiaomi_poco_models';
-            else if (b.includes('infinix')) tableName = 'infinix_models';
-
+            // جلب البيانات من جدول phone_screen_compatibilities المحدث
             let models = [];
-            if (tableName) {
-                const { data, error } = await supabaseClient.from(tableName).select('device_name, model_code');
-                if (!error && data) {
-                    models = data;
-                }
+            const { data, error } = await supabaseClient
+                .from('phone_screen_compatibilities')
+                .select('phone_name, model_code');
+                
+            if (!error && data) {
+                // تصفية الهواتف بناءً على اسم الماركة المختار (مثلاً إذا كانت تبدأ بـ Samsung أو Nokia أو iPhone إلخ)
+                models = data.filter(m => m.phone_name.toLowerCase().includes(brand.toLowerCase()));
             }
 
             let modelsHtml = "";
             if (models.length > 0) {
                 modelsHtml = models.map(m => `
-                    <div onclick="renderPartsScreen('${m.device_name}', '${m.model_code}')" class="w-full bg-blue-50/80 hover:bg-blue-100 border border-blue-200 p-4 rounded-2xl shadow-sm flex items-center justify-between cursor-pointer transition-all text-sm sm:text-base">
+                    <div onclick="renderPartsScreen('${m.device_name || m.phone_name} (${m.model_code})')" class="w-full bg-blue-50/80 hover:bg-blue-100 border border-blue-200 p-4 rounded-2xl shadow-sm flex items-center justify-between cursor-pointer transition-all text-sm sm:text-base">
                         <span class="font-bold text-gray-800">
-                            ${m.device_name} <span class="text-xs text-blue-600/70 font-normal">(${m.model_code})</span>
+                            ${m.phone_name} <span class="text-xs text-blue-600/70 font-normal">(${m.model_code})</span>
                         </span>
                         <svg class="w-5 h-5 text-blue-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
                     </div>
                 `).join('');
             } else {
-                modelsHtml = `<div class="text-center text-gray-500 py-6">لا توجد موديلات متاحة حالياً لهذه الماركة</div>`;
+                modelsHtml = `<div class="text-center text-gray-500 py-6">لا توجد موديلات متاحة حالياً لهذه الماركة في قاعدة البيانات</div>`;
             }
 
             const html = `
@@ -380,10 +383,9 @@
         }
 
 
-        // ================= 5. شاشة قطع الغيار =================
-        function renderPartsScreen(deviceName, modelCode) {
-            selectedModel = `${deviceName} (${modelCode})`;
-            window.currentModelCode = modelCode; // تخزين رقم الطراز (مثل A013) مؤقتاً لجلب التوافقات
+        // ================= 5. شاشة قطع الغيار (خلفية بلون أزرق خفيف معبأ) =================
+        function renderPartsScreen(model) {
+            selectedModel = model;
 
             let partsHtml = sparePartsList.map(part => `
                 <div onclick="renderProductDetailScreen('${part}')" class="w-full bg-blue-50/80 hover:bg-blue-100 border border-blue-200 p-4 rounded-2xl shadow-sm flex items-center justify-between cursor-pointer transition-all text-sm sm:text-base">
@@ -398,7 +400,7 @@
                     <button onclick="renderModelsScreen('${selectedBrand}')" class="bg-blue-50 hover:bg-blue-100 text-blue-600 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all border border-blue-200">
                         ↩ عودة للموديلات
                     </button>
-                    <h2 class="text-xs sm:text-sm font-bold text-gray-800">${selectedBrand} - ${selectedModel}</h2>
+                    <h2 class="text-xs sm:text-sm font-bold text-gray-800">${selectedBrand} - ${model}</h2>
                 </div>
                 <div class="flex-1 overflow-y-auto space-y-3 p-1">
                     ${partsHtml}
@@ -408,35 +410,43 @@
         }
 
 
-        // ================= 6. صفحة المنتج النهائية المقسمة إلى 3 أقسام (مع جلب توافقات الشاشات ديناميكياً) =================
+        // ================= 6. صفحة المنتج النهائية المقسمة إلى 3 أقسام (مع جلب التوافقات الحقيقية) =================
         async function renderProductDetailScreen(part) {
             selectedPart = part;
 
-            let compatibilityText = "هذه القطعة متوافقة مع الإصدارات والنسخ المتطابقة من الماركة.";
+            let compatibilitiesText = "لا توجد توافقات مسجلة لهذه الشاشة.";
+            
+            // إذا كانت قطعة الغيار هي "شاشة"، نقوم بجلب البيانات المتوافقة من الجدول الجديد
+            if (part === "شاشة") {
+                // استخراج كود المحطة بين الأقواس من selectedModel (مثلاً استخراج A013 من "Samsung Galaxy A01 Core (A013)")
+                const match = selectedModel.match(/\(([^)]+)\)$/);
+                if (match && match[1]) {
+                    const currentModelCode = match[1].trim();
+                    const { data, error } = await supabaseClient
+                        .from('phone_screen_compatibilities')
+                        .select('compatible_screens')
+                        .eq('model_code', currentModelCode)
+                        .single();
 
-            // إذا كان القسم المختار هو "شاشة"، نقوم بجلب التوافقات الخاصة به من جدول Supabase الجديد
-            if (part === "شاشة" && window.currentModelCode) {
-                const { data, error } = await supabaseClient
-                    .from('phone_screen_compatibilities')
-                    .select('compatible_screens')
-                    .eq('model_code', window.currentModelCode)
-                    .single();
-
-                if (!error && data && data.compatible_screens) {
-                    compatibilityText = data.compatible_screens;
+                    if (!error && data && data.compatible_screens) {
+                        compatibilitiesText = data.compatible_screens;
+                    }
                 }
+            } else {
+                compatibilitiesText = "التوافقات متاحة لقسم الشاشات بناءً على الجدول المحدث.";
             }
 
             const html = `
                 ${getHeaderTemplate()}
                 <div class="flex items-center justify-between mb-4 flex-shrink-0">
-                    <button onclick="renderPartsScreen('${selectedBrand}', '${window.currentModelCode}')" class="bg-blue-50 hover:bg-blue-100 text-blue-600 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all border border-blue-200">
+                    <button onclick="renderPartsScreen('${selectedModel}')" class="bg-blue-50 hover:bg-blue-100 text-blue-600 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all border border-blue-200">
                         ↩ عودة لقطع الغيار
                     </button>
                     <h2 class="text-xs sm:text-sm font-bold text-gray-800">${part} (${selectedModel})</h2>
                 </div>
 
                 <div class="flex-1 overflow-y-auto space-y-4 p-1">
+                    <!-- شراء المنتج -->
                     <div class="bg-blue-50/70 border border-blue-100 p-4.5 rounded-2xl shadow-sm">
                         <h3 class="font-bold text-blue-800 mb-2 text-sm sm:text-base">🛒 شراء المنتج</h3>
                         <p class="text-xs sm:text-sm text-gray-600 mb-3">القطعة متوفرة بالضمان الكامل.</p>
@@ -445,11 +455,13 @@
                         </button>
                     </div>
 
+                    <!-- التوافقات -->
                     <div class="bg-emerald-50/70 border border-emerald-100 p-4.5 rounded-2xl shadow-sm">
                         <h3 class="font-bold text-emerald-800 mb-2 text-sm sm:text-base">🔗 التوافقات</h3>
-                        <p id="compatibilityBoxText" class="text-xs sm:text-sm text-gray-700 font-semibold">${compatibilityText}</p>
+                        <p class="text-xs sm:text-sm text-gray-700 font-semibold">${compatibilitiesText}</p>
                     </div>
 
+                    <!-- تنبيهات بعد التركيب -->
                     <div class="bg-amber-50/70 border border-amber-100 p-4.5 rounded-2xl shadow-sm">
                         <h3 class="font-bold text-amber-800 mb-2 text-sm sm:text-base">⚠️ تنبيهات بعد التركيب</h3>
                         <p class="text-xs sm:text-sm text-gray-600">يُرجى التجربة الفورية قبل التثبيت النهائي وإزالة اللزقات.</p>
