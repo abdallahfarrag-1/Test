@@ -63,7 +63,7 @@
             return styles[index % 3];
         }
 
-        // قائمة الماركات المطلوبة تماماً (من قاعدة البيانات أو الثابتة)
+        // قائمة الماركات المطلوبة تماماً
         const brandsData = [
             "Apple", "Samsung", "Xiaomi", "Redmi", "Infinix", 
             "Oppo", "Realme", "Huawei", "Vivo", "Honor", "Techno", "itel", "Nokia"
@@ -294,37 +294,41 @@
         }
 
 
-        // ================= 2. الصفحة الرئيسية =================
+        // ================= 2. الصفحة الرئيسية (تحتوي الآن على الصورة تحت اسم الشركة مباشرة) =================
         function renderMainDashboard() {
             const html = `
+                <!-- اسم الشركة في الأعلى -->
+                <div class="text-center mb-3 flex-shrink-0">
+                    <h1 class="text-2xl sm:text-3xl font-bold text-gray-800 tracking-wide">Electricity Aswan</h1>
+                </div>
+
+                <!-- الصورة تحت الاسم مباشرة تماماً كما طلبت -->
+                <div class="mb-4 flex-shrink-0">
+                    <img src="https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?auto=format&fit=crop&w=800&q=80" 
+                         alt="Banner" class="w-full h-32 sm:h-44 object-cover rounded-2xl shadow-md">
+                </div>
+
                 ${getHeaderTemplate()}
 
-                <div class="flex-1 overflow-y-auto space-y-4 px-1">
-                    <div class="mb-4">
-                        <img src="https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?auto=format&fit=crop&w=800&q=80" 
-                             alt="Banner" class="w-full h-36 sm:h-48 object-cover rounded-2xl shadow-md">
+                <div class="flex-1 overflow-y-auto space-y-3.5 pb-4 px-1">
+                    <div onclick="renderBrandsScreen()" class="w-full bg-blue-50/80 hover:bg-blue-100 border border-blue-200 p-4 sm:p-5 rounded-2xl shadow-sm cursor-pointer transition-all flex items-center justify-between">
+                        <span class="font-bold text-gray-800 text-base sm:text-lg">الماركات</span>
+                        <svg class="w-6 h-6 text-blue-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
                     </div>
 
-                    <div class="space-y-3.5 pb-4">
-                        <div onclick="renderBrandsScreen()" class="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white p-5 sm:p-6 rounded-2xl shadow-md cursor-pointer transition-all flex items-center justify-between">
-                            <span class="font-bold text-lg sm:text-xl">الماركات</span>
-                            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
-                        </div>
+                    <div onclick="alert('قسم التوافقات')" class="w-full bg-emerald-50/80 hover:bg-emerald-100 border border-emerald-200 p-4 sm:p-5 rounded-2xl shadow-sm cursor-pointer transition-all flex items-center justify-between">
+                        <span class="font-bold text-gray-800 text-base sm:text-lg">التوافقات</span>
+                        <svg class="w-6 h-6 text-emerald-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                    </div>
 
-                        <div onclick="alert('قسم التوافقات')" class="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white p-5 sm:p-6 rounded-2xl shadow-md cursor-pointer transition-all flex items-center justify-between">
-                            <span class="font-bold text-lg sm:text-xl">التوافقات</span>
-                            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
-                        </div>
+                    <div onclick="alert('تنبيهات بعد التركيب')" class="w-full bg-amber-50/80 hover:bg-amber-100 border border-amber-200 p-4 sm:p-5 rounded-2xl shadow-sm cursor-pointer transition-all flex items-center justify-between">
+                        <span class="font-bold text-gray-800 text-base sm:text-lg">تنبيهات بعد التركيب</span>
+                        <svg class="w-6 h-6 text-amber-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                    </div>
 
-                        <div onclick="alert('تنبيهات بعد التركيب')" class="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white p-5 sm:p-6 rounded-2xl shadow-md cursor-pointer transition-all flex items-center justify-between">
-                            <span class="font-bold text-lg sm:text-xl">تنبيهات بعد التركيب</span>
-                            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
-                        </div>
-
-                        <div onclick="alert('للتواصل مع الشركة')" class="w-full bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white p-5 sm:p-6 rounded-2xl shadow-md cursor-pointer transition-all flex items-center justify-between">
-                            <span class="font-bold text-lg sm:text-xl">التواصل مع الشركة</span>
-                            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
-                        </div>
+                    <div onclick="alert('للتواصل مع الشركة')" class="w-full bg-blue-50/80 hover:bg-blue-100 border border-blue-200 p-4 sm:p-5 rounded-2xl shadow-sm cursor-pointer transition-all flex items-center justify-between">
+                        <span class="font-bold text-gray-800 text-base sm:text-lg">التواصل مع الشركة</span>
+                        <svg class="w-6 h-6 text-blue-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
                     </div>
                 </div>
             `;
