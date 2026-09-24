@@ -36,6 +36,7 @@
         let selectedBrand = "";
         let selectedModel = "";
         let selectedPart = "";
+        let selectedModelCode = ""; // حفظ كود الموديل لجلب التوافقات بدقة
 
         // قائمة الماركات المطلوبة تماماً (من قاعدة البيانات أو الثابتة)
         const brandsData = [
@@ -368,26 +369,36 @@
 
             let models = [];
             if (tableName) {
-                const { data, error } = await supabaseClient.from(tableName).select(`${nameColumn}, ${codeColumn}`);
+                // في سامسونج نجلب أيضا عمود screen_compatibility إذا وجد
+                let queryFields = `${nameColumn}, ${codeColumn}`;
+                if (tableName === 'samsung_models') {
+                    queryFields += `, screen_compatibility`;
+                }
+
+                const { data, error } = await supabaseClient.from(tableName).select(queryFields);
                 if (!error && data) {
-                    // توحيد شكل البيانات لجعل بقية الكود يعمل بسلاسة
                     models = data.map(item => ({
                         device_name: item[nameColumn],
-                        model_code: item[codeColumn]
+                        model_code: item[codeColumn],
+                        screen_compatibility: item.screen_compatibility || null
                     }));
                 }
             }
 
             let modelsHtml = "";
             if (models.length > 0) {
-                modelsHtml = models.map(m => `
-                    <div onclick="renderPartsScreen('${m.device_name} (${m.model_code})')" class="w-full bg-blue-50/80 hover:bg-blue-100 border border-blue-200 p-4 rounded-2xl shadow-sm flex items-center justify-between cursor-pointer transition-all text-sm sm:text-base">
-                        <span class="font-bold text-gray-800">
-                            ${m.device_name} <span class="text-xs text-blue-600/70 font-normal">(${m.model_code})</span>
-                        </span>
-                        <svg class="w-5 h-5 text-blue-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
-                    </div>
-                `).join('');
+                modelsHtml = models.map(m => {
+                    // تخزين كود الموديل والبيانات في خاصية عند الضغط
+                    const escapedCompat = m.screen_compatibility ? encodeURIComponent(m.screen_compatibility) : '';
+                    return `
+                        <div onclick="selectModelAndProceed('${m.device_name}', '${m.model_code}', '${escapedCompat}')" class="w-full bg-blue-50/80 hover:bg-blue-100 border border-blue-200 p-4 rounded-2xl shadow-sm flex items-center justify-between cursor-pointer transition-all text-sm sm:text-base">
+                            <span class="font-bold text-gray-800">
+                                ${m.device_name} <span class="text-xs text-blue-600/70 font-normal">(${m.model_code})</span>
+                            </span>
+                            <svg class="w-5 h-5 text-blue-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                        </div>
+                    `;
+                }).join('');
             } else {
                 modelsHtml = `<div class="text-center text-gray-500 py-6">لا توجد موديلات متاحة حالياً لهذه الماركة</div>`;
             }
@@ -405,6 +416,15 @@
                 </div>
             `;
             document.getElementById('appContainer').innerHTML = html;
+        }
+
+        let currentScreenCompatibility = "";
+
+        function selectModelAndProceed(deviceName, modelCode, compatEncoded) {
+            selectedModel = `${deviceName} (${modelCode})`;
+            selectedModelCode = modelCode;
+            currentScreenCompatibility = compatEncoded ? decodeURIComponent(compatEncoded) : "";
+            renderPartsScreen(selectedModel);
         }
 
 
@@ -435,9 +455,24 @@
         }
 
 
-        // ================= 6. صفحة المنتج النهائية المقسمة إلى 3 أقسام (تم تكبير المساحات والأحجام) =================
+        // ================= 6. صفحة المنتج النهائية المقسمة إلى 3 أقسام (مع ربط توافقات الشاشات) =================
         function renderProductDetailScreen(part) {
             selectedPart = part;
+
+            // تحديد محتوى قسم التوافقات بناءً على ما إذا كانت القطعة "شاشة" ومتاحة في الجدول
+            let compatibilityText = "هذه القطعة متوافقة مع الإصدارات والنسخ المتطابقة من الماركة.";
+            if (part === "شاشة") {
+                if (currentScreenCompatibility) {
+                    if (currentScreenCompatibility.toLowerCase() === 'none') {
+                        compatibilityText = "هذه الشاشة غير متوافقة مع موديلات أخرى (خاصة بهذا الموديل فقط).";
+                    } else {
+                        compatibilityText = `الموديلات المتوافقة مع هذه الشاشة: ${currentScreenCompatibility}`;
+                    }
+                } else {
+                    // إذا لم تكن مسجلة في قاعدة بيانات سامسونج الجديدة أو جدول آخر
+                    compatibilityText = "لا توجد توافقات مسجلة لهذه الشاشة حالياً.";
+                }
+            }
 
             const html = `
                 ${getHeaderTemplate()}
@@ -458,10 +493,10 @@
                         </button>
                     </div>
 
-                    <!-- التوافقات (مكبر) -->
+                    <!-- التوافقات (مكبر ومعطيات حقيقية من قاعدة البيانات للشاشات) -->
                     <div class="bg-emerald-50/70 border border-emerald-100 p-6 sm:p-7 rounded-2xl shadow-sm">
                         <h3 class="font-bold text-emerald-800 mb-3 text-base sm:text-lg">🔗 التوافقات</h3>
-                        <p class="text-sm sm:text-base text-gray-600">هذه القطعة متوافقة مع الإصدارات والنسخ المتطابقة من الماركة.</p>
+                        <p class="text-sm sm:text-base text-gray-600 font-medium">${compatibilityText}</p>
                     </div>
 
                     <!-- تنبيهات بعد التركيب (مكبر) -->
