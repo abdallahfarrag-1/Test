@@ -36,6 +36,13 @@
         let selectedBrand = "";
         let selectedModel = "";
         let selectedPart = "";
+        let currentDeviceData = null; // لتخزين بيانات الموديل المختار لعرض توافقاته الحقيقية
+
+        // قائمة الماركات المطلوبة تماماً (من قاعدة البيانات أو الثابتة)
+        const brandsData = [
+            "Apple", "Samsung", "Xiaomi", "Redmi", "Infinix", 
+            "Oppo", "Realme", "Huawei", "Vivo", "Honor", "Techno", "itel", "Nokia"
+        ];
 
         // قطع الغيار المطلوبة
         const sparePartsList = [
@@ -214,7 +221,6 @@
             renderMainDashboard();
         }
 
-
         // ================= قالب الجزء الثابت المتكرر في أعلى كل الصفحات الداخلية =================
         function getHeaderTemplate() {
             return `
@@ -240,16 +246,16 @@
                         </div>
                     </div>
 
-                    <!-- أدوات البحث -->
+                    <!-- أدوات البحث (صوت، كاميرا، كتابة تحتوي على كلمة ابحث) -->
                     <div class="flex items-center gap-2">
                         <div class="flex-1 relative">
                             <input type="text" placeholder="ابحث" 
                                    class="w-full bg-gray-50 border border-gray-200 text-gray-700 text-xs sm:text-sm rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm">
                         </div>
-                        <button onclick="alert('جارِ الاستماع للصوت...')" class="bg-gray-50 hover:bg-gray-100 border border-gray-200 p-3 rounded-xl text-gray-600 transition-all shadow-sm" title="بحث صوتي">
+                        <button onclick="alert('جارِ الاستماع للصوت...فعل ميكروفون المتصفح')" class="bg-gray-50 hover:bg-gray-100 border border-gray-200 p-3 rounded-xl text-gray-600 transition-all shadow-sm" title="بحث صوتي">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path></svg>
                         </button>
-                        <button onclick="alert('جارِ فتح الكاميرا...')" class="bg-gray-50 hover:bg-gray-100 border border-gray-200 p-3 rounded-xl text-gray-600 transition-all shadow-sm" title="بحث بالكاميرا">
+                        <button onclick="alert('جارِ فتح الكاميرا للمسح الضوئي...')" class="bg-gray-50 hover:bg-gray-100 border border-gray-200 p-3 rounded-xl text-gray-600 transition-all shadow-sm" title="بحث بالكاميرا">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                         </button>
                     </div>
@@ -266,8 +272,7 @@
             select.value = "";
         }
 
-
-        // ================= 2. الصفحة الرئيسية =================
+        // ================= 2. الصفحة الرئيسية (بعد الدخول) وتحتوي على البطاقات الأربعة =================
         function renderMainDashboard() {
             const html = `
                 ${getHeaderTemplate()}
@@ -278,6 +283,7 @@
                              alt="Banner" class="w-full h-36 sm:h-48 object-cover rounded-2xl shadow-md">
                     </div>
 
+                    <!-- البطاقات الأربعة الرئيسية المكبرة بتصميم أفقي متسلسل -->
                     <div class="space-y-3.5 pb-4">
                         <div onclick="renderBrandsScreen()" class="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white p-5 sm:p-6 rounded-2xl shadow-md cursor-pointer transition-all flex items-center justify-between">
                             <span class="font-bold text-lg sm:text-xl">الماركات</span>
@@ -304,28 +310,9 @@
             document.getElementById('appContainer').innerHTML = html;
         }
 
-
-        // ================= 3. شاشة الماركات (جلب الماركات ديناميكياً بناءً على الجدول الجديد) =================
-        async function renderBrandsScreen() {
-            // جلب أسماء الهواتف لتحديد الماركات المتوفرة فعلياً في الجدول (Samsung, iPhone, Nokia)
-            const { data, error } = await supabaseClient
-                .from('phone_screen_compatibilities')
-                .select('phone_name');
-
-            let brandsSet = new Set();
-            if (!error && data) {
-                data.forEach(item => {
-                    let name = item.phone_name.toLowerCase();
-                    if (name.includes('samsung')) brandsSet.add('Samsung');
-                    else if (name.includes('iphone')) brandsSet.add('iPhone');
-                    else if (name.includes('nokia')) brandsSet.add('Nokia');
-                });
-            }
-            
-            // لو الجدول فاضي أو حدث خطأ، نظهر الماركات الأساسية الموجودة في السيكوال كاحتياطي
-            let brandsList = brandsSet.size > 0 ? Array.from(brandsSet) : ["Samsung", "iPhone", "Nokia"];
-
-            let brandsHtml = brandsList.map(brand => `
+        // ================= 3. شاشة الماركات =================
+        function renderBrandsScreen() {
+            let brandsHtml = brandsData.map(brand => `
                 <div onclick="renderModelsScreen('${brand}')" class="w-full bg-blue-50/80 hover:bg-blue-100 border border-blue-200 p-4 rounded-2xl shadow-sm flex items-center justify-between cursor-pointer transition-all text-sm sm:text-base">
                     <span class="font-bold text-gray-800">${brand}</span>
                     <svg class="w-5 h-5 text-blue-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
@@ -347,25 +334,25 @@
             document.getElementById('appContainer').innerHTML = html;
         }
 
-
-        // ================= 4. شاشة الموديلات (تعمل بالفلترة مع الجدول الجديد) =================
+        // ================= 4. شاشة الموديلات (ربط الجدول الجديد phone_screen_compatibilities) =================
         async function renderModelsScreen(brand) {
             selectedBrand = brand;
             
+            // جلب البيانات مباشرة من الجدول الجديد الموحد حسب الماركة المختارة
             let models = [];
             const { data, error } = await supabaseClient
                 .from('phone_screen_compatibilities')
-                .select('phone_name, model_code');
-                
+                .select('phone_name, model_code, compatible_screens');
+
             if (!error && data) {
-                // تصفية الهواتف بناءً على الماركة المختارة
-                models = data.filter(m => m.phone_name.toLowerCase().includes(brand.toLowerCase()));
+                // تصفية الموديلات بناءً على اسم الماركة في العمود phone_name
+                models = data.filter(item => item.phone_name.toLowerCase().includes(brand.toLowerCase()));
             }
 
             let modelsHtml = "";
             if (models.length > 0) {
                 modelsHtml = models.map(m => `
-                    <div onclick="renderPartsScreen('${m.phone_name} (${m.model_code})')" class="w-full bg-blue-50/80 hover:bg-blue-100 border border-blue-200 p-4 rounded-2xl shadow-sm flex items-center justify-between cursor-pointer transition-all text-sm sm:text-base">
+                    <div onclick='renderPartsScreenWithData(${JSON.stringify(m)})' class="w-full bg-blue-50/80 hover:bg-blue-100 border border-blue-200 p-4 rounded-2xl shadow-sm flex items-center justify-between cursor-pointer transition-all text-sm sm:text-base">
                         <span class="font-bold text-gray-800">
                             ${m.phone_name} <span class="text-xs text-blue-600/70 font-normal">(${m.model_code})</span>
                         </span>
@@ -391,6 +378,11 @@
             document.getElementById('appContainer').innerHTML = html;
         }
 
+        function renderPartsScreenWithData(deviceObj) {
+            currentDeviceData = deviceObj;
+            selectedModel = `${deviceObj.phone_name} (${deviceObj.model_code})`;
+            renderPartsScreen(selectedModel);
+        }
 
         // ================= 5. شاشة قطع الغيار =================
         function renderPartsScreen(model) {
@@ -409,7 +401,7 @@
                     <button onclick="renderModelsScreen('${selectedBrand}')" class="bg-blue-50 hover:bg-blue-100 text-blue-600 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all border border-blue-200">
                         ↩ عودة للموديلات
                     </button>
-                    <h2 class="text-xs sm:text-sm font-bold text-gray-800">${selectedModel}</h2>
+                    <h2 class="text-xs sm:text-sm font-bold text-gray-800">${selectedBrand} - ${model}</h2>
                 </div>
                 <div class="flex-1 overflow-y-auto space-y-3 p-1">
                     ${partsHtml}
@@ -418,34 +410,18 @@
             document.getElementById('appContainer').innerHTML = html;
         }
 
-
-        // ================= 6. صفحة المنتج النهائية (مع جلب التوافقات الحقيقية من الأعمدة الجديدة) =================
-        async function renderProductDetailScreen(part) {
+        // ================= 6. صفحة المنتج النهائية (مع عرض التوافقات المستخرجة من الجدول الجديد) =================
+        function renderProductDetailScreen(part) {
             selectedPart = part;
 
-            let compatibilitiesText = "لا توجد توافقات مسجلة لهذه الشاشة.";
-            
-            if (part === "شاشة") {
-                // استخراج كود الموديل بين القوسين (مثلاً A013)
-                const match = selectedModel.match(/\(([^)]+)\)$/);
-                if (match && match[1]) {
-                    const currentModelCode = match[1].trim();
-                    const { data, error } = await supabaseClient
-                        .from('phone_screen_compatibilities')
-                        .select('compatible_screens')
-                        .eq('model_code', currentModelCode)
-                        .single();
-
-                    if (!error && data) {
-                        if (data.compatible_screens) {
-                            compatibilitiesText = data.compatible_screens;
-                        } else {
-                            compatibilitiesText = "هذه الشاشة غير مرتبطة بتوافقات أخرى (قيمة فارغة NULL).";
-                        }
-                    }
+            // استخراج التوافقات الخاصة بالجهاز إذا كانت القطعة "شاشة" وموجودة بقاعدة البيانات
+            let compatibilitiesText = "هذه القطعة متوافقة مع الإصدارات والنسخ المتطابقة من الماركة.";
+            if (part === "شاشة" && currentDeviceData) {
+                if (currentDeviceData.compatible_screens) {
+                    compatibilitiesText = `متوافق مع: ${currentDeviceData.compatible_screens}`;
+                } else {
+                    compatibilitiesText = "لا توجد توافقات مسجلة لهذه الشاشة حالياً (تقتصر على نفس الموديل فقط).";
                 }
-            } else {
-                compatibilitiesText = "التوافقات متاحة لقسم الشاشات بناءً على الجدول المحدث.";
             }
 
             const html = `
@@ -470,7 +446,7 @@
                     <!-- التوافقات -->
                     <div class="bg-emerald-50/70 border border-emerald-100 p-4.5 rounded-2xl shadow-sm">
                         <h3 class="font-bold text-emerald-800 mb-2 text-sm sm:text-base">🔗 التوافقات</h3>
-                        <p class="text-xs sm:text-sm text-gray-700 font-semibold">${compatibilitiesText}</p>
+                        <p class="text-xs sm:text-sm text-gray-600">${compatibilitiesText}</p>
                     </div>
 
                     <!-- تنبيهات بعد التركيب -->
