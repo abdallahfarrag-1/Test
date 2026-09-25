@@ -38,6 +38,7 @@
         let selectedPart = "";
         let selectedModelCode = ""; // حفظ كود الموديل لجلب التوافقات بدقة
         let currentScreenCompatibility = "";
+        let currentBatteryModel = ""; // لحفظ طراز البطارية
 
         // دالة مساعدة لإرجاع الألوان بالترتيب (أزرق، أخضر، بني)
         function getRotatingCardStyle(index) {
@@ -64,7 +65,7 @@
             return styles[index % 3];
         }
 
-        // قائمة الماركات المطلوبة تماماً (من قاعدة البيانات أو الثابتة)
+        // قائمة الماركات المطلوبة تماماً
         const brandsData = [
             "Apple", "Samsung", "Xiaomi", "Redmi", "Infinix", 
             "Oppo", "Realme", "Huawei", "Vivo", "Honor", "Techno", "itel", "Nokia"
@@ -336,7 +337,7 @@
             document.getElementById('appContainer').innerHTML = html;
         }
 
-        // ================= 3. شاشة الماركات (مع الألوان الدورية) =================
+        // ================= 3. شاشة الماركات =================
         function renderBrandsScreen(push = true) {
             if (push) {
                 history.pushState({ screen: 'brands' }, "", "");
@@ -354,8 +355,9 @@
             const html = `
                 ${getHeaderTemplate()}
                 <div class="flex items-center justify-between mb-4 flex-shrink-0">
-                    <button onclick="renderMainDashboard()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all">
-                        → رجوع
+                    <button onclick="renderMainDashboard()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center gap-1.5">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                        <span>رجوع</span>
                     </button>
                     <h2 class="text-sm sm:text-base font-bold text-gray-800">اختر الماركة</h2>
                 </div>
@@ -366,7 +368,7 @@
             document.getElementById('appContainer').innerHTML = html;
         }
 
-        // ================= 4. شاشة الموديلات (مع الألوان الدورية) =================
+        // ================= 4. شاشة الموديلات =================
         async function renderModelsScreen(brand, push = true) {
             selectedBrand = brand;
             if (push) {
@@ -377,6 +379,7 @@
             let nameColumn = "device_name";
             let codeColumn = "model_code";
             let compatColumn = "screen_compatibility";
+            let batteryColumn = "battery_model"; // اسم عمود طراز البطارية المتوقع في الجداول
             
             const b = brand.toLowerCase();
             if (b.includes('samsung')) {
@@ -384,90 +387,105 @@
                 nameColumn = 'samsung_phone_name';
                 codeColumn = 'samsung_phone_code';
                 compatColumn = 'samsung_screen_compatibility';
+                batteryColumn = 'samsung_battery_model';
             }
             else if (b.includes('iphone') || b.includes('apple')) {
                 tableName = 'apple_models';
                 nameColumn = 'apple_phone_name';
                 codeColumn = 'apple_phone_code';
                 compatColumn = 'apple_screen_compatibility';
+                batteryColumn = 'apple_battery_model';
             }
             else if (b.includes('xiaomi') || b.includes('poco')) {
                 tableName = 'xiaomi_models';
                 nameColumn = 'xiaomi_phone_name';
                 codeColumn = 'xiaomi_phone_code';
                 compatColumn = 'xiaomi_screen_compatibility';
+                batteryColumn = 'xiaomi_battery_model';
             }
             else if (b.includes('redmi')) {
                 tableName = 'redmi_models';
                 nameColumn = 'redmi_phone_name';
                 codeColumn = 'redmi_phone_code';
                 compatColumn = 'redmi_screen_compatibility';
+                batteryColumn = 'redmi_battery_model';
             }
             else if (b.includes('huawei')) {
                 tableName = 'huawei_models';
                 nameColumn = 'huawei_phone_name';
                 codeColumn = 'huawei_phone_code';
                 compatColumn = 'huawei_screen_compatibility';
+                batteryColumn = 'huawei_battery_model';
             }
             else if (b.includes('honor')) {
                 tableName = 'honor_models';
                 nameColumn = 'honor_phone_name';
                 codeColumn = 'honor_phone_code';
                 compatColumn = 'honor_screen_compatibility';
+                batteryColumn = 'honor_battery_model';
             }
             else if (b.includes('oppo')) {
                 tableName = 'oppo_models';
                 nameColumn = 'oppo_phone_name';
                 codeColumn = 'oppo_phone_code';
                 compatColumn = 'oppo_screen_compatibility';
+                batteryColumn = 'oppo_battery_model';
             }
             else if (b.includes('realme')) {
                 tableName = 'realme_models';
                 nameColumn = 'realme_phone_name';
                 codeColumn = 'realme_phone_code';
                 compatColumn = 'realme_screen_compatibility';
+                batteryColumn = 'realme_battery_model';
             }
             else if (b.includes('itel')) {
                 tableName = 'itel_models';
                 nameColumn = 'itel_phone_name';
                 codeColumn = 'itel_phone_code';
                 compatColumn = 'itel_screen_compatibility';
+                batteryColumn = 'itel_battery_model';
             }
             else if (b.includes('nokia')) {
                 tableName = 'nokia_models';
                 nameColumn = 'nokia_phone_name';
                 codeColumn = 'nokia_phone_code';
                 compatColumn = 'nokia_screen_compatibility';
+                batteryColumn = 'nokia_battery_model';
             }
             else if (b.includes('vivo')) {
                 tableName = 'vivo_models';
                 nameColumn = 'vivo_phone_name';
                 codeColumn = 'vivo_phone_code';
                 compatColumn = 'vivo_screen_compatibility';
+                batteryColumn = 'vivo_battery_model';
             }
             else if (b.includes('techno') || b.includes('tecno')) {
                 tableName = 'tecno_models';
                 nameColumn = 'tecno_phone_name';
                 codeColumn = 'tecno_phone_code';
                 compatColumn = 'tecno_screen_compatibility';
+                batteryColumn = 'tecno_battery_model';
             }
             else if (b.includes('infinix')) {
                 tableName = 'infinix_models';
                 nameColumn = 'infinix_phone_name';
                 codeColumn = 'infinix_phone_code';
                 compatColumn = 'infinix_screen_compatibility';
+                batteryColumn = 'infinix_battery_model';
             }
 
             let models = [];
             if (tableName) {
+                // جلب الحقول مع محاولة جلب عمود البطارية إذا وجد
                 let queryFields = `${nameColumn}, ${codeColumn}, ${compatColumn}`;
-
-                const { data, error } = await supabaseClient.from(tableName).select(queryFields);
+                
+                const { data, error } = await supabaseClient.from(tableName).select('*');
                 if (!error && data) {
                     models = data.map(item => ({
-                        device_name: item[nameColumn],
-                        model_code: item[codeColumn],
-                        screen_compatibility: item[compatColumn] || null
+                        device_name: item[nameColumn] || item['device_name'],
+                        model_code: item[codeColumn] || item['model_code'],
+                        screen_compatibility: item[compatColumn] || item['screen_compatibility'] || null,
+                        battery_model: item[batteryColumn] || item['battery_model'] || null
                     }));
                 }
             }
@@ -477,8 +495,9 @@
                 modelsHtml = models.map((m, index) => {
                     const style = getRotatingCardStyle(index);
                     const escapedCompat = m.screen_compatibility ? encodeURIComponent(m.screen_compatibility) : '';
+                    const escapedBattery = m.battery_model ? encodeURIComponent(m.battery_model) : '';
                     return `
-                        <div onclick="selectModelAndProceed('${m.device_name}', '${m.model_code}', '${escapedCompat}')" class="w-full ${style.bg} border ${style.border} p-4 rounded-2xl shadow-sm flex items-center justify-between cursor-pointer transition-all text-sm sm:text-base">
+                        <div onclick="selectModelAndProceed('${m.device_name}', '${m.model_code}', '${escapedCompat}', '${escapedBattery}')" class="w-full ${style.bg} border ${style.border} p-4 rounded-2xl shadow-sm flex items-center justify-between cursor-pointer transition-all text-sm sm:text-base">
                             <span class="font-bold text-gray-800">
                                 ${m.device_name} <span class="text-xs ${style.icon} font-normal">(${m.model_code})</span>
                             </span>
@@ -493,8 +512,9 @@
             const html = `
                 ${getHeaderTemplate()}
                 <div class="flex items-center justify-between mb-4 flex-shrink-0">
-                    <button onclick="renderBrandsScreen()" class="bg-blue-50 hover:bg-blue-100 text-blue-600 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all border border-blue-200">
-                        → رجوع
+                    <button onclick="renderBrandsScreen()" class="bg-blue-50 hover:bg-blue-100 text-blue-600 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all border border-blue-200 flex items-center gap-1.5">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                        <span>رجوع</span>
                     </button>
                     <h2 class="text-xs sm:text-sm font-bold text-gray-800">موديلات ${brand}</h2>
                 </div>
@@ -505,14 +525,15 @@
             document.getElementById('appContainer').innerHTML = html;
         }
 
-        function selectModelAndProceed(deviceName, modelCode, compatEncoded) {
+        function selectModelAndProceed(deviceName, modelCode, compatEncoded, batteryEncoded) {
             selectedModel = `${deviceName} (${modelCode})`;
             selectedModelCode = modelCode;
             currentScreenCompatibility = compatEncoded ? decodeURIComponent(compatEncoded) : "";
+            currentBatteryModel = batteryEncoded ? decodeURIComponent(batteryEncoded) : "";
             renderPartsScreen(selectedModel);
         }
 
-        // ================= 5. شاشة قطع الغيار (مع الألوان الدورية) =================
+        // ================= 5. شاشة قطع الغيار =================
         function renderPartsScreen(model, push = true) {
             selectedModel = model;
             if (push) {
@@ -532,8 +553,9 @@
             const html = `
                 ${getHeaderTemplate()}
                 <div class="flex items-center justify-between mb-4 flex-shrink-0">
-                    <button onclick="renderModelsScreen('${selectedBrand}')" class="bg-blue-50 hover:bg-blue-100 text-blue-600 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all border border-blue-200">
-                        → رجوع
+                    <button onclick="renderModelsScreen('${selectedBrand}')" class="bg-blue-50 hover:bg-blue-100 text-blue-600 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all border border-blue-200 flex items-center gap-1.5">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                        <span>رجوع</span>
                     </button>
                     <h2 class="text-xs sm:text-sm font-bold text-gray-800">${selectedBrand} - ${model}</h2>
                 </div>
@@ -564,27 +586,43 @@
                 }
             }
 
+            // تجهيز محتوى قسم طراز البطارية إذا كانت القطعة المختارة هي "بطارية"
+            let batterySectionHtml = "";
+            if (part === "بطارية") {
+                let batteryDisplay = currentBatteryModel ? currentBatteryModel : "غير متوفر طراز مسجل لهذا الموديل";
+                batterySectionHtml = `
+                    <div class="bg-indigo-50/70 border border-indigo-100 p-6 sm:p-7 rounded-2xl shadow-sm">
+                        <h3 class="font-bold text-indigo-800 mb-3 text-base sm:text-lg">🔋 طراز البطارية</h3>
+                        <p class="text-sm sm:text-base text-gray-600 font-medium">${batteryDisplay}</p>
+                    </div>
+                `;
+            }
+
             const html = `
                 ${getHeaderTemplate()}
                 <div class="flex items-center justify-between mb-4 flex-shrink-0">
-                    <button onclick="renderPartsScreen('${selectedModel}')" class="bg-blue-50 hover:bg-blue-100 text-blue-600 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all border border-blue-200">
-                        → رجوع
+                    <button onclick="renderPartsScreen('${selectedModel}')" class="bg-blue-50 hover:bg-blue-100 text-blue-600 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all border border-blue-200 flex items-center gap-1.5">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                        <span>رجوع</span>
                     </button>
                     <h2 class="text-xs sm:text-sm font-bold text-gray-800">${part} (${selectedModel})</h2>
                 </div>
 
                 <div class="flex-1 overflow-y-auto space-y-5 p-1">
+                    <div class="bg-emerald-50/70 border border-emerald-100 p-6 sm:p-7 rounded-2xl shadow-sm">
+                        <h3 class="font-bold text-emerald-800 mb-3 text-base sm:text-lg">🔗 التوافقات</h3>
+                        <p class="text-sm sm:text-base text-gray-600 font-medium">${compatibilityText}</p>
+                    </div>
+
+                    <!-- قسم طراز البطارية يظهر هنا مباشرة فوق قسم الشراء إذا كانت البطارية هي المختارة -->
+                    ${batterySectionHtml}
+
                     <div class="bg-blue-50/70 border border-blue-100 p-6 sm:p-7 rounded-2xl shadow-sm">
                         <h3 class="font-bold text-blue-800 mb-3 text-base sm:text-lg">🛒 شراء المنتج</h3>
                         <p class="text-sm sm:text-base text-gray-600 mb-4">القطعة متوفرة بالضمان الكامل.</p>
                         <button onclick="alert('تمت إضافة الطلب بنجاح!')" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl text-sm sm:text-base shadow-md transition-all">
                             شراء المنتج / اطلب الآن
                         </button>
-                    </div>
-
-                    <div class="bg-emerald-50/70 border border-emerald-100 p-6 sm:p-7 rounded-2xl shadow-sm">
-                        <h3 class="font-bold text-emerald-800 mb-3 text-base sm:text-lg">🔗 التوافقات</h3>
-                        <p class="text-sm sm:text-base text-gray-600 font-medium">${compatibilityText}</p>
                     </div>
 
                     <div class="bg-amber-50/70 border border-amber-100 p-6 sm:p-7 rounded-2xl shadow-sm">
