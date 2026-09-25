@@ -378,9 +378,48 @@
                 codeColumn = 'apple_phone_code';
                 compatColumn = 'apple_screen_compatibility';
             }
-            else if (b.includes('honor')) tableName = 'honor_models';
-            else if (b.includes('huawei')) tableName = 'huawei_models';
-            else if (b.includes('itel')) tableName = 'itel_models';
+            else if (b.includes('xiaomi') || b.includes('poco')) {
+                tableName = 'xiaomi_models';
+                nameColumn = 'xiaomi_phone_name';
+                codeColumn = 'xiaomi_phone_code';
+                compatColumn = 'xiaomi_screen_compatibility';
+            }
+            else if (b.includes('redmi')) {
+                tableName = 'redmi_models';
+                nameColumn = 'redmi_phone_name';
+                codeColumn = 'redmi_phone_code';
+                compatColumn = 'redmi_screen_compatibility';
+            }
+            else if (b.includes('huawei')) {
+                tableName = 'huawei_models';
+                nameColumn = 'huawei_phone_name';
+                codeColumn = 'huawei_phone_code';
+                compatColumn = 'huawei_screen_compatibility';
+            }
+            else if (b.includes('honor')) {
+                tableName = 'honor_models';
+                nameColumn = 'honor_phone_name';
+                codeColumn = 'honor_phone_code';
+                compatColumn = 'honor_screen_compatibility';
+            }
+            else if (b.includes('oppo')) {
+                tableName = 'oppo_models';
+                nameColumn = 'oppo_phone_name';
+                codeColumn = 'oppo_phone_code';
+                compatColumn = 'oppo_screen_compatibility';
+            }
+            else if (b.includes('realme')) {
+                tableName = 'realme_models';
+                nameColumn = 'realme_phone_name';
+                codeColumn = 'realme_phone_code';
+                compatColumn = 'realme_screen_compatibility';
+            }
+            else if (b.includes('itel')) {
+                tableName = 'itel_models';
+                nameColumn = 'itel_phone_name';
+                codeColumn = 'itel_phone_code';
+                compatColumn = 'itel_screen_compatibility';
+            }
             else if (b.includes('nokia')) {
                 tableName = 'nokia_models';
                 nameColumn = 'nokia_phone_name';
@@ -393,12 +432,18 @@
                 codeColumn = 'vivo_phone_code';
                 compatColumn = 'vivo_screen_compatibility';
             }
-            else if (b.includes('techno') || b.includes('tecno')) tableName = 'tecno_models';
-            else if (b.includes('oppo')) tableName = 'oppo_models';
-            else if (b.includes('realme')) tableName = 'realme_models';
-            else if (b.includes('redmi')) tableName = 'redmi_models';
-            else if (b.includes('xiaomi') || b.includes('poco')) tableName = 'xiaomi_poco_models';
-            else if (b.includes('infinix')) tableName = 'infinix_models';
+            else if (b.includes('techno') || b.includes('tecno')) {
+                tableName = 'tecno_models';
+                nameColumn = 'tecno_phone_name';
+                codeColumn = 'tecno_phone_code';
+                compatColumn = 'tecno_screen_compatibility';
+            }
+            else if (b.includes('infinix')) {
+                tableName = 'infinix_models';
+                nameColumn = 'infinix_phone_name';
+                codeColumn = 'infinix_phone_code';
+                compatColumn = 'infinix_screen_compatibility';
+            }
 
             let models = [];
             if (tableName) {
