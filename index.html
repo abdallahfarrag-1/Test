@@ -583,7 +583,7 @@
                 }
             }
 
-            // قسم طراز البطارية (يظهر فقط لقطعة "بطارية") فوق قسم الشراء مباشرة
+            // قسم طراز البطارية (يظهر فقط لقطعة "بطارية" ويكون في أعلى القائمة فوق الشراء مباشرة)
             let batterySectionHtml = "";
             if (part === "بطارية") {
                 let batteryDisplay = currentBatteryModel ? currentBatteryModel : "غير متوفر طراز مسجل لهذا الموديل";
@@ -606,7 +606,10 @@
                 </div>
 
                 <div class="flex-1 overflow-y-auto space-y-5 p-1">
-                    <!-- 1. قسم الشراء (أول قسم في الأعلى كما طلبته) -->
+                    <!-- 1. قسم طراز البطارية (يظهر هنا في الأعلى تماماً قبل الشراء عند اختيار البطارية) -->
+                    ${batterySectionHtml}
+
+                    <!-- 2. قسم الشراء (تحت طراز البطارية مباشرة، أو في الأعلى لو مش بطارية) -->
                     <div class="bg-blue-50/70 border border-blue-100 p-6 sm:p-7 rounded-2xl shadow-sm">
                         <h3 class="font-bold text-blue-800 mb-3 text-base sm:text-lg">🛒 شراء المنتج</h3>
                         <p class="text-sm sm:text-base text-gray-600 mb-4">القطعة متوفرة بالضمان الكامل.</p>
@@ -615,16 +618,13 @@
                         </button>
                     </div>
 
-                    <!-- 2. قسم التوافقات (تحت الشراء مباشرة) -->
+                    <!-- 3. قسم التوافقات (تحت الشراء) -->
                     <div class="bg-emerald-50/70 border border-emerald-100 p-6 sm:p-7 rounded-2xl shadow-sm">
                         <h3 class="font-bold text-emerald-800 mb-3 text-base sm:text-lg">🔗 التوافقات</h3>
                         <p class="text-sm sm:text-base text-gray-600 font-medium">${compatibilityText}</p>
                     </div>
 
-                    <!-- 3. قسم طراز البطارية (يظهر هنا في حالة البطارية وفوق الشراء بحسب مكان طلبه، أو تحت التوافقات حسب رغبتك الدقيقة) -->
-                    ${batterySectionHtml}
-
-                    <!-- 4. قسم التنبيهات -->
+                    <!-- 4. قسم التنبيهات (في الأسفل خالص) -->
                     <div class="bg-amber-50/70 border border-amber-100 p-6 sm:p-7 rounded-2xl shadow-sm">
                         <h3 class="font-bold text-amber-800 mb-3 text-base sm:text-lg">⚠️ تنبيهات بعد التركيب</h3>
                         <p class="text-sm sm:text-base text-gray-600">يُرجى التجربة الفورية قبل التثبيت النهائي وإزالة اللزقات.</p>
