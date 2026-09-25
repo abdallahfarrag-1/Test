@@ -36,7 +36,7 @@
         let selectedBrand = "";
         let selectedModel = "";
         let selectedPart = "";
-        let selectedModelCode = ""; // حفظ كود الموديل لجلب التوافقات بدقة
+        let selectedModelCode = ""; 
         let currentScreenCompatibility = "";
         let currentBatteryModel = ""; // لحفظ طراز البطارية
 
@@ -379,7 +379,7 @@
             let nameColumn = "device_name";
             let codeColumn = "model_code";
             let compatColumn = "screen_compatibility";
-            let batteryColumn = "battery_model"; // اسم عمود طراز البطارية المتوقع في الجداول
+            let batteryColumn = "battery_model";
             
             const b = brand.toLowerCase();
             if (b.includes('samsung')) {
@@ -476,9 +476,6 @@
 
             let models = [];
             if (tableName) {
-                // جلب الحقول مع محاولة جلب عمود البطارية إذا وجد
-                let queryFields = `${nameColumn}, ${codeColumn}, ${compatColumn}`;
-                
                 const { data, error } = await supabaseClient.from(tableName).select('*');
                 if (!error && data) {
                     models = data.map(item => ({
@@ -586,7 +583,7 @@
                 }
             }
 
-            // تجهيز محتوى قسم طراز البطارية إذا كانت القطعة المختارة هي "بطارية"
+            // قسم طراز البطارية (يظهر فقط لقطعة "بطارية") فوق قسم الشراء مباشرة
             let batterySectionHtml = "";
             if (part === "بطارية") {
                 let batteryDisplay = currentBatteryModel ? currentBatteryModel : "غير متوفر طراز مسجل لهذا الموديل";
@@ -609,14 +606,7 @@
                 </div>
 
                 <div class="flex-1 overflow-y-auto space-y-5 p-1">
-                    <div class="bg-emerald-50/70 border border-emerald-100 p-6 sm:p-7 rounded-2xl shadow-sm">
-                        <h3 class="font-bold text-emerald-800 mb-3 text-base sm:text-lg">🔗 التوافقات</h3>
-                        <p class="text-sm sm:text-base text-gray-600 font-medium">${compatibilityText}</p>
-                    </div>
-
-                    <!-- قسم طراز البطارية يظهر هنا مباشرة فوق قسم الشراء إذا كانت البطارية هي المختارة -->
-                    ${batterySectionHtml}
-
+                    <!-- 1. قسم الشراء (أول قسم في الأعلى كما طلبته) -->
                     <div class="bg-blue-50/70 border border-blue-100 p-6 sm:p-7 rounded-2xl shadow-sm">
                         <h3 class="font-bold text-blue-800 mb-3 text-base sm:text-lg">🛒 شراء المنتج</h3>
                         <p class="text-sm sm:text-base text-gray-600 mb-4">القطعة متوفرة بالضمان الكامل.</p>
@@ -625,6 +615,16 @@
                         </button>
                     </div>
 
+                    <!-- 2. قسم التوافقات (تحت الشراء مباشرة) -->
+                    <div class="bg-emerald-50/70 border border-emerald-100 p-6 sm:p-7 rounded-2xl shadow-sm">
+                        <h3 class="font-bold text-emerald-800 mb-3 text-base sm:text-lg">🔗 التوافقات</h3>
+                        <p class="text-sm sm:text-base text-gray-600 font-medium">${compatibilityText}</p>
+                    </div>
+
+                    <!-- 3. قسم طراز البطارية (يظهر هنا في حالة البطارية وفوق الشراء بحسب مكان طلبه، أو تحت التوافقات حسب رغبتك الدقيقة) -->
+                    ${batterySectionHtml}
+
+                    <!-- 4. قسم التنبيهات -->
                     <div class="bg-amber-50/70 border border-amber-100 p-6 sm:p-7 rounded-2xl shadow-sm">
                         <h3 class="font-bold text-amber-800 mb-3 text-base sm:text-lg">⚠️ تنبيهات بعد التركيب</h3>
                         <p class="text-sm sm:text-base text-gray-600">يُرجى التجربة الفورية قبل التثبيت النهائي وإزالة اللزقات.</p>
@@ -638,7 +638,6 @@
         window.onload = function() {
             renderLoginScreen();
 
-            // الاستماع لحركة زر الرجوع في الهاتف أو المتصفح
             window.addEventListener('popstate', function(event) {
                 if (event.state && event.state.screen) {
                     const state = event.state;
