@@ -37,6 +37,7 @@
         let selectedModel = "";
         let selectedPart = "";
         let selectedModelCode = ""; // حفظ كود الموديل لجلب التوافقات بدقة
+        let currentScreenCompatibility = "";
 
         // دالة مساعدة لإرجاع الألوان بالترتيب (أزرق، أخضر، بني)
         function getRotatingCardStyle(index) {
@@ -77,7 +78,10 @@
         ];
 
         // ================= 1. واجهة تسجيل الدخول (الصفحة الأولى) =================
-        function renderLoginScreen() {
+        function renderLoginScreen(push = true) {
+            if (push) {
+                history.pushState({ screen: 'login' }, "", "");
+            }
             const html = `
                 <div class="flex-1 overflow-y-auto px-2">
                     <div class="max-w-xl mx-auto w-full py-4">
@@ -293,7 +297,10 @@
         }
 
         // ================= 2. الصفحة الرئيسية =================
-        function renderMainDashboard() {
+        function renderMainDashboard(push = true) {
+            if (push) {
+                history.pushState({ screen: 'main' }, "", "");
+            }
             const html = `
                 ${getHeaderTemplate()}
 
@@ -330,7 +337,10 @@
         }
 
         // ================= 3. شاشة الماركات (مع الألوان الدورية) =================
-        function renderBrandsScreen() {
+        function renderBrandsScreen(push = true) {
+            if (push) {
+                history.pushState({ screen: 'brands' }, "", "");
+            }
             let brandsHtml = brandsData.map((brand, index) => {
                 const style = getRotatingCardStyle(index);
                 return `
@@ -357,8 +367,11 @@
         }
 
         // ================= 4. شاشة الموديلات (مع الألوان الدورية) =================
-        async function renderModelsScreen(brand) {
+        async function renderModelsScreen(brand, push = true) {
             selectedBrand = brand;
+            if (push) {
+                history.pushState({ screen: 'models', brand: brand }, "", "");
+            }
             
             let tableName = "";
             let nameColumn = "device_name";
@@ -492,8 +505,6 @@
             document.getElementById('appContainer').innerHTML = html;
         }
 
-        let currentScreenCompatibility = "";
-
         function selectModelAndProceed(deviceName, modelCode, compatEncoded) {
             selectedModel = `${deviceName} (${modelCode})`;
             selectedModelCode = modelCode;
@@ -502,8 +513,11 @@
         }
 
         // ================= 5. شاشة قطع الغيار (مع الألوان الدورية) =================
-        function renderPartsScreen(model) {
+        function renderPartsScreen(model, push = true) {
             selectedModel = model;
+            if (push) {
+                history.pushState({ screen: 'parts', model: model, brand: selectedBrand }, "", "");
+            }
 
             let partsHtml = sparePartsList.map((part, index) => {
                 const style = getRotatingCardStyle(index);
@@ -531,8 +545,11 @@
         }
 
         // ================= 6. صفحة المنتج النهائية =================
-        function renderProductDetailScreen(part) {
+        function renderProductDetailScreen(part, push = true) {
             selectedPart = part;
+            if (push) {
+                history.pushState({ screen: 'product', part: part, model: selectedModel, brand: selectedBrand }, "", "");
+            }
 
             let compatibilityText = "هذه القطعة متوافقة مع الإصدارات والنسخ المتطابقة من الماركة.";
             if (part === "شاشة") {
@@ -579,9 +596,35 @@
             document.getElementById('appContainer').innerHTML = html;
         }
 
-        // التشغيل المبدئي
+        // التشغيل المبدئي وإدارة زر الرجوع (Back Button)
         window.onload = function() {
             renderLoginScreen();
+
+            // الاستماع لحركة زر الرجوع في الهاتف أو المتصفح
+            window.addEventListener('popstate', function(event) {
+                if (event.state && event.state.screen) {
+                    const state = event.state;
+                    if (state.screen === 'login') {
+                        renderLoginScreen(false);
+                    } else if (state.screen === 'main') {
+                        renderMainDashboard(false);
+                    } else if (state.screen === 'brands') {
+                        renderBrandsScreen(false);
+                    } else if (state.screen === 'models') {
+                        selectedBrand = state.brand;
+                        renderModelsScreen(state.brand, false);
+                    } else if (state.screen === 'parts') {
+                        selectedBrand = state.brand;
+                        renderPartsScreen(state.model, false);
+                    } else if (state.screen === 'product') {
+                        selectedBrand = state.brand;
+                        selectedModel = state.model;
+                        renderProductDetailScreen(state.part, false);
+                    }
+                } else {
+                    renderLoginScreen(false);
+                }
+            });
         };
     </script>
 </body>
