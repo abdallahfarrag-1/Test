@@ -25,7 +25,7 @@
 
     </div>
 
-    <!-- كود الجافاسكريبت لإدارة النظام والصفحات والتنقل الأفقي -->
+    <!-- كود الجافاسكريبت لإدارة النظام والصفحات والتنقل الداخلي بدقة -->
     <script>
         // إعدادات اتصال Supabase
         const SUPABASE_URL = 'https://byiayomtcwqlgrknvgcz.supabase.co';
@@ -38,29 +38,43 @@
         let selectedPart = "";
         let selectedModelCode = ""; 
         let currentScreenCompatibility = "";
-        let currentBatteryModel = ""; // لحفظ طراز البطارية
+        let currentBatteryModel = ""; 
+
+        // مصفوفة تتبع خطوات التنقل الداخلية (لضمان الرجوع للخلف فقط بشكل مضبوط 100%)
+        let navStack = [];
+
+        function navigateTo(screenFunction, params = {}, addToStack = true) {
+            if (addToStack && navStack.length > 0) {
+                // حفظ الشاشة الحالية قبل الانتقال للجديدة
+                const current = navStack[navStack.length - 1];
+                // عدم تكرار نفس الشاشة متتالية
+                if (current.fn !== screenFunction || JSON.stringify(current.params) !== JSON.stringify(params)) {
+                    // ممكن نسجلهم لو حابين، لكن الأسهل حفظ دالة التنقل بالباراميترز
+                }
+            }
+            if (addToStack) {
+                navStack.push({ fn: screenFunction, params: params });
+            }
+            screenFunction(params, false);
+        }
+
+        function goBack() {
+            if (navStack.length > 1) {
+                navStack.pop(); // حذف الشاشة الحالية
+                const previous = navStack[navStack.length - 1]; // الحصول على الشاشة السابقة
+                previous.fn(previous.params, false);
+            } else {
+                // لو وصلنا للبداية خالص
+                renderLoginScreen(false);
+            }
+        }
 
         // دالة مساعدة لإرجاع الألوان بالترتيب (أزرق، أخضر، بني)
         function getRotatingCardStyle(index) {
             const styles = [
-                {
-                    bg: "bg-blue-50/80 hover:bg-blue-100",
-                    border: "border-blue-200",
-                    text: "text-blue-800",
-                    icon: "text-blue-500"
-                },
-                {
-                    bg: "bg-emerald-50/80 hover:bg-emerald-100",
-                    border: "border-emerald-200",
-                    text: "text-emerald-800",
-                    icon: "text-emerald-500"
-                },
-                {
-                    bg: "bg-amber-50/80 hover:bg-amber-100",
-                    border: "border-amber-200",
-                    text: "text-amber-800",
-                    icon: "text-amber-500"
-                }
+                { bg: "bg-blue-50/80 hover:bg-blue-100", border: "border-blue-200", text: "text-blue-800", icon: "text-blue-500" },
+                { bg: "bg-emerald-50/80 hover:bg-emerald-100", border: "border-emerald-200", text: "text-emerald-800", icon: "text-emerald-500" },
+                { bg: "bg-amber-50/80 hover:bg-amber-100", border: "border-amber-200", text: "text-amber-800", icon: "text-amber-500" }
             ];
             return styles[index % 3];
         }
@@ -78,10 +92,10 @@
             "سماعة خارجية مكبر الصوت", "سوكيت", "ايسيهات"
         ];
 
-        // ================= 1. واجهة تسجيل الدخول (الصفحة الأولى) =================
-        function renderLoginScreen(push = true) {
-            if (push) {
-                history.pushState({ screen: 'login' }, "", "");
+        // ================= 1. واجهة تسجيل الدخول =================
+        function renderLoginScreen(params = {}, resetStack = true) {
+            if (resetStack) {
+                navStack = [{ fn: renderLoginScreen, params: {} }];
             }
             const html = `
                 <div class="flex-1 overflow-y-auto px-2">
@@ -90,13 +104,11 @@
                             <h1 class="text-2xl sm:text-3xl font-bold text-gray-800 tracking-wide">Electricity Aswan</h1>
                         </div>
 
-                        <!-- الصورة المستطيلة بحواف دائرية ذات ظلال -->
                         <div class="mb-6">
                             <img src="https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?auto=format&fit=crop&w=800&q=80" 
                                  alt="Banner" class="w-full h-40 sm:h-52 object-cover rounded-2xl shadow-md">
                         </div>
 
-                        <!-- أزرار التبديل بين (تسجيل الدخول) و (إنشاء حساب) -->
                         <div class="grid grid-cols-2 gap-2 bg-gray-100 p-1.5 rounded-2xl mb-6">
                             <button onclick="switchTab('login')" id="loginTabBtn" 
                                     class="py-2.5 text-sm font-semibold rounded-xl transition-all duration-200 bg-white text-blue-600 shadow-sm">
@@ -108,7 +120,6 @@
                             </button>
                         </div>
 
-                        <!-- خانة تسجيل الدخول -->
                         <div id="loginFormContainer">
                             <form onsubmit="handleLoginSubmit(event)" class="space-y-4">
                                 <div>
@@ -121,21 +132,12 @@
                                     <input type="password" id="loginPassword" required
                                            class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-gray-50">
                                 </div>
-                                
-                                <div class="flex items-center justify-between text-sm">
-                                    <label class="flex items-center space-x-2 space-x-reverse cursor-pointer">
-                                        <input type="checkbox" class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
-                                        <span class="text-gray-600 text-xs">تذكرني</span>
-                                    </label>
-                                </div>
-
                                 <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl shadow-lg shadow-blue-500/35 transition-all text-sm">
                                     تسجيل الدخول
                                 </button>
                             </form>
                         </div>
 
-                        <!-- خانة إنشاء حساب (مخفية افتراضياً) -->
                         <div id="registerFormContainer" class="hidden">
                             <form onsubmit="handleRegisterSubmit(event)" class="space-y-3.5">
                                 <div>
@@ -158,7 +160,6 @@
                                     <label class="block text-xs font-semibold text-gray-600 mb-1">رمز المرور</label>
                                     <input type="password" id="regPassword" required class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-gray-50">
                                 </div>
-
                                 <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl shadow-lg shadow-emerald-500/35 transition-all text-sm mt-2">
                                     إنشاء الحساب
                                 </button>
@@ -170,7 +171,6 @@
                             <div class="relative flex justify-center text-xs uppercase"><span class="bg-white px-2 text-gray-400">أو</span></div>
                         </div>
 
-                        <!-- زر الدخول كزائر -->
                         <div>
                             <button onclick="loginAsVisitor()" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 rounded-xl transition-all text-sm border border-gray-200">
                                 الدخول كزائر
@@ -219,7 +219,7 @@
             }
 
             currentUserRole = data.phone_number;
-            renderMainDashboard();
+            renderMainDashboard({}, true);
         }
 
         async function handleRegisterSubmit(e) {
@@ -242,15 +242,14 @@
 
             alert('تم إنشاء الحساب بنجاح!');
             currentUserRole = phone_number;
-            renderMainDashboard();
+            renderMainDashboard({}, true);
         }
 
         function loginAsVisitor() {
             currentUserRole = "زائر";
-            renderMainDashboard();
+            renderMainDashboard({}, true);
         }
 
-        // ================= قالب الجزء الثابت المتكرر في أعلى كل الصفحات الداخلية =================
         function getHeaderTemplate() {
             return `
                 <div class="border-b border-gray-100 pb-4 mb-4 flex-shrink-0">
@@ -290,18 +289,21 @@
 
         function handleMenuChange(select) {
             if (select.value === 'logout') {
-                renderLoginScreen();
+                renderLoginScreen({}, true);
             } else if (select.value === 'home') {
-                renderMainDashboard();
+                renderMainDashboard({}, true);
             }
             select.value = "";
         }
 
         // ================= 2. الصفحة الرئيسية =================
-        function renderMainDashboard(push = true) {
-            if (push) {
-                history.pushState({ screen: 'main' }, "", "");
+        function renderMainDashboard(params = {}, resetStack = false) {
+            if (resetStack) {
+                navStack = [{ fn: renderMainDashboard, params: {} }];
+            } else {
+                navStack.push({ fn: renderMainDashboard, params: {} });
             }
+
             const html = `
                 ${getHeaderTemplate()}
 
@@ -338,14 +340,17 @@
         }
 
         // ================= 3. شاشة الماركات =================
-        function renderBrandsScreen(push = true) {
-            if (push) {
-                history.pushState({ screen: 'brands' }, "", "");
+        function renderBrandsScreen(params = {}, resetStack = false) {
+            if (resetStack) {
+                navStack = [{ fn: renderBrandsScreen, params: {} }];
+            } else {
+                navStack.push({ fn: renderBrandsScreen, params: {} });
             }
+
             let brandsHtml = brandsData.map((brand, index) => {
                 const style = getRotatingCardStyle(index);
                 return `
-                    <div onclick="renderModelsScreen('${brand}')" class="w-full ${style.bg} border ${style.border} p-4 rounded-2xl shadow-sm flex items-center justify-between cursor-pointer transition-all text-sm sm:text-base">
+                    <div onclick="renderModelsScreen({brand: '${brand}'})" class="w-full ${style.bg} border ${style.border} p-4 rounded-2xl shadow-sm flex items-center justify-between cursor-pointer transition-all text-sm sm:text-base">
                         <span class="font-bold text-gray-800">${brand}</span>
                         <svg class="w-5 h-5 ${style.icon} flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
                     </div>
@@ -355,7 +360,7 @@
             const html = `
                 ${getHeaderTemplate()}
                 <div class="flex items-center justify-between mb-4 flex-shrink-0">
-                    <button onclick="renderMainDashboard()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center gap-1.5">
+                    <button onclick="goBack()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center gap-1.5">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
                         <span>رجوع</span>
                     </button>
@@ -369,10 +374,14 @@
         }
 
         // ================= 4. شاشة الموديلات =================
-        async function renderModelsScreen(brand, push = true) {
+        async function renderModelsScreen(params = {}, resetStack = false) {
+            const brand = params.brand;
             selectedBrand = brand;
-            if (push) {
-                history.pushState({ screen: 'models', brand: brand }, "", "");
+
+            if (resetStack) {
+                navStack = [{ fn: renderModelsScreen, params: params }];
+            } else {
+                navStack.push({ fn: renderModelsScreen, params: params });
             }
             
             let tableName = "";
@@ -382,97 +391,19 @@
             let batteryColumn = "battery_model";
             
             const b = brand.toLowerCase();
-            if (b.includes('samsung')) {
-                tableName = 'samsung_models';
-                nameColumn = 'samsung_phone_name';
-                codeColumn = 'samsung_phone_code';
-                compatColumn = 'samsung_screen_compatibility';
-                batteryColumn = 'samsung_battery_model';
-            }
-            else if (b.includes('iphone') || b.includes('apple')) {
-                tableName = 'apple_models';
-                nameColumn = 'apple_phone_name';
-                codeColumn = 'apple_phone_code';
-                compatColumn = 'apple_screen_compatibility';
-                batteryColumn = 'apple_battery_model';
-            }
-            else if (b.includes('xiaomi') || b.includes('poco')) {
-                tableName = 'xiaomi_models';
-                nameColumn = 'xiaomi_phone_name';
-                codeColumn = 'xiaomi_phone_code';
-                compatColumn = 'xiaomi_screen_compatibility';
-                batteryColumn = 'xiaomi_battery_model';
-            }
-            else if (b.includes('redmi')) {
-                tableName = 'redmi_models';
-                nameColumn = 'redmi_phone_name';
-                codeColumn = 'redmi_phone_code';
-                compatColumn = 'redmi_screen_compatibility';
-                batteryColumn = 'redmi_battery_model';
-            }
-            else if (b.includes('huawei')) {
-                tableName = 'huawei_models';
-                nameColumn = 'huawei_phone_name';
-                codeColumn = 'huawei_phone_code';
-                compatColumn = 'huawei_screen_compatibility';
-                batteryColumn = 'huawei_battery_model';
-            }
-            else if (b.includes('honor')) {
-                tableName = 'honor_models';
-                nameColumn = 'honor_phone_name';
-                codeColumn = 'honor_phone_code';
-                compatColumn = 'honor_screen_compatibility';
-                batteryColumn = 'honor_battery_model';
-            }
-            else if (b.includes('oppo')) {
-                tableName = 'oppo_models';
-                nameColumn = 'oppo_phone_name';
-                codeColumn = 'oppo_phone_code';
-                compatColumn = 'oppo_screen_compatibility';
-                batteryColumn = 'oppo_battery_model';
-            }
-            else if (b.includes('realme')) {
-                tableName = 'realme_models';
-                nameColumn = 'realme_phone_name';
-                codeColumn = 'realme_phone_code';
-                compatColumn = 'realme_screen_compatibility';
-                batteryColumn = 'realme_battery_model';
-            }
-            else if (b.includes('itel')) {
-                tableName = 'itel_models';
-                nameColumn = 'itel_phone_name';
-                codeColumn = 'itel_phone_code';
-                compatColumn = 'itel_screen_compatibility';
-                batteryColumn = 'itel_battery_model';
-            }
-            else if (b.includes('nokia')) {
-                tableName = 'nokia_models';
-                nameColumn = 'nokia_phone_name';
-                codeColumn = 'nokia_phone_code';
-                compatColumn = 'nokia_screen_compatibility';
-                batteryColumn = 'nokia_battery_model';
-            }
-            else if (b.includes('vivo')) {
-                tableName = 'vivo_models';
-                nameColumn = 'vivo_phone_name';
-                codeColumn = 'vivo_phone_code';
-                compatColumn = 'vivo_screen_compatibility';
-                batteryColumn = 'vivo_battery_model';
-            }
-            else if (b.includes('techno') || b.includes('tecno')) {
-                tableName = 'tecno_models';
-                nameColumn = 'tecno_phone_name';
-                codeColumn = 'tecno_phone_code';
-                compatColumn = 'tecno_screen_compatibility';
-                batteryColumn = 'tecno_battery_model';
-            }
-            else if (b.includes('infinix')) {
-                tableName = 'infinix_models';
-                nameColumn = 'infinix_phone_name';
-                codeColumn = 'infinix_phone_code';
-                compatColumn = 'infinix_screen_compatibility';
-                batteryColumn = 'infinix_battery_model';
-            }
+            if (b.includes('samsung')) { tableName = 'samsung_models'; nameColumn = 'samsung_phone_name'; codeColumn = 'samsung_phone_code'; compatColumn = 'samsung_screen_compatibility'; batteryColumn = 'samsung_battery_model'; }
+            else if (b.includes('iphone') || b.includes('apple')) { tableName = 'apple_models'; nameColumn = 'apple_phone_name'; codeColumn = 'apple_phone_code'; compatColumn = 'apple_screen_compatibility'; batteryColumn = 'apple_battery_model'; }
+            else if (b.includes('xiaomi') || b.includes('poco')) { tableName = 'xiaomi_models'; nameColumn = 'xiaomi_phone_name'; codeColumn = 'xiaomi_phone_code'; compatColumn = 'xiaomi_screen_compatibility'; batteryColumn = 'xiaomi_battery_model'; }
+            else if (b.includes('redmi')) { tableName = 'redmi_models'; nameColumn = 'redmi_phone_name'; codeColumn = 'redmi_phone_code'; compatColumn = 'redmi_screen_compatibility'; batteryColumn = 'redmi_battery_model'; }
+            else if (b.includes('huawei')) { tableName = 'huawei_models'; nameColumn = 'huawei_phone_name'; codeColumn = 'huawei_phone_code'; compatColumn = 'huawei_screen_compatibility'; batteryColumn = 'huawei_battery_model'; }
+            else if (b.includes('honor')) { tableName = 'honor_models'; nameColumn = 'honor_phone_name'; codeColumn = 'honor_phone_code'; compatColumn = 'honor_screen_compatibility'; batteryColumn = 'honor_battery_model'; }
+            else if (b.includes('oppo')) { tableName = 'oppo_models'; nameColumn = 'oppo_phone_name'; codeColumn = 'oppo_phone_code'; compatColumn = 'oppo_screen_compatibility'; batteryColumn = 'oppo_battery_model'; }
+            else if (b.includes('realme')) { tableName = 'realme_models'; nameColumn = 'realme_phone_name'; codeColumn = 'realme_phone_code'; compatColumn = 'realme_screen_compatibility'; batteryColumn = 'realme_battery_model'; }
+            else if (b.includes('itel')) { tableName = 'itel_models'; nameColumn = 'itel_phone_name'; codeColumn = 'itel_phone_code'; compatColumn = 'itel_screen_compatibility'; batteryColumn = 'itel_battery_model'; }
+            else if (b.includes('nokia')) { tableName = 'nokia_models'; nameColumn = 'nokia_phone_name'; codeColumn = 'nokia_phone_code'; compatColumn = 'nokia_screen_compatibility'; batteryColumn = 'nokia_battery_model'; }
+            else if (b.includes('vivo')) { tableName = 'vivo_models'; nameColumn = 'vivo_phone_name'; codeColumn = 'vivo_phone_code'; compatColumn = 'vivo_screen_compatibility'; batteryColumn = 'vivo_battery_model'; }
+            else if (b.includes('techno') || b.includes('tecno')) { tableName = 'tecno_models'; nameColumn = 'tecno_phone_name'; codeColumn = 'tecno_phone_code'; compatColumn = 'tecno_screen_compatibility'; batteryColumn = 'tecno_battery_model'; }
+            else if (b.includes('infinix')) { tableName = 'infinix_models'; nameColumn = 'infinix_phone_name'; codeColumn = 'infinix_phone_code'; compatColumn = 'infinix_screen_compatibility'; batteryColumn = 'infinix_battery_model'; }
 
             let models = [];
             if (tableName) {
@@ -509,7 +440,7 @@
             const html = `
                 ${getHeaderTemplate()}
                 <div class="flex items-center justify-between mb-4 flex-shrink-0">
-                    <button onclick="renderBrandsScreen()" class="bg-blue-50 hover:bg-blue-100 text-blue-600 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all border border-blue-200 flex items-center gap-1.5">
+                    <button onclick="goBack()" class="bg-blue-50 hover:bg-blue-100 text-blue-600 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all border border-blue-200 flex items-center gap-1.5">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
                         <span>رجوع</span>
                     </button>
@@ -527,20 +458,25 @@
             selectedModelCode = modelCode;
             currentScreenCompatibility = compatEncoded ? decodeURIComponent(compatEncoded) : "";
             currentBatteryModel = batteryEncoded ? decodeURIComponent(batteryEncoded) : "";
-            renderPartsScreen(selectedModel);
+            
+            renderPartsScreen({ model: selectedModel });
         }
 
         // ================= 5. شاشة قطع الغيار =================
-        function renderPartsScreen(model, push = true) {
+        function renderPartsScreen(params = {}, resetStack = false) {
+            const model = params.model;
             selectedModel = model;
-            if (push) {
-                history.pushState({ screen: 'parts', model: model, brand: selectedBrand }, "", "");
+
+            if (resetStack) {
+                navStack = [{ fn: renderPartsScreen, params: params }];
+            } else {
+                navStack.push({ fn: renderPartsScreen, params: params });
             }
 
             let partsHtml = sparePartsList.map((part, index) => {
                 const style = getRotatingCardStyle(index);
                 return `
-                    <div onclick="renderProductDetailScreen('${part}')" class="w-full ${style.bg} border ${style.border} p-4 rounded-2xl shadow-sm flex items-center justify-between cursor-pointer transition-all text-sm sm:text-base">
+                    <div onclick="renderProductDetailScreen({part: '${part}'})" class="w-full ${style.bg} border ${style.border} p-4 rounded-2xl shadow-sm flex items-center justify-between cursor-pointer transition-all text-sm sm:text-base">
                         <span class="font-bold text-gray-800">${part}</span>
                         <svg class="w-5 h-5 ${style.icon} flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
                     </div>
@@ -550,7 +486,7 @@
             const html = `
                 ${getHeaderTemplate()}
                 <div class="flex items-center justify-between mb-4 flex-shrink-0">
-                    <button onclick="renderModelsScreen('${selectedBrand}')" class="bg-blue-50 hover:bg-blue-100 text-blue-600 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all border border-blue-200 flex items-center gap-1.5">
+                    <button onclick="goBack()" class="bg-blue-50 hover:bg-blue-100 text-blue-600 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all border border-blue-200 flex items-center gap-1.5">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
                         <span>رجوع</span>
                     </button>
@@ -564,10 +500,14 @@
         }
 
         // ================= 6. صفحة المنتج النهائية =================
-        function renderProductDetailScreen(part, push = true) {
+        function renderProductDetailScreen(params = {}, resetStack = false) {
+            const part = params.part;
             selectedPart = part;
-            if (push) {
-                history.pushState({ screen: 'product', part: part, model: selectedModel, brand: selectedBrand }, "", "");
+
+            if (resetStack) {
+                navStack = [{ fn: renderProductDetailScreen, params: params }];
+            } else {
+                navStack.push({ fn: renderProductDetailScreen, params: params });
             }
 
             let compatibilityText = "هذه القطعة متوافقة مع الإصدارات والنسخ المتطابقة من الماركة.";
@@ -583,7 +523,6 @@
                 }
             }
 
-            // قسم طراز البطارية (يظهر فقط لقطعة "بطارية" ويكون في أعلى القائمة فوق الشراء مباشرة)
             let batterySectionHtml = "";
             if (part === "بطارية") {
                 let batteryDisplay = currentBatteryModel ? currentBatteryModel : "غير متوفر طراز مسجل لهذا الموديل";
@@ -598,7 +537,7 @@
             const html = `
                 ${getHeaderTemplate()}
                 <div class="flex items-center justify-between mb-4 flex-shrink-0">
-                    <button onclick="renderPartsScreen('${selectedModel}')" class="bg-blue-50 hover:bg-blue-100 text-blue-600 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all border border-blue-200 flex items-center gap-1.5">
+                    <button onclick="goBack()" class="bg-blue-50 hover:bg-blue-100 text-blue-600 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all border border-blue-200 flex items-center gap-1.5">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
                         <span>رجوع</span>
                     </button>
@@ -606,10 +545,8 @@
                 </div>
 
                 <div class="flex-1 overflow-y-auto space-y-5 p-1">
-                    <!-- 1. قسم طراز البطارية (يظهر هنا في الأعلى تماماً قبل الشراء عند اختيار البطارية) -->
                     ${batterySectionHtml}
 
-                    <!-- 2. قسم الشراء (تحت طراز البطارية مباشرة، أو في الأعلى لو مش بطارية) -->
                     <div class="bg-blue-50/70 border border-blue-100 p-6 sm:p-7 rounded-2xl shadow-sm">
                         <h3 class="font-bold text-blue-800 mb-3 text-base sm:text-lg">🛒 شراء المنتج</h3>
                         <p class="text-sm sm:text-base text-gray-600 mb-4">القطعة متوفرة بالضمان الكامل.</p>
@@ -618,13 +555,11 @@
                         </button>
                     </div>
 
-                    <!-- 3. قسم التوافقات (تحت الشراء) -->
                     <div class="bg-emerald-50/70 border border-emerald-100 p-6 sm:p-7 rounded-2xl shadow-sm">
                         <h3 class="font-bold text-emerald-800 mb-3 text-base sm:text-lg">🔗 التوافقات</h3>
                         <p class="text-sm sm:text-base text-gray-600 font-medium">${compatibilityText}</p>
                     </div>
 
-                    <!-- 4. قسم التنبيهات (في الأسفل خالص) -->
                     <div class="bg-amber-50/70 border border-amber-100 p-6 sm:p-7 rounded-2xl shadow-sm">
                         <h3 class="font-bold text-amber-800 mb-3 text-base sm:text-lg">⚠️ تنبيهات بعد التركيب</h3>
                         <p class="text-sm sm:text-base text-gray-600">يُرجى التجربة الفورية قبل التثبيت النهائي وإزالة اللزقات.</p>
@@ -634,34 +569,9 @@
             document.getElementById('appContainer').innerHTML = html;
         }
 
-        // التشغيل المبدئي وإدارة زر الرجوع (Back Button)
+        // التشغيل المبدئي للتطبيق
         window.onload = function() {
             renderLoginScreen();
-
-            window.addEventListener('popstate', function(event) {
-                if (event.state && event.state.screen) {
-                    const state = event.state;
-                    if (state.screen === 'login') {
-                        renderLoginScreen(false);
-                    } else if (state.screen === 'main') {
-                        renderMainDashboard(false);
-                    } else if (state.screen === 'brands') {
-                        renderBrandsScreen(false);
-                    } else if (state.screen === 'models') {
-                        selectedBrand = state.brand;
-                        renderModelsScreen(state.brand, false);
-                    } else if (state.screen === 'parts') {
-                        selectedBrand = state.brand;
-                        renderPartsScreen(state.model, false);
-                    } else if (state.screen === 'product') {
-                        selectedBrand = state.brand;
-                        selectedModel = state.model;
-                        renderProductDetailScreen(state.part, false);
-                    }
-                } else {
-                    renderLoginScreen(false);
-                }
-            });
         };
     </script>
 </body>
