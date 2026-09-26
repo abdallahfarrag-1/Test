@@ -65,12 +65,6 @@
             return styles[index % 3];
         }
 
-        // قائمة الماركات المطلوبة تماماً
-        const brandsData = [
-            "Apple", "Samsung", "Xiaomi", "Redmi", "Infinix", 
-            "Oppo", "Realme", "Huawei", "Vivo", "Honor", "Techno", "itel", "Nokia"
-        ];
-
         // قطع الغيار المطلوبة
         const sparePartsList = [
             "شاشة", "بطارية", "ضهرية", "فلاتة ربط", "فلاتة باور", 
@@ -331,17 +325,30 @@
             document.getElementById('appContainer').innerHTML = html;
         }
 
-        // ================= 3. شاشة الماركات =================
-        function renderBrandsScreen() {
-            let brandsHtml = brandsData.map((brand, index) => {
-                const style = getRotatingCardStyle(index);
-                return `
-                    <div onclick="renderModelsScreen('${brand}')" class="w-full ${style.bg} border ${style.border} p-4 rounded-2xl shadow-sm flex items-center justify-between cursor-pointer transition-all text-sm sm:text-base">
-                        <span class="font-bold text-gray-800">${brand}</span>
-                        <svg class="w-5 h-5 ${style.icon} flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
-                    </div>
-                `;
-            }).join('');
+        // ================= 3. شاشة الماركات (تعتمد على جلب البيانات من جدول brands) =================
+        async function renderBrandsScreen() {
+            let brands = [];
+            // جلب البيانات من جدول brands في Supabase
+            const { data, error } = await supabaseClient.from('brands').select('*');
+            
+            if (!error && data) {
+                brands = data.map(item => item.brand_name || item.name || Object.values(item)[1]); 
+            }
+
+            let brandsHtml = "";
+            if (brands.length > 0) {
+                brandsHtml = brands.map((brand, index) => {
+                    const style = getRotatingCardStyle(index);
+                    return `
+                        <div onclick="renderModelsScreen('${brand}')" class="w-full ${style.bg} border ${style.border} p-4 rounded-2xl shadow-sm flex items-center justify-between cursor-pointer transition-all text-sm sm:text-base">
+                            <span class="font-bold text-gray-800">${brand}</span>
+                            <svg class="w-5 h-5 ${style.icon} flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                        </div>
+                    `;
+                }).join('');
+            } else {
+                brandsHtml = `<div class="text-center text-gray-500 py-6">لا توجد ماركات متاحة حالياً أو تأكد من تفعيل RLS والسماح بالقراءة</div>`;
+            }
 
             const html = `
                 ${getHeaderTemplate()}
@@ -565,7 +572,6 @@
                 }
             }
 
-            // قسم طراز البطارية (يظهر فقط لقطعة "بطارية" ويكون في أعلى القائمة فوق الشراء مباشرة)
             let batterySectionHtml = "";
             if (part === "بطارية") {
                 let batteryDisplay = currentBatteryModel ? currentBatteryModel : "غير متوفر طراز مسجل لهذا الموديل";
@@ -588,10 +594,8 @@
                 </div>
 
                 <div class="flex-1 overflow-y-auto space-y-5 p-1">
-                    <!-- 1. قسم طراز البطارية (يظهر هنا في الأعلى تماماً قبل الشراء عند اختيار البطارية) -->
                     ${batterySectionHtml}
 
-                    <!-- 2. قسم الشراء (تحت طراز البطارية مباشرة، أو في الأعلى لو مش بطارية) -->
                     <div class="bg-blue-50/70 border border-blue-100 p-6 sm:p-7 rounded-2xl shadow-sm">
                         <h3 class="font-bold text-blue-800 mb-3 text-base sm:text-lg">🛒 شراء المنتج</h3>
                         <p class="text-sm sm:text-base text-gray-600 mb-4">القطعة متوفرة بالضمان الكامل.</p>
@@ -600,13 +604,11 @@
                         </button>
                     </div>
 
-                    <!-- 3. قسم التوافقات (تحت الشراء) -->
                     <div class="bg-emerald-50/70 border border-emerald-100 p-6 sm:p-7 rounded-2xl shadow-sm">
                         <h3 class="font-bold text-emerald-800 mb-3 text-base sm:text-lg">🔗 التوافقات</h3>
                         <p class="text-sm sm:text-base text-gray-600 font-medium">${compatibilityText}</p>
                     </div>
 
-                    <!-- 4. قسم التنبيهات (في الأسفل خالص) -->
                     <div class="bg-amber-50/70 border border-amber-100 p-6 sm:p-7 rounded-2xl shadow-sm">
                         <h3 class="font-bold text-amber-800 mb-3 text-base sm:text-lg">⚠️ تنبيهات بعد التركيب</h3>
                         <p class="text-sm sm:text-base text-gray-600">يُرجى التجربة الفورية قبل التثبيت النهائي وإزالة اللزقات.</p>
