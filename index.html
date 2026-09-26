@@ -131,7 +131,7 @@
                             <form onsubmit="handleRegisterSubmit(event)" class="space-y-3.5">
                                 <div>
                                     <label class="block text-xs font-semibold text-gray-600 mb-1">الاسم</label>
-                                    <input type="text" id="regUserName" required class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-gray-50">
+                                    <input type="text" id="regOwnerName" required class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-gray-50">
                                 </div>
                                 <div>
                                     <label class="block text-xs font-semibold text-gray-600 mb-1">اسم المحل</label>
@@ -197,35 +197,35 @@
             const phone = document.getElementById('loginPhone').value.trim();
             const password = document.getElementById('loginPassword').value.trim();
 
-            const { data, error } = await supabaseClient
-                .from('users')
-                .select('*')
-                .eq('phone_number', phone)
-                .eq('password', password)
-                .single();
+            const { data, error } = await supabaseClient.rpc('login_user', {
+                phone_input: phone,
+                password_input: password
+            });
 
-            if (error || !data) {
+            if (error || !data || data.length === 0) {
                 alert('خطأ في رقم الهاتف أو رمز المرور!');
                 return;
             }
 
-            currentUserRole = data.phone_number;
+            currentUserRole = data[0].phone_number || phone;
             renderMainDashboard();
         }
 
         async function handleRegisterSubmit(e) {
             e.preventDefault();
-            const user_name = document.getElementById('regUserName').value.trim();
+            const owner_name = document.getElementById('regOwnerName').value.trim();
             const shop_name = document.getElementById('regShopName').value.trim();
             const shop_address = document.getElementById('regShopAddress').value.trim();
             const phone_number = document.getElementById('regPhone').value.trim();
             const password = document.getElementById('regPassword').value.trim();
-            const user_type = "فني"; // قيمة افتراضية لنوع المستخدم أو حسب رغبتك
 
-            const { data, error } = await supabaseClient
-                .from('users')
-                .insert([{ user_type, user_name, shop_name, shop_address, phone_number, password }])
-                .select();
+            const { data, error } = await supabaseClient.rpc('register_user', {
+                name_input: owner_name,
+                shop_name_input: shop_name,
+                shop_address_input: shop_address,
+                phone_input: phone_number,
+                password_input: password
+            });
 
             if (error) {
                 alert('حدث خطأ أثناء إنشاء الحساب أو الرقم مسجل مسبقاً: ' + error.message);
