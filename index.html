@@ -325,10 +325,9 @@
             document.getElementById('appContainer').innerHTML = html;
         }
 
-        // ================= 3. شاشة الماركات (تعتمد على جلب البيانات من جدول brands) =================
+        // ================= 3. شاشة الماركات =================
         async function renderBrandsScreen() {
             let brands = [];
-            // جلب البيانات من جدول brands في Supabase
             const { data, error } = await supabaseClient.from('brands').select('*');
             
             if (!error && data) {
