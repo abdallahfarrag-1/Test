@@ -192,16 +192,24 @@
             }
         }
 
-        // دالة تسجيل الدخول عبر RPC
+        // دالة تسجيل الدخول عبر RPC (معدلة لتطابق p_phone_number في السيرفر)
         async function handleLoginSubmit(e) {
             e.preventDefault();
             const phone = document.getElementById('loginPhone').value.trim();
             const password = document.getElementById('loginPassword').value.trim();
 
             const { data, error } = await supabaseClient
-                .rpc('login_user', { p_phone: phone, p_password: password });
+                .rpc('login_user', { 
+                    p_phone_number: phone, 
+                    p_password: password 
+                });
 
-            if (error || !data || (Array.isArray(data) && data.length === 0)) {
+            if (error) {
+                alert('خطأ في الاتصال أو بيانات الدخول: ' + error.message);
+                return;
+            }
+
+            if (!data || (Array.isArray(data) && data.length === 0)) {
                 alert('خطأ في رقم الهاتف أو رمز المرور!');
                 return;
             }
