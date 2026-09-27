@@ -333,10 +333,10 @@
             `;
         }
 
-        // ================= دالة جلب عناصر القائمة الديناميكية من Supabase RPC وتحميلها في القائمة الجانبية =================
+        // ================= دالة جلب عناصر القائمة الديناميكية من Supabase RPC (متوافقة مع إعدادات صورتك بدون وسائط) =================
         async function loadDynamicMenuIntoSidebar() {
             try {
-                // استدعاء دالة الـ RPC مباشرة بدون تمرير معاملات لأن الدالة تتحقق من المستخدم الحالي عبر auth.uid() تلقائياً
+                // استدعاء دالة الـ RPC بدون تمرير معاملات لأن الدالة في قاعدة البيانات لا تستقبل وسائط[span_2](start_span)[span_2](end_span)[span_3](start_span)[span_3](end_span)
                 const { data: menuItems, error } = await supabaseClient.rpc('get_menu_items');
 
                 if (error) throw error;
@@ -350,14 +350,14 @@
                     if (menuItems && menuItems.length > 0) {
                         menuItems.forEach(item => {
                             menuHtml += `
-                                <button onclick="toggleSidebar(); handleMenuAction('${item.action || ''}');" class="w-full text-right px-4 py-3 rounded-xl bg-gray-50 hover:bg-blue-50 text-gray-700 hover:text-blue-600 font-semibold text-sm transition-all flex items-center gap-3">
+                                <button onclick="toggleSidebar(); handleMenuAction('${item.action}');" class="w-full text-right px-4 py-3 rounded-xl bg-gray-50 hover:bg-blue-50 text-gray-700 hover:text-blue-600 font-semibold text-sm transition-all flex items-center gap-3">
                                     <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-                                    <span>${item.menu_items}</span>
+                                    <span>${item.title}</span>
                                 </button>
                             `;
                         });
                     } else {
-                        menuHtml = `<div class="text-center text-gray-400 text-xs py-4">القائمة تظهر للأدمن فقط أو لا توجد عناصر</div>`;
+                        menuHtml = `<div class="text-center text-gray-400 text-xs py-4">لا توجد عناصر مضافة للقائمة</div>`;
                     }
 
                     sidebarContainer.innerHTML = menuHtml;
@@ -369,10 +369,10 @@
         }
 
         function handleMenuAction(actionName) {
-            if (actionName && typeof window[actionName] === 'function') {
+            if (typeof window[actionName] === 'function') {
                 window[actionName]();
             } else {
-                console.log(`الإجراء: ${actionName}`);
+                alert(`تم اختيار الإجراء (غير معرف بعد): ${actionName}`);
             }
         }
 
