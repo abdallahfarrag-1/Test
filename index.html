@@ -49,6 +49,7 @@
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         let currentUserRole = "زائر";
+        let currentUserType = "زائر"; // لحفظ نوع المستخدم
         let selectedBrand = "";
         let selectedModel = "";
         let selectedPart = "";
@@ -75,24 +76,9 @@
         // دالة مساعدة لإرجاع الألوان بالترتيب (أزرق، أخضر، بني)
         function getRotatingCardStyle(index) {
             const styles = [
-                {
-                    bg: "bg-blue-50/80 hover:bg-blue-100",
-                    border: "border-blue-200",
-                    text: "text-blue-800",
-                    icon: "text-blue-500"
-                },
-                {
-                    bg: "bg-emerald-50/80 hover:bg-emerald-100",
-                    border: "border-emerald-200",
-                    text: "text-emerald-800",
-                    icon: "text-emerald-500"
-                },
-                {
-                    bg: "bg-amber-50/80 hover:bg-amber-100",
-                    border: "border-amber-200",
-                    text: "text-amber-800",
-                    icon: "text-amber-500"
-                }
+                { bg: "bg-blue-50/80 hover:bg-blue-100", border: "border-blue-200", text: "text-blue-800", icon: "text-blue-500" },
+                { bg: "bg-emerald-50/80 hover:bg-emerald-100", border: "border-emerald-200", text: "text-emerald-800", icon: "text-emerald-500" },
+                { bg: "bg-amber-50/80 hover:bg-amber-100", border: "border-amber-200", text: "text-amber-800", icon: "text-amber-500" }
             ];
             return styles[index % 3];
         }
@@ -104,7 +90,7 @@
             "سماعة خارجية مكبر الصوت", "سوكيت", "ايسيهات"
         ];
 
-        // ================= 1. واجهة تسجيل الدخول (الصفحة الأولى) =================
+        // ================= 1. واجهة تسجيل الدخول =================
         function renderLoginScreen() {
             const html = `
                 <div class="flex-1 overflow-y-auto px-2">
@@ -113,13 +99,11 @@
                             <h1 class="text-2xl sm:text-3xl font-bold text-gray-800 tracking-wide">Electricity Aswan</h1>
                         </div>
 
-                        <!-- الصورة المستطيلة بحواف دائرية ذات ظلال -->
                         <div class="mb-6">
                             <img src="https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?auto=format&fit=crop&w=800&q=80" 
                                  alt="Banner" class="w-full h-40 sm:h-52 object-cover rounded-2xl shadow-md">
                         </div>
 
-                        <!-- أزرار التبديل بين (تسجيل الدخول) و (إنشاء حساب) -->
                         <div class="grid grid-cols-2 gap-2 bg-gray-100 p-1.5 rounded-2xl mb-6">
                             <button onclick="switchTab('login')" id="loginTabBtn" 
                                     class="py-2.5 text-sm font-semibold rounded-xl transition-all duration-200 bg-white text-blue-600 shadow-sm">
@@ -131,7 +115,6 @@
                             </button>
                         </div>
 
-                        <!-- خانة تسجيل الدخول -->
                         <div id="loginFormContainer">
                             <form onsubmit="handleLoginSubmit(event)" class="space-y-4">
                                 <div>
@@ -144,38 +127,35 @@
                                     <input type="password" id="loginPassword" required
                                            class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-gray-50">
                                 </div>
-
-                                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl shadow-lg shadow-blue-500/35 transition-all text-sm">
+                                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl shadow-lg transition-all text-sm">
                                     تسجيل الدخول
                                 </button>
                             </form>
                         </div>
 
-                        <!-- خانة إنشاء حساب (مخفية افتراضياً) -->
                         <div id="registerFormContainer" class="hidden">
                             <form onsubmit="handleRegisterSubmit(event)" class="space-y-3.5">
                                 <div>
                                     <label class="block text-xs font-semibold text-gray-600 mb-1">الاسم</label>
-                                    <input type="text" id="regUserName" required class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-gray-50">
+                                    <input type="text" id="regUserName" required class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm bg-gray-50">
                                 </div>
                                 <div>
                                     <label class="block text-xs font-semibold text-gray-600 mb-1">اسم المحل</label>
-                                    <input type="text" id="regShopName" required class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-gray-50">
+                                    <input type="text" id="regShopName" required class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm bg-gray-50">
                                 </div>
                                 <div>
                                     <label class="block text-xs font-semibold text-gray-600 mb-1">عنوان المحل</label>
-                                    <input type="text" id="regShopAddress" required class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-gray-50">
+                                    <input type="text" id="regShopAddress" required class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm bg-gray-50">
                                 </div>
                                 <div>
                                     <label class="block text-xs font-semibold text-gray-600 mb-1">رقم الهاتف</label>
-                                    <input type="text" id="regPhone" required class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-gray-50">
+                                    <input type="text" id="regPhone" required class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm bg-gray-50">
                                 </div>
                                 <div>
                                     <label class="block text-xs font-semibold text-gray-600 mb-1">رمز المرور</label>
-                                    <input type="password" id="regPassword" required class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-gray-50">
+                                    <input type="password" id="regPassword" required class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm bg-gray-50">
                                 </div>
-
-                                <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl shadow-lg shadow-emerald-500/35 transition-all text-sm mt-2">
+                                <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl shadow-lg transition-all text-sm mt-2">
                                     إنشاء الحساب
                                 </button>
                             </form>
@@ -186,7 +166,6 @@
                             <div class="relative flex justify-center text-xs uppercase"><span class="bg-white px-2 text-gray-400">أو</span></div>
                         </div>
 
-                        <!-- زر الدخول كزائر -->
                         <div>
                             <button onclick="loginAsVisitor()" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 rounded-xl transition-all text-sm border border-gray-200">
                                 الدخول كزائر
@@ -207,17 +186,16 @@
             if (tab === 'login') {
                 loginForm.classList.remove('hidden');
                 registerForm.classList.add('hidden');
-                loginTabBtn.className = "py-2.5 text-sm font-semibold rounded-xl transition-all duration-200 bg-white text-blue-600 shadow-sm";
-                registerTabBtn.className = "py-2.5 text-sm font-semibold rounded-xl transition-all duration-200 text-gray-500 hover:text-gray-700";
+                loginTabBtn.className = "py-2.5 text-sm font-semibold rounded-xl bg-white text-blue-600 shadow-sm";
+                registerTabBtn.className = "py-2.5 text-sm font-semibold rounded-xl text-gray-500 hover:text-gray-700";
             } else {
                 loginForm.classList.add('hidden');
                 registerForm.classList.remove('hidden');
-                registerTabBtn.className = "py-2.5 text-sm font-semibold rounded-xl transition-all duration-200 bg-white text-emerald-600 shadow-sm";
-                loginTabBtn.className = "py-2.5 text-sm font-semibold rounded-xl transition-all duration-200 text-gray-500 hover:text-gray-700";
+                registerTabBtn.className = "py-2.5 text-sm font-semibold rounded-xl bg-white text-emerald-600 shadow-sm";
+                loginTabBtn.className = "py-2.5 text-sm font-semibold rounded-xl text-gray-500 hover:text-gray-700";
             }
         }
 
-        // دالة تسجيل الدخول عبر RPC وحفظ الـ ID في localStorage
         async function handleLoginSubmit(e) {
             e.preventDefault();
             const phone = document.getElementById('loginPhone').value.trim();
@@ -240,22 +218,13 @@
             }
 
             const userData = Array.isArray(data) ? data[0] : data;
-
-            if (!userData || !userData.id) {
-                alert('خطأ في بيانات المستخدم المسترجعة!');
-                return;
-            }
-
-            // حفظ الـ ID والبيانات في LocalStorage للأمان
-            localStorage.setItem('currentUserId', userData.id);
-            localStorage.setItem('currentUserRole', userData.user_role || 'user');
+            currentUserRole = userData.user_name || userData.phone_number || phone;
+            currentUserType = userData.user_role || userData.user_type || "admin"; 
             
-            currentUserRole = userData.user_name || phone;
             renderMainDashboard();
             loadDynamicMenuIntoSidebar(); 
         }
 
-        // دالة إنشاء الحساب عبر RPC
         async function handleRegisterSubmit(e) {
             e.preventDefault();
             const user_name = document.getElementById('regUserName').value.trim();
@@ -278,56 +247,49 @@
                 return;
             }
 
-            alert('تم إنشاء الحساب بنجاح! يمكنك تسجيل الدخول الآن.');
-            switchTab('login');
-        }
-
-        function loginAsVisitor() {
-            localStorage.removeItem('currentUserId');
-            localStorage.setItem('currentUserRole', 'visitor');
-            currentUserRole = "زائر";
+            alert('تم إنشاء الحساب بنجاح!');
+            currentUserRole = user_name;
+            currentUserType = "admin"; 
             renderMainDashboard();
             loadDynamicMenuIntoSidebar();
         }
 
-        // ================= قالب الجزء الثابت المتكرر في أعلى كل الصفحات الداخلية =================
+        function loginAsVisitor() {
+            currentUserRole = "زائر";
+            currentUserType = "زائر";
+            renderMainDashboard();
+            loadDynamicMenuIntoSidebar();
+        }
+
         function getHeaderTemplate() {
             return `
                 <div class="border-b border-gray-100 pb-4 mb-4 flex-shrink-0">
                     <div class="text-center mb-3">
                         <h1 class="text-2xl sm:text-3xl font-bold text-gray-800 tracking-wide">Electricity Aswan</h1>
                     </div>
-
                     <div class="flex items-center justify-between mb-4">
                         <button onclick="toggleSidebar()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs sm:text-sm rounded-xl px-4 py-2.5 flex items-center gap-2 shadow-sm transition-all cursor-pointer">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
                             <span>القائمة</span>
                         </button>
-
                         <div class="bg-blue-50/60 border border-blue-100 px-3.5 py-2 rounded-xl text-blue-700 text-xs sm:text-sm font-semibold shadow-sm">
                             ${currentUserRole}
-                        </div>
-                    </div>
-
-                    <div class="flex items-center gap-2">
-                        <div class="flex-1 relative">
-                            <input type="text" placeholder="ابحث" 
-                                  class="w-full bg-gray-50 border border-gray-200 text-gray-700 text-xs sm:text-sm rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm">
                         </div>
                     </div>
                 </div>
             `;
         }
 
-        // ================= جلب عناصر القائمة الديناميكية عبر دالة RPC الآمنة (التي تتحقق من الـ ID والرول) =================
+        // ================= جلب القائمة الديناميكية من جدول menu_items =================
         async function loadDynamicMenuIntoSidebar() {
             try {
-                const userId = localStorage.getItem('currentUserId');
-                
-                // لو مفيش مستخدم مسجل (زائر)، ممكن نبعت null أو نعرض منيو الزوار البسيطة
-                const { data: responseData, error } = await supabaseClient.rpc('get_menu_items_for_admin', {
-                    p_user_id: userId || '00000000-0000-0000-0000-000000000000'
+                // جلب العناصر بناءً على صلاحية المستخدم أو جلبها بالكامل إذا كانت عامة
+                const { data: menuItems, error } = await supabaseClient.rpc('get_menu_items', {
+                    p_user_type: currentUserType
                 });
+
+                // في حال لم تكن تستخدم دالة RPC مخصصة وتفضل الجلب المباشر من الجدول:
+                // const { data: menuItems, error } = await supabaseClient.from('menu_items').select('*');
 
                 if (error) throw error;
 
@@ -336,58 +298,50 @@
                     if (!sidebarContainer) return;
 
                     let menuHtml = "";
+                    if (menuItems && menuItems.length > 0) {
+                        menuItems.forEach(item => {
+                            // افتراض أن الأعمدة في جدول menu_items هي title و action (أو استخدم اسم العمود لديك مثل text)
+                            const title = item.title || item.text || "عنصر القائمة";
+                            const action = item.action || 'handleDefaultAction';
 
-                    // التحقق من أن الاستجابة ناجحة (أدمن) أو إرجاع قائمة عامة للزوار
-                    if (responseData && responseData.success === true && responseData.data) {
-                        responseData.data.forEach(item => {
                             menuHtml += `
-                                <button onclick="toggleSidebar(); handleMenuAction('${item.action}');" class="w-full text-right px-4 py-3 rounded-xl bg-gray-50 hover:bg-blue-50 text-gray-700 hover:text-blue-600 font-semibold text-sm transition-all flex items-center gap-3">
+                                <button onclick="toggleSidebar(); handleMenuAction('${action}');" class="w-full text-right px-4 py-3 rounded-xl bg-gray-50 hover:bg-blue-50 text-gray-700 hover:text-blue-600 font-semibold text-sm transition-all flex items-center gap-3">
                                     <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-                                    <span>${item.title || item.name}</span>
+                                    <span>${title}</span>
                                 </button>
                             `;
                         });
                     } else {
-                        // لو مش أدمن، اعرض له خيارات عامة مثل تسجيل الخروج
-                        menuHtml = `
-                            <div class="text-center text-gray-500 text-xs py-2">القائمة مخصصة للمدير فقط</div>
-                            <button onclick="toggleSidebar(); renderLoginScreen();" class="w-full text-right px-4 py-3 rounded-xl bg-red-50 hover:bg-red-100 text-red-600 font-semibold text-sm transition-all flex items-center gap-3">
-                                <span>تسجيل الدخول / الخروج</span>
-                            </button>
-                        `;
+                        menuHtml = `<div class="text-center text-gray-400 text-xs py-4">لا توجد عناصر مضافة للقائمة</div>`;
                     }
 
                     sidebarContainer.innerHTML = menuHtml;
                 }, 100);
 
             } catch (err) {
-                console.error('خطأ في جلب القائمة:', err.message);
+                console.error('خطأ في جلب عناصر القائمة:', err.message);
             }
         }
 
         function handleMenuAction(actionName) {
+            if (actionName === 'اسجل خروج' || actionName === 'تسجيل خروج') {
+                renderLoginScreen();
+                return;
+            }
             if (typeof window[actionName] === 'function') {
                 window[actionName]();
             } else {
-                alert(`إجراء القائمة: ${actionName}`);
+                alert(`تم اختيار الإجراء: ${actionName}`);
             }
         }
 
-        // ================= 2. الصفحة الرئيسية =================
         function renderMainDashboard() {
             const html = `
                 ${getHeaderTemplate()}
-
                 <div class="flex-1 overflow-y-auto space-y-4 px-1">
-                    <div class="mb-4">
-                        <img src="https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?auto=format&fit=crop&w=800&q=80" 
-                             alt="Banner" class="w-full h-36 sm:h-48 object-cover rounded-2xl shadow-md">
-                    </div>
-
                     <div class="space-y-3.5 pb-4">
-                        <div onclick="renderBrandsScreen()" class="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white p-5 sm:p-6 rounded-2xl shadow-md cursor-pointer transition-all flex items-center justify-between">
-                            <span class="font-bold text-lg sm:text-xl">الماركات</span>
-                            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                        <div onclick="renderBrandsScreen()" class="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white p-5 rounded-2xl shadow-md cursor-pointer flex items-center justify-between">
+                            <span class="font-bold text-lg">الماركات</span>
                         </div>
                     </div>
                 </div>
@@ -396,38 +350,27 @@
             loadDynamicMenuIntoSidebar();
         }
 
-        // ================= 3. شاشة الماركات =================
         async function renderBrandsScreen() {
             let brands = [];
             const { data, error } = await supabaseClient.from('brands').select('*');
-            
             if (!error && data) {
                 brands = data.map(item => item.brand_name || item.name || Object.values(item)[1]); 
             }
 
-            let brandsHtml = "";
-            if (brands.length > 0) {
-                brandsHtml = brands.map((brand, index) => {
-                    const style = getRotatingCardStyle(index);
-                    return `
-                        <div onclick="renderModelsScreen('${brand}')" class="w-full ${style.bg} border ${style.border} p-4 rounded-2xl shadow-sm flex items-center justify-between cursor-pointer transition-all text-sm sm:text-base">
-                            <span class="font-bold text-gray-800">${brand}</span>
-                            <svg class="w-5 h-5 ${style.icon} flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
-                        </div>
-                    `;
-                }).join('');
-            } else {
-                brandsHtml = `<div class="text-center text-gray-500 py-6">لا توجد ماركات متاحة حالياً</div>`;
-            }
+            let brandsHtml = brands.map((brand, index) => {
+                const style = getRotatingCardStyle(index);
+                return `
+                    <div onclick="renderModelsScreen('${brand}')" class="w-full ${style.bg} border ${style.border} p-4 rounded-2xl shadow-sm flex items-center justify-between cursor-pointer">
+                        <span class="font-bold text-gray-800">${brand}</span>
+                    </div>
+                `;
+            }).join('');
 
             const html = `
                 ${getHeaderTemplate()}
-                <div class="flex items-center justify-between mb-4 flex-shrink-0">
-                    <button onclick="renderMainDashboard()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center gap-1.5">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
-                        <span>رجوع</span>
-                    </button>
-                    <h2 class="text-sm sm:text-base font-bold text-gray-800">اختر الماركة</h2>
+                <div class="flex items-center justify-between mb-4">
+                    <button onclick="renderMainDashboard()" class="bg-gray-100 text-gray-700 px-3 py-2 rounded-xl text-xs font-semibold">رجوع</button>
+                    <h2 class="text-sm font-bold text-gray-800">اختر الماركة</h2>
                 </div>
                 <div class="flex-1 overflow-y-auto space-y-3 p-1">
                     ${brandsHtml}
@@ -437,17 +380,6 @@
             loadDynamicMenuIntoSidebar();
         }
 
-        // بقية الدوال الخاصة بالموديلات وقطع الغيار تعمل كما هي...
-        async function renderModelsScreen(brand) {
-            selectedBrand = brand;
-            renderPartsScreen("شاشة عينة"); // كمثال للتوضيح أو استكمل باقي الجداول كودك القديم
-        }
-
-        function renderPartsScreen(model) {
-            renderMainDashboard();
-        }
-
-        // التشغيل المبدئي عند تحميل الصفحة
         window.onload = function() {
             renderLoginScreen();
         };
