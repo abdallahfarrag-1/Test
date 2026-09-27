@@ -29,7 +29,7 @@
         </div>
         <!-- محتوى القائمة الجانبية الديناميكي -->
         <div id="sidebarContent" class="flex-1 overflow-y-auto p-4 space-y-2">
-            <!-- يتم تعبئتها ديناميكياً -->
+            <!-- يتم تعبئتها ديناميكياً من جدول menu_items عبر Supabase -->
         </div>
     </div>
 
@@ -49,7 +49,7 @@
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         let currentUserRole = "زائر";
-        let currentUserType = "زائر"; // لحفظ نوع المستخدم (مثل "أدمن")
+        let currentUserType = "زائر"; // لحفظ نوع المستخدم (مثل "ادمن")
         let selectedBrand = "";
         let selectedModel = "";
         let selectedPart = "";
@@ -255,7 +255,7 @@
             }
 
             currentUserRole = userData.phone_number || phone;
-            currentUserType = userData.user_type || "زائر"; 
+            currentUserType = userData.user_type || "ادمن"; 
             renderMainDashboard();
             loadDynamicMenuIntoSidebar(); 
         }
@@ -285,7 +285,7 @@
 
             alert('تم إنشاء الحساب بنجاح!');
             currentUserRole = phone_number;
-            currentUserType = "أدمن"; 
+            currentUserType = "ادمن"; 
             renderMainDashboard();
             loadDynamicMenuIntoSidebar();
         }
@@ -333,11 +333,13 @@
             `;
         }
 
-        // ================= دالة جلب عناصر القائمة الديناميكية من Supabase RPC (تظهر للأدمن فقط) =================
+        // ================= دالة جلب عناصر القائمة الديناميكية من Supabase RPC وتحميلها في القائمة الجانبية =================
         async function loadDynamicMenuIntoSidebar() {
             try {
-                // استدعاء دالة الـ RPC الجديدة لجلب عناصر المنيو حصرياً للأدمن
-                const { data: menuItems, error } = await supabaseClient.rpc('get_menu_items');
+                // استدعاء دالة الـ RPC لجلب عناصر القائمة المخصصة لنوع المستخدم الحالي
+                const { data: menuItems, error } = await supabaseClient.rpc('get_menu_items', {
+                    p_user_type: currentUserType
+                });
 
                 if (error) throw error;
 
@@ -349,16 +351,15 @@
 
                     if (menuItems && menuItems.length > 0) {
                         menuItems.forEach(item => {
-                            // item.menu_items يعرض القيمة النصية المسجلة في العمود
                             menuHtml += `
-                                <div class="w-full text-right px-4 py-3 rounded-xl bg-gray-50 hover:bg-blue-50 text-gray-700 hover:text-blue-600 font-semibold text-sm transition-all flex items-center gap-3 cursor-pointer" onclick="alert('تم اختيار: ${item.menu_items}')">
+                                <button onclick="toggleSidebar(); handleMenuAction('${item.action}');" class="w-full text-right px-4 py-3 rounded-xl bg-gray-50 hover:bg-blue-50 text-gray-700 hover:text-blue-600 font-semibold text-sm transition-all flex items-center gap-3">
                                     <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-                                    <span>${item.menu_items}</span>
-                                </div>
+                                    <span>${item.title}</span>
+                                </button>
                             `;
                         });
                     } else {
-                        menuHtml = `<div class="text-center text-gray-400 text-xs py-4">القائمة مخصصة للأدمن فقط</div>`;
+                        menuHtml = `<div class="text-center text-gray-400 text-xs py-4">لا توجد عناصر مضافة للقائمة</div>`;
                     }
 
                     sidebarContainer.innerHTML = menuHtml;
@@ -366,10 +367,14 @@
 
             } catch (err) {
                 console.error('خطأ في جلب عناصر القائمة:', err.message);
-                const sidebarContainer = document.getElementById('sidebarContent');
-                if (sidebarContainer) {
-                    sidebarContainer.innerHTML = `<div class="text-center text-red-400 text-xs py-4">عذراً، هذه القائمة متاحة للأدمن فقط</div>`;
-                }
+            }
+        }
+
+        function handleMenuAction(actionName) {
+            if (typeof window[actionName] === 'function') {
+                window[actionName]();
+            } else {
+                alert(`تم اختيار الإجراء (غير معرف بعد): ${actionName}`);
             }
         }
 
