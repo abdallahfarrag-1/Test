@@ -17,17 +17,17 @@
 </head>
 <body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen p-2 sm:p-4 flex items-center justify-center">
 
-    <!-- البطاقة البيضاء الرئيسية - ملء الشاشة (Full Screen Card) -->
-    <div class="bg-white w-full h-[96vh] sm:h-[94vh] rounded-3xl shadow-2xl p-4 sm:p-6 flex flex-col justify-between transition-all duration-300 overflow-hidden">
+    <!-- البطاقة البيضاء الرئيسية - ملء الشاشة -->
+    <div class="bg-white w-full h-[96vh] sm:h-[94vh] rounded-3xl shadow-2xl p-4 sm:p-6 flex flex-col justify-between transition-all duration-300 relative overflow-hidden">
         
-        <!-- حاوية التطبيق الرئيسية (تظهر الشاشات الداخلية بعد تسجيل الدخول) -->
-        <div id="mainLayoutContainer" class="flex-1 flex flex-col overflow-hidden">
-            <!-- سيتم حقن الهيكل هنا -->
+        <!-- الحاوية العامة -->
+        <div id="mainLayoutContainer" class="flex-1 flex flex-col overflow-hidden relative">
+            <!-- سيتم حقن الواجهة هنا -->
         </div>
 
     </div>
 
-    <!-- كود الجافاسكريبت لإدارة النظام والصفحات -->
+    <!-- كود الجافاسكريبت -->
     <script>
         // إعدادات اتصال Supabase
         const SUPABASE_URL = 'https://byiayomtcwqlgrknvgcz.supabase.co';
@@ -58,7 +58,7 @@
             "سماعة خارجية مكبر الصوت", "سوكيت", "ايسيهات"
         ];
 
-        // ================= 1. واجهة تسجيل الدخول (الصفحة الأولى) =================
+        // ================= 1. شاشة تسجيل الدخول =================
         function renderLoginScreen() {
             const html = `
                 <div class="flex-1 overflow-y-auto px-2 flex items-center justify-center">
@@ -210,36 +210,49 @@
             initAppLayout();
         }
 
-        // ================= بناء التخطيط الرئيسي (القائمة الجانبية + محتوى الشاشات) =================
+        // ================= بناء التخطيط الرئيسي مع القائمة الجانبية المنزلقة (Drawer) =================
         function initAppLayout() {
             const layoutHtml = `
-                <div class="flex-1 flex flex-col md:flex-row gap-4 overflow-hidden">
-                    <!-- القائمة الجانبية (Sidebar) -->
-                    <aside class="w-full md:w-64 bg-gray-50 border border-gray-200 rounded-2xl p-4 flex flex-col justify-between flex-shrink-0">
+                <div class="flex-1 flex flex-col overflow-hidden relative">
+                    
+                    <!-- طبقة التعتيم الخلفية عند فتح القائمة (Overlay) -->
+                    <div id="sidebarOverlay" onclick="toggleSidebar(false)" class="absolute inset-0 bg-black/30 z-40 hidden transition-opacity duration-300"></div>
+
+                    <!-- القائمة الجانبية المنزلقة من اليمين (Slide-out Sidebar) -->
+                    <div id="sideDrawer" class="absolute top-0 right-0 bottom-0 w-72 bg-white shadow-2xl z-50 transform translate-x-full transition-transform duration-300 ease-in-out flex flex-col justify-between p-4 border-l border-gray-100">
                         <div>
-                            <div class="text-center mb-4 pb-3 border-b border-gray-200">
-                                <h1 class="text-xl font-bold text-gray-800">Electricity Aswan</h1>
-                                <span class="text-xs text-blue-600 font-semibold mt-1 inline-block bg-blue-50 px-2.5 py-1 rounded-lg border border-blue-100">${currentUserRole}</span>
+                            <div class="flex items-center justify-between mb-4 pb-3 border-b border-gray-200">
+                                <div>
+                                    <h1 class="text-lg font-bold text-gray-800">Electricity Aswan</h1>
+                                    <span class="text-xs text-blue-600 font-semibold mt-0.5 inline-block bg-blue-50 px-2 py-0.5 rounded-lg border border-blue-100">${currentUserRole}</span>
+                                </div>
+                                <button onclick="toggleSidebar(false)" class="p-2 text-gray-400 hover:text-gray-600 rounded-xl hover:bg-gray-100 transition-all">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                </button>
                             </div>
 
-                            <!-- حاوية عناصر القائمة الديناميكية -->
-                            <nav id="sidebarNavItems" class="space-y-1.5 overflow-y-auto max-h-[50vh] md:max-h-[60vh]">
-                                <a href="#" onclick="renderMainDashboard(); return false;" class="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-all">
+                            <!-- عناصر القائمة الجانبية -->
+                            <nav id="sidebarNavItems" class="space-y-1.5 overflow-y-auto max-h-[60vh]">
+                                <a href="#" onclick="toggleSidebar(false); renderMainDashboard(); return false;" class="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-all">
                                     <span>الرئيسية</span>
+                                </a>
+                                <a href="#" onclick="toggleSidebar(false); renderBrandsScreen(); return false;" class="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-all">
+                                    <span>الماركات</span>
                                 </a>
                             </nav>
                         </div>
 
-                        <div class="pt-3 border-t border-gray-200 mt-2">
+                        <div class="pt-3 border-t border-gray-200">
                             <button onclick="renderLoginScreen()" class="w-full flex items-center justify-center gap-2 bg-red-50 hover:bg-red-100 text-red-600 py-2.5 rounded-xl text-sm font-bold transition-all border border-red-200">
                                 تسجيل الخروج
                             </button>
                         </div>
-                    </aside>
+                    </div>
 
-                    <!-- حاوية المحتوى الديناميكي للشاشات -->
+                    <!-- مساحة محتوى التطبيق الرئيسية -->
                     <main id="contentArea" class="flex-1 flex flex-col overflow-hidden bg-white border border-gray-100 rounded-2xl p-4 sm:p-6 shadow-sm">
                     </main>
+
                 </div>
             `;
             document.getElementById('mainLayoutContainer').innerHTML = layoutHtml;
@@ -247,7 +260,22 @@
             renderMainDashboard();
         }
 
-        // ================= جلب وعرض القائمة الجانبية من قاعدة البيانات =================
+        // دالة فتح وإغلاق القائمة الجانبية المنزلقة
+        function toggleSidebar(open) {
+            const drawer = document.getElementById('sideDrawer');
+            const overlay = document.getElementById('sidebarOverlay');
+            if (!drawer || !overlay) return;
+
+            if (open) {
+                drawer.classList.remove('translate-x-full');
+                overlay.classList.remove('hidden');
+            } else {
+                drawer.classList.add('translate-x-full');
+                overlay.classList.add('hidden');
+            }
+        }
+
+        // ================= جلب عناصر القائمة الجانبية من قاعدة البيانات =================
         async function loadDynamicSidebarMenu() {
             try {
                 const { data: menuItems, error } = await supabaseClient.rpc('get_menu_items', {
@@ -260,15 +288,18 @@
                 if (!navContainer) return;
 
                 let html = `
-                    <a href="#" onclick="renderMainDashboard(); return false;" class="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-all">
+                    <a href="#" onclick="toggleSidebar(false); renderMainDashboard(); return false;" class="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-all">
                         <span>الرئيسية</span>
+                    </a>
+                    <a href="#" onclick="toggleSidebar(false); renderBrandsScreen(); return false;" class="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-all">
+                        <span>الماركات</span>
                     </a>
                 `;
 
                 if (menuItems && menuItems.length > 0) {
                     menuItems.forEach(item => {
                         html += `
-                            <a href="#" onclick="handleMenuAction('${item.action}'); return false;" class="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-all">
+                            <a href="#" onclick="toggleSidebar(false); handleMenuAction('${item.action}'); return false;" class="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-all">
                                 <span>${item.title}</span>
                             </a>
                         `;
@@ -289,24 +320,24 @@
             }
         }
 
-        // ================= الهيدر العلوي المشترك داخل شاشات المحتوى =================
+        // الهيدر العلوي يحتوي الآن على زر القائمة (زر البرجر)
         function getHeaderTemplate() {
             return `
-                <div class="border-b border-gray-100 pb-4 mb-4 flex-shrink-0">
-                    <div class="flex items-center gap-2">
-                        <div class="flex-1 relative">
-                            <input type="text" placeholder="ابحث في المنتجات والموديلات..." 
-                                  class="w-full bg-gray-50 border border-gray-200 text-gray-700 text-xs sm:text-sm rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm">
-                        </div>
-                        <button onclick="alert('بحث صوتي')" class="bg-gray-50 hover:bg-gray-100 border border-gray-200 p-2.5 rounded-xl text-gray-600 transition-all shadow-sm" title="بحث صوتي">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path></svg>
-                        </button>
+                <div class="border-b border-gray-100 pb-4 mb-4 flex-shrink-0 flex items-center gap-3">
+                    <!-- زر القائمة (يفتح القائمة الجانبية عند الضغط عليه) -->
+                    <button onclick="toggleSidebar(true)" class="bg-blue-50 hover:bg-blue-100 border border-blue-200 p-2.5 rounded-xl text-blue-600 transition-all shadow-sm flex items-center justify-center" title="فتح القائمة">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                    </button>
+
+                    <div class="flex-1 relative">
+                        <input type="text" placeholder="ابحث في المنتجات والموديلات..." 
+                              class="w-full bg-gray-50 border border-gray-200 text-gray-700 text-xs sm:text-sm rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm">
                     </div>
                 </div>
             `;
         }
 
-        // ================= 2. الصفحة الرئيسية =================
+        // ================= 2. محتوى لوحة التحكم (الرئيسية) =================
         function renderMainDashboard() {
             const html = `
                 ${getHeaderTemplate()}
@@ -339,7 +370,7 @@
             document.getElementById('contentArea').innerHTML = html;
         }
 
-        // ================= 3. شاشة الماركات =================
+        // ================= 3. شاشة عرض الماركات =================
         async function renderBrandsScreen() {
             let brands = [];
             const { data, error } = await supabaseClient.from('brands').select('*');
@@ -365,10 +396,6 @@
             const html = `
                 ${getHeaderTemplate()}
                 <div class="flex items-center justify-between mb-4 flex-shrink-0">
-                    <button onclick="renderMainDashboard()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center gap-1">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
-                        <span>رجوع</span>
-                    </button>
                     <h2 class="text-sm font-bold text-gray-800">اختر الماركة</h2>
                 </div>
                 <div class="flex-1 overflow-y-auto space-y-2.5 p-1">
@@ -378,7 +405,7 @@
             document.getElementById('contentArea').innerHTML = html;
         }
 
-        // ================= 4. شاشة الموديلات =================
+        // ================= 4. شاشة عرض الموديلات =================
         async function renderModelsScreen(brand) {
             selectedBrand = brand;
             let tableName = "", nameColumn = "device_name", codeColumn = "model_code", compatColumn = "screen_compatibility", batteryColumn = "battery_model";
@@ -433,7 +460,7 @@
                 <div class="flex items-center justify-between mb-4 flex-shrink-0">
                     <button onclick="renderBrandsScreen()" class="bg-blue-50 hover:bg-blue-100 text-blue-600 px-3 py-1.5 rounded-xl text-xs sm:text-sm font-bold transition-all border border-blue-200 flex items-center gap-1">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
-                        <span>رجوع</span>
+                        <span>رجوع للماركات</span>
                     </button>
                     <h2 class="text-xs sm:text-sm font-bold text-gray-800">موديلات ${brand}</h2>
                 </div>
@@ -470,7 +497,7 @@
                 <div class="flex items-center justify-between mb-4 flex-shrink-0">
                     <button onclick="renderModelsScreen('${selectedBrand}')" class="bg-blue-50 hover:bg-blue-100 text-blue-600 px-3 py-1.5 rounded-xl text-xs sm:text-sm font-bold transition-all border border-blue-200 flex items-center gap-1">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
-                        <span>رجوع</span>
+                        <span>رجوع للموديلات</span>
                     </button>
                     <h2 class="text-xs sm:text-sm font-bold text-gray-800">${selectedBrand} - ${model}</h2>
                 </div>
@@ -481,7 +508,7 @@
             document.getElementById('contentArea').innerHTML = html;
         }
 
-        // ================= 6. صفحة المنتج النهائية =================
+        // ================= 6. صفحة تفاصيل المنتج =================
         function renderProductDetailScreen(part) {
             selectedPart = part;
             let compatibilityText = "هذه القطعة متوافقة مع الإصدارات والنسخ المتطابقة من الماركة.";
@@ -511,7 +538,7 @@
                 <div class="flex items-center justify-between mb-4 flex-shrink-0">
                     <button onclick="renderPartsScreen('${selectedModel}')" class="bg-blue-50 hover:bg-blue-100 text-blue-600 px-3 py-1.5 rounded-xl text-xs sm:text-sm font-bold transition-all border border-blue-200 flex items-center gap-1">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
-                        <span>رجوع</span>
+                        <span>رجوع لقطع الغيار</span>
                     </button>
                     <h2 class="text-xs sm:text-sm font-bold text-gray-800">${part} (${selectedModel})</h2>
                 </div>
