@@ -348,6 +348,22 @@
         // ================= دالة جلب عناصر القائمة بناءً على الـ UUID ودور الـ Admin عبر دالة الـ RPC =================
         async function loadDynamicMenuIntoSidebar() {
     try {
+        // أضفه هنا للتأكد من قيمة الـ ID
+        console.log("Current User ID is:", currentUserId);
+        
+        let menuItems = [];
+        
+        if (!currentUserId) {
+            console.log("لا يوجد مستخدم مسجل دخول أو الـ UUID غير متوفر");
+            const sidebarContainer = document.getElementById('sidebarContent');
+            if (sidebarContainer) {
+                sidebarContainer.innerHTML = `<div class="text-center text-gray-400 text-xs py-4">لا توجد عناصر للقائمة</div>`;
+            }
+            return;
+        }
+        
+        // باقي الكود...
+
         let menuItems = [];
         
         // إذا لم يكن هناك مستخدم مسجل دخول أو لم يتوفر الـ UUID، فلا تكمل
