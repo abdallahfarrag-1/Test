@@ -350,17 +350,19 @@
     try {
         let menuItems = [];
         
-        // 1. الحصول على المستخدم الحالي لمعرفة الـ UUID الخاص به
-        const { data: { user } } = await supabaseClient.auth.getUser();
-        
-        if (!user) {
-            console.log("المستخدم غير مسجل دخول");
+        // إذا لم يكن هناك مستخدم مسجل دخول أو لم يتوفر الـ UUID، فلا تكمل
+        if (!currentUserId) {
+            console.log("لا يوجد مستخدم مسجل دخول أو الـ UUID غير متوفر");
+            const sidebarContainer = document.getElementById('sidebarContent');
+            if (sidebarContainer) {
+                sidebarContainer.innerHTML = `<div class="text-center text-gray-400 text-xs py-4">لا توجد عناصر للقائمة</div>`;
+            }
             return;
         }
 
-        // 2. استدعاء دالة الـ RPC وإرسال الـ UUID للتحقق من صلاحية الأدمن
+        // استدعاء دالة الـ RPC وإرسال الـ UUID المخزن مباشرة
         const { data, error } = await supabaseClient.rpc('get_menu_items_for_admin', {
-            p_user_id: user.id
+            p_user_id: currentUserId
         });
 
         if (!error && data) {
@@ -387,7 +389,7 @@
                     `;
                 });
             } else {
-                menuHtml = `<div class="text-center text-gray-400 text-xs py-4">لا توجد صلاحية أو عناصر للقائمة</div>`;
+                menuHtml = `<div class="text-center text-gray-400 text-xs py-4">لا توجد عناصر مضافة للقائمة</div>`;
             }
 
             sidebarContainer.innerHTML = menuHtml;
