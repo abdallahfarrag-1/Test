@@ -347,46 +347,48 @@
 
         // ================= دالة جلب عناصر القائمة بناءً على الـ UUID ودور الـ Admin عبر دالة الـ RPC =================
         async function loadDynamicMenuIntoSidebar() {
-            try {
-                let menuItems = [];
-                
-                // استدعاء دالة الـ RPC في Supabase وإرسال معرف المستخدم (currentUserId) للتحقق من صلاحية الأدمن
-                const { data, error } = await supabaseClient.rpc('get_menu_items_for_admin', {
-                    p_user_id: currentUserId 
-                });
+    try {
+        let menuItems = [];
+        
+        // استدعاء البيانات مباشرة من جدول menu_items أو عبر دالة الـ RPC
+        const { data, error } = await supabaseClient
+            .from('menu_items')
+            .select('*');
 
-                if (!error && data) {
-                    menuItems = Array.isArray(data) ? data : JSON.parse(JSON.stringify(data));
-                }
-
-                setTimeout(() => {
-                    const sidebarContainer = document.getElementById('sidebarContent');
-                    if (!sidebarContainer) return;
-
-                    let menuHtml = "";
-
-                    if (menuItems && menuItems.length > 0) {
-                        menuItems.forEach(item => {
-                            const title = item.menu_items || item.title || "عنصر القائمة";
-                            const action = item.action || 'defaultAction';
-                            menuHtml += `
-                                <button onclick="toggleSidebar(); handleMenuAction('${action}');" class="w-full text-right px-4 py-3 rounded-xl bg-gray-50 hover:bg-blue-50 text-gray-700 hover:text-blue-600 font-semibold text-sm transition-all flex items-center gap-3">
-                                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-                                    <span>${title}</span>
-                                </button>
-                            `;
-                        });
-                    } else {
-                        menuHtml = `<div class="text-center text-gray-400 text-xs py-4">لا توجد صلاحية أو عناصر مضافة للقائمة</div>`;
-                    }
-
-                    sidebarContainer.innerHTML = menuHtml;
-                }, 100);
-
-            } catch (err) {
-                console.error('خطأ في جلب عناصر القائمة:', err.message);
-            }
+        if (!error && data) {
+            menuItems = data;
         }
+
+        setTimeout(() => {
+            const sidebarContainer = document.getElementById('sidebarContent');
+            if (!sidebarContainer) return;
+
+            let menuHtml = "";
+
+            if (menuItems && menuItems.length > 0) {
+                menuItems.forEach(item => {
+                    // استخدام اسم العمود الصحيح item.menu_items
+                    const title = item.menu_items || "عنصر القائمة"; 
+                    const action = item.action || 'defaultAction';
+                    menuHtml += `
+                        <button onclick="toggleSidebar(); handleMenuAction('${action}');" class="w-full text-right px-4 py-3 rounded-xl bg-gray-50 hover:bg-blue-50 text-gray-700 hover:text-blue-600 font-semibold text-sm transition-all flex items-center gap-3">
+                            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                            <span>${title}</span>
+                        </button>
+                    `;
+                });
+            } else {
+                menuHtml = `<div class="text-center text-gray-400 text-xs py-4">لا توجد عناصر مضافة للقائمة</div>`;
+            }
+
+            sidebarContainer.innerHTML = menuHtml;
+        }, 100);
+
+    } catch (err) {
+        console.error('خطأ في جلب عناصر القائمة:', err.message);
+    }
+}
+
 
         function handleMenuAction(actionName) {
             if (typeof window[actionName] === 'function') {
