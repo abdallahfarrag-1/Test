@@ -350,13 +350,23 @@
     try {
         let menuItems = [];
         
-        // استدعاء البيانات مباشرة من جدول menu_items أو عبر دالة الـ RPC
-        const { data, error } = await supabaseClient
-            .from('menu_items')
-            .select('*');
+        // 1. الحصول على المستخدم الحالي لمعرفة الـ UUID الخاص به
+        const { data: { user } } = await supabaseClient.auth.getUser();
+        
+        if (!user) {
+            console.log("المستخدم غير مسجل دخول");
+            return;
+        }
+
+        // 2. استدعاء دالة الـ RPC وإرسال الـ UUID للتحقق من صلاحية الأدمن
+        const { data, error } = await supabaseClient.rpc('get_menu_items_for_admin', {
+            p_user_id: user.id
+        });
 
         if (!error && data) {
             menuItems = data;
+        } else {
+            console.error("خطأ أو أن المستخدم ليس أدمن:", error);
         }
 
         setTimeout(() => {
@@ -367,7 +377,6 @@
 
             if (menuItems && menuItems.length > 0) {
                 menuItems.forEach(item => {
-                    // استخدام اسم العمود الصحيح item.menu_items
                     const title = item.menu_items || "عنصر القائمة"; 
                     const action = item.action || 'defaultAction';
                     menuHtml += `
@@ -378,7 +387,7 @@
                     `;
                 });
             } else {
-                menuHtml = `<div class="text-center text-gray-400 text-xs py-4">لا توجد عناصر مضافة للقائمة</div>`;
+                menuHtml = `<div class="text-center text-gray-400 text-xs py-4">لا توجد صلاحية أو عناصر للقائمة</div>`;
             }
 
             sidebarContainer.innerHTML = menuHtml;
@@ -388,6 +397,7 @@
         console.error('خطأ في جلب عناصر القائمة:', err.message);
     }
 }
+
 
 
         function handleMenuAction(actionName) {
