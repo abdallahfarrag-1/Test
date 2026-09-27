@@ -33,6 +33,7 @@
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         let currentUserRole = "زائر";
+        let currentUserType = "زائر"; // لحفظ نوع المستخدم (مثل "ادمن")
         let selectedBrand = "";
         let selectedModel = "";
         let selectedPart = "";
@@ -192,7 +193,7 @@
             }
         }
 
-        // دالة تسجيل الدخول عبر RPC (معدلة لتطابق p_phone_number في السيرفر)
+        // دالة تسجيل الدخول عبر RPC
         async function handleLoginSubmit(e) {
             e.preventDefault();
             const phone = document.getElementById('loginPhone').value.trim();
@@ -222,10 +223,12 @@
             }
 
             currentUserRole = userData.phone_number || phone;
+            currentUserType = userData.user_type || "ادمن"; // جلب نوع المستخدم من الجدول
             renderMainDashboard();
+            loadDynamicMenuIntoDropdown(); // تحميل القائمة الديناميكية
         }
 
-        // دالة إنشاء الحساب عبر RPC باستخدام user_name
+        // دالة إنشاء الحساب عبر RPC
         async function handleRegisterSubmit(e) {
             e.preventDefault();
             const user_name = document.getElementById('regUserName').value.trim();
@@ -250,12 +253,16 @@
 
             alert('تم إنشاء الحساب بنجاح!');
             currentUserRole = phone_number;
+            currentUserType = "ادمن"; // افتراضياً الحسابات الجديدة للأدمن مبدئياً
             renderMainDashboard();
+            loadDynamicMenuIntoDropdown();
         }
 
         function loginAsVisitor() {
             currentUserRole = "زائر";
+            currentUserType = "زائر";
             renderMainDashboard();
+            loadDynamicMenuIntoDropdown();
         }
 
         // ================= قالب الجزء الثابت المتكرر في أعلى كل الصفحات الداخلية =================
@@ -268,7 +275,7 @@
 
                     <div class="flex items-center justify-between mb-4">
                         <div class="relative">
-                            <select onchange="handleMenuChange(this)" class="bg-gray-50 border border-gray-200 text-gray-700 text-xs sm:text-sm rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer shadow-sm">
+                            <select id="dynamicMenuSelect" onchange="handleMenuChange(this)" class="bg-gray-50 border border-gray-200 text-gray-700 text-xs sm:text-sm rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer shadow-sm">
                                 <option value="" disabled selected>القائمة</option>
                                 <option value="home">الرئيسية</option>
                                 <option value="logout">تسجيل الخروج</option>
@@ -296,11 +303,61 @@
             `;
         }
 
+        // ================= دالة جلب العناصر الديناميكية من Supabase RPC وتحميلها في القائمة المنسدلة =================
+        async function loadDynamicMenuIntoDropdown() {
+            try {
+                const { data: menuItems, error } = await supabaseClient.rpc('get_menu_items', {
+                    p_user_type: currentUserType
+                });
+
+                if (error) throw error;
+
+                // الانتظار لحظة حتى يتم رسم الهيدر في الـ DOM
+                setTimeout(() => {
+                    const selectElement = document.getElementById('dynamicMenuSelect');
+                    if (!selectElement) return;
+
+                    // إعادة بناء خيارات القائمة مع الحفاظ على العناصر الثابتة
+                    selectElement.innerHTML = `
+                        <option value="" disabled selected>القائمة</option>
+                        <option value="home">الرئيسية</option>
+                    `;
+
+                    // إضافة العناصر القادمة من جدول menu_items بأمان
+                    if (menuItems && menuItems.length > 0) {
+                        menuItems.forEach(item => {
+                            const option = document.createElement('option');
+                            option.value = item.action; // اسم الدالة البرمجية
+                            option.textContent = item.title; // الاسم الظاهر للمستخدم
+                            selectElement.appendChild(option);
+                        });
+                    }
+
+                    // إضافة زر تسجيل الخروج في النهاية
+                    const logoutOption = document.createElement('option');
+                    logoutOption.value = 'logout';
+                    logoutOption.textContent = 'تسجيل الخروج';
+                    selectElement.appendChild(logoutOption);
+                }, 100);
+
+            } catch (err) {
+                console.error('خطأ في جلب عناصر القائمة:', err.message);
+            }
+        }
+
         function handleMenuChange(select) {
-            if (select.value === 'logout') {
+            const val = select.value;
+            if (val === 'logout') {
                 renderLoginScreen();
-            } else if (select.value === 'home') {
+            } else if (val === 'home') {
                 renderMainDashboard();
+            } else {
+                // تنفيذ الأكشن البرمجي المختار ديناميكياً إذا كان موجوداً
+                if (typeof window[val] === 'function') {
+                    window[val]();
+                } else {
+                    alert(`تم اختيار: ${select.options[select.selectedIndex].text} (الإجراء غير معرف بعد)`);
+                }
             }
             select.value = "";
         }
@@ -340,6 +397,7 @@
                 </div>
             `;
             document.getElementById('appContainer').innerHTML = html;
+            loadDynamicMenuIntoDropdown();
         }
 
         // ================= 3. شاشة الماركات =================
@@ -380,6 +438,7 @@
                 </div>
             `;
             document.getElementById('appContainer').innerHTML = html;
+            loadDynamicMenuIntoDropdown();
         }
 
         // ================= 4. شاشة الموديلات =================
@@ -531,6 +590,7 @@
                 </div>
             `;
             document.getElementById('appContainer').innerHTML = html;
+            loadDynamicMenuIntoDropdown();
         }
 
         function selectModelAndProceed(deviceName, modelCode, compatEncoded, batteryEncoded) {
@@ -569,6 +629,7 @@
                 </div>
             `;
             document.getElementById('appContainer').innerHTML = html;
+            loadDynamicMenuIntoDropdown();
         }
 
         // ================= 6. صفحة المنتج النهائية =================
@@ -632,6 +693,7 @@
                 </div>
             `;
             document.getElementById('appContainer').innerHTML = html;
+            loadDynamicMenuIntoDropdown();
         }
 
         // التشغيل المبدئي عند تحميل الصفحة
