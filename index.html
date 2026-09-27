@@ -15,19 +15,33 @@
         }
     </style>
 </head>
-<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen p-2 sm:p-4 flex items-center justify-center">
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen p-2 sm:p-4 flex items-center justify-center relative overflow-x-hidden">
 
-    <!-- البطاقة البيضاء الرئيسية - ملء الشاشة -->
-    <div class="bg-white w-full h-[96vh] sm:h-[94vh] rounded-3xl shadow-2xl p-4 sm:p-6 flex flex-col justify-between transition-all duration-300 relative overflow-hidden">
-        
-        <!-- الحاوية العامة -->
-        <div id="mainLayoutContainer" class="flex-1 flex flex-col overflow-hidden relative">
-            <!-- سيتم حقن الواجهة هنا -->
+    <!-- القائمة الجانبية (Sidebar) المخفية افتراضياً -->
+    <div id="sidebarOverlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/50 z-40 hidden transition-opacity opacity-0 duration-300"></div>
+    <div id="sideMenu" class="fixed top-0 right-0 h-full w-72 bg-white shadow-2xl z-50 transform translate-x-full transition-transform duration-300 flex flex-col">
+        <!-- رأس القائمة الجانبية -->
+        <div class="p-4 border-b border-gray-100 flex items-center justify-between bg-gray-50">
+            <h3 class="font-bold text-gray-800 text-base">القائمة الرئيسية</h3>
+            <button onclick="toggleSidebar()" class="p-2 text-gray-500 hover:text-red-500 rounded-xl transition-all">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
         </div>
+        <!-- محتوى القائمة الجانبية الديناميكي -->
+        <div id="sidebarContent" class="flex-1 overflow-y-auto p-4 space-y-2">
+            <!-- يتم تعبئتها ديناميكياً -->
+        </div>
+    </div>
+
+    <!-- البطاقة البيضاء الرئيسية - ملء الشاشة (Full Screen Card) -->
+    <div class="bg-white w-full h-[96vh] sm:h-[94vh] rounded-3xl shadow-2xl p-4 sm:p-8 flex flex-col justify-between transition-all duration-300 overflow-hidden">
+        
+        <!-- حاوية الشاشات الديناميكية -->
+        <div id="appContainer" class="flex-1 flex flex-col overflow-hidden"></div>
 
     </div>
 
-    <!-- كود الجافاسكريبت -->
+    <!-- كود الجافاسكريبت لإدارة النظام والصفحات والتنقل الأفقي -->
     <script>
         // إعدادات اتصال Supabase
         const SUPABASE_URL = 'https://byiayomtcwqlgrknvgcz.supabase.co';
@@ -35,43 +49,78 @@
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         let currentUserRole = "زائر";
-        let currentUserType = "زائر"; 
+        let currentUserType = "زائر"; // لحفظ نوع المستخدم (مثل "ادمن")
         let selectedBrand = "";
         let selectedModel = "";
         let selectedPart = "";
         let selectedModelCode = ""; 
         let currentScreenCompatibility = "";
-        let currentBatteryModel = "";
+        let currentBatteryModel = ""; // لحفظ طراز البطارية
 
+        // دوال التحكم في فتح وإغلاق القائمة الجانبية
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sideMenu');
+            const overlay = document.getElementById('sidebarOverlay');
+            
+            if (sidebar.classList.contains('translate-x-full')) {
+                sidebar.classList.remove('translate-x-full');
+                overlay.classList.remove('hidden');
+                setTimeout(() => overlay.classList.remove('opacity-0'), 10);
+            } else {
+                sidebar.classList.add('translate-x-full');
+                overlay.classList.add('opacity-0');
+                setTimeout(() => overlay.classList.add('hidden'), 300);
+            }
+        }
+
+        // دالة مساعدة لإرجاع الألوان بالترتيب (أزرق، أخضر، بني)
         function getRotatingCardStyle(index) {
             const styles = [
-                { bg: "bg-blue-50/80 hover:bg-blue-100", border: "border-blue-200", text: "text-blue-800", icon: "text-blue-500" },
-                { bg: "bg-emerald-50/80 hover:bg-emerald-100", border: "border-emerald-200", text: "text-emerald-800", icon: "text-emerald-500" },
-                { bg: "bg-amber-50/80 hover:bg-amber-100", border: "border-amber-200", text: "text-amber-800", icon: "text-amber-500" }
+                {
+                    bg: "bg-blue-50/80 hover:bg-blue-100",
+                    border: "border-blue-200",
+                    text: "text-blue-800",
+                    icon: "text-blue-500"
+                },
+                {
+                    bg: "bg-emerald-50/80 hover:bg-emerald-100",
+                    border: "border-emerald-200",
+                    text: "text-emerald-800",
+                    icon: "text-emerald-500"
+                },
+                {
+                    bg: "bg-amber-50/80 hover:bg-amber-100",
+                    border: "border-amber-200",
+                    text: "text-amber-800",
+                    icon: "text-amber-500"
+                }
             ];
             return styles[index % 3];
         }
 
+        // قطع الغيار المطلوبة
         const sparePartsList = [
             "شاشة", "بطارية", "ضهرية", "فلاتة ربط", "فلاتة باور", 
             "فلاتة شحن", "فريم", "ميدل", "سماعة داخلية مكالمات", 
             "سماعة خارجية مكبر الصوت", "سوكيت", "ايسيهات"
         ];
 
-        // ================= 1. شاشة تسجيل الدخول =================
+        // ================= 1. واجهة تسجيل الدخول (الصفحة الأولى) =================
         function renderLoginScreen() {
             const html = `
-                <div class="flex-1 overflow-y-auto px-2 flex items-center justify-center">
+                <div class="flex-1 overflow-y-auto px-2">
                     <div class="max-w-xl mx-auto w-full py-4">
                         <div class="text-center mb-6">
                             <h1 class="text-2xl sm:text-3xl font-bold text-gray-800 tracking-wide">Electricity Aswan</h1>
                         </div>
 
+                        <!-- الصورة المستطيلة بحواف دائرية ذات ظلال -->
                         <div class="mb-6">
                             <img src="https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?auto=format&fit=crop&w=800&q=80" 
                                  alt="Banner" class="w-full h-40 sm:h-52 object-cover rounded-2xl shadow-md">
                         </div>
 
+                        <!-- أزرار التبديل بين (تسجيل الدخول) و (إنشاء حساب) -->
                         <div class="grid grid-cols-2 gap-2 bg-gray-100 p-1.5 rounded-2xl mb-6">
                             <button onclick="switchTab('login')" id="loginTabBtn" 
                                     class="py-2.5 text-sm font-semibold rounded-xl transition-all duration-200 bg-white text-blue-600 shadow-sm">
@@ -83,6 +132,7 @@
                             </button>
                         </div>
 
+                        <!-- خانة تسجيل الدخول -->
                         <div id="loginFormContainer">
                             <form onsubmit="handleLoginSubmit(event)" class="space-y-4">
                                 <div>
@@ -95,12 +145,21 @@
                                     <input type="password" id="loginPassword" required
                                            class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-gray-50">
                                 </div>
+                                
+                                <div class="flex items-center justify-between text-sm">
+                                    <label class="flex items-center space-x-2 space-x-reverse cursor-pointer">
+                                        <input type="checkbox" class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                                        <span class="text-gray-600 text-xs">تذكرني</span>
+                                    </label>
+                                </div>
+
                                 <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl shadow-lg shadow-blue-500/35 transition-all text-sm">
                                     تسجيل الدخول
                                 </button>
                             </form>
                         </div>
 
+                        <!-- خانة إنشاء حساب (مخفية افتراضياً) -->
                         <div id="registerFormContainer" class="hidden">
                             <form onsubmit="handleRegisterSubmit(event)" class="space-y-3.5">
                                 <div>
@@ -123,6 +182,7 @@
                                     <label class="block text-xs font-semibold text-gray-600 mb-1">رمز المرور</label>
                                     <input type="password" id="regPassword" required class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-gray-50">
                                 </div>
+
                                 <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl shadow-lg shadow-emerald-500/35 transition-all text-sm mt-2">
                                     إنشاء الحساب
                                 </button>
@@ -134,6 +194,7 @@
                             <div class="relative flex justify-center text-xs uppercase"><span class="bg-white px-2 text-gray-400">أو</span></div>
                         </div>
 
+                        <!-- زر الدخول كزائر -->
                         <div>
                             <button onclick="loginAsVisitor()" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 rounded-xl transition-all text-sm border border-gray-200">
                                 الدخول كزائر
@@ -142,7 +203,7 @@
                     </div>
                 </div>
             `;
-            document.getElementById('mainLayoutContainer').innerHTML = html;
+            document.getElementById('appContainer').innerHTML = html;
         }
 
         function switchTab(tab) {
@@ -164,23 +225,42 @@
             }
         }
 
+        // دالة تسجيل الدخول عبر RPC
         async function handleLoginSubmit(e) {
             e.preventDefault();
             const phone = document.getElementById('loginPhone').value.trim();
             const password = document.getElementById('loginPassword').value.trim();
 
-            const { data, error } = await supabaseClient.rpc('login_user', { p_phone_number: phone, p_password: password });
-            if (error || !data || (Array.isArray(data) && data.length === 0)) {
+            const { data, error } = await supabaseClient
+                .rpc('login_user', { 
+                    p_phone_number: phone, 
+                    p_password: password 
+                });
+
+            if (error) {
+                alert('خطأ في الاتصال أو بيانات الدخول: ' + error.message);
+                return;
+            }
+
+            if (!data || (Array.isArray(data) && data.length === 0)) {
                 alert('خطأ في رقم الهاتف أو رمز المرور!');
                 return;
             }
 
             const userData = Array.isArray(data) ? data[0] : data;
+
+            if (!userData) {
+                alert('خطأ في رقم الهاتف أو رمز المرور!');
+                return;
+            }
+
             currentUserRole = userData.phone_number || phone;
             currentUserType = userData.user_type || "ادمن"; 
-            initAppLayout();
+            renderMainDashboard();
+            loadDynamicMenuIntoSidebar(); 
         }
 
+        // دالة إنشاء الحساب عبر RPC
         async function handleRegisterSubmit(e) {
             e.preventDefault();
             const user_name = document.getElementById('regUserName').value.trim();
@@ -189,9 +269,14 @@
             const phone_number = document.getElementById('regPhone').value.trim();
             const password = document.getElementById('regPassword').value.trim();
 
-            const { error } = await supabaseClient.rpc('signup_user', { 
-                p_user_name: user_name, p_shop_name: shop_name, p_shop_address: shop_address, p_phone_number: phone_number, p_password: password 
-            });
+            const { data, error } = await supabaseClient
+                .rpc('signup_user', { 
+                    p_user_name: user_name, 
+                    p_shop_name: shop_name, 
+                    p_shop_address: shop_address, 
+                    p_phone_number: phone_number, 
+                    p_password: password 
+                });
 
             if (error) {
                 alert('حدث خطأ أثناء إنشاء الحساب أو الرقم مسجل مسبقاً: ' + error.message);
@@ -201,82 +286,55 @@
             alert('تم إنشاء الحساب بنجاح!');
             currentUserRole = phone_number;
             currentUserType = "ادمن"; 
-            initAppLayout();
+            renderMainDashboard();
+            loadDynamicMenuIntoSidebar();
         }
 
         function loginAsVisitor() {
             currentUserRole = "زائر";
             currentUserType = "زائر";
-            initAppLayout();
+            renderMainDashboard();
+            loadDynamicMenuIntoSidebar();
         }
 
-        // ================= بناء التخطيط الرئيسي مع القائمة الجانبية المنزلقة (Drawer) =================
-        function initAppLayout() {
-            const layoutHtml = `
-                <div class="flex-1 flex flex-col overflow-hidden relative">
-                    
-                    <!-- طبقة التعتيم الخلفية عند فتح القائمة (Overlay) -->
-                    <div id="sidebarOverlay" onclick="toggleSidebar(false)" class="absolute inset-0 bg-black/30 z-40 hidden transition-opacity duration-300"></div>
+        // ================= قالب الجزء الثابت المتكرر في أعلى كل الصفحات الداخلية =================
+        function getHeaderTemplate() {
+            return `
+                <div class="border-b border-gray-100 pb-4 mb-4 flex-shrink-0">
+                    <div class="text-center mb-3">
+                        <h1 class="text-2xl sm:text-3xl font-bold text-gray-800 tracking-wide">Electricity Aswan</h1>
+                    </div>
 
-                    <!-- القائمة الجانبية المنزلقة من اليمين (Slide-out Sidebar) -->
-                    <div id="sideDrawer" class="absolute top-0 right-0 bottom-0 w-72 bg-white shadow-2xl z-50 transform translate-x-full transition-transform duration-300 ease-in-out flex flex-col justify-between p-4 border-l border-gray-100">
-                        <div>
-                            <div class="flex items-center justify-between mb-4 pb-3 border-b border-gray-200">
-                                <div>
-                                    <h1 class="text-lg font-bold text-gray-800">Electricity Aswan</h1>
-                                    <span class="text-xs text-blue-600 font-semibold mt-0.5 inline-block bg-blue-50 px-2 py-0.5 rounded-lg border border-blue-100">${currentUserRole}</span>
-                                </div>
-                                <button onclick="toggleSidebar(false)" class="p-2 text-gray-400 hover:text-gray-600 rounded-xl hover:bg-gray-100 transition-all">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                                </button>
-                            </div>
+                    <div class="flex items-center justify-between mb-4">
+                        <!-- زر فتح القائمة الجانبية بدلاً من القائمة المنسدلة القديمة -->
+                        <button onclick="toggleSidebar()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs sm:text-sm rounded-xl px-4 py-2.5 flex items-center gap-2 shadow-sm transition-all cursor-pointer">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                            <span>القائمة</span>
+                        </button>
 
-                            <!-- عناصر القائمة الجانبية -->
-                            <nav id="sidebarNavItems" class="space-y-1.5 overflow-y-auto max-h-[60vh]">
-                                <a href="#" onclick="toggleSidebar(false); renderMainDashboard(); return false;" class="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-all">
-                                    <span>الرئيسية</span>
-                                </a>
-                                <a href="#" onclick="toggleSidebar(false); renderBrandsScreen(); return false;" class="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-all">
-                                    <span>الماركات</span>
-                                </a>
-                            </nav>
-                        </div>
-
-                        <div class="pt-3 border-t border-gray-200">
-                            <button onclick="renderLoginScreen()" class="w-full flex items-center justify-center gap-2 bg-red-50 hover:bg-red-100 text-red-600 py-2.5 rounded-xl text-sm font-bold transition-all border border-red-200">
-                                تسجيل الخروج
-                            </button>
+                        <div class="bg-blue-50/60 border border-blue-100 px-3.5 py-2 rounded-xl text-blue-700 text-xs sm:text-sm font-semibold shadow-sm">
+                            ${currentUserRole}
                         </div>
                     </div>
 
-                    <!-- مساحة محتوى التطبيق الرئيسية -->
-                    <main id="contentArea" class="flex-1 flex flex-col overflow-hidden bg-white border border-gray-100 rounded-2xl p-4 sm:p-6 shadow-sm">
-                    </main>
-
+                    <div class="flex items-center gap-2">
+                        <div class="flex-1 relative">
+                            <input type="text" placeholder="ابحث" 
+                                  class="w-full bg-gray-50 border border-gray-200 text-gray-700 text-xs sm:text-sm rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm">
+                        </div>
+                        <button onclick="alert('جارِ الاستماع للصوت...فعل ميكروفون المتصفح')" class="bg-gray-50 hover:bg-gray-100 border border-gray-200 p-3 rounded-xl text-gray-600 transition-all shadow-sm" title="بحث صوتي">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path></svg>
+                        </button>
+                        <button onclick="alert('جارِ فتح الكاميرا للمسح الضوئي...')" class="bg-gray-50 hover:bg-gray-100 border border-gray-200 p-3 rounded-xl text-gray-600 transition-all shadow-sm" title="بحث بالكاميرا">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                        </button>
+                    </div>
                 </div>
             `;
-            document.getElementById('mainLayoutContainer').innerHTML = layoutHtml;
-            loadDynamicSidebarMenu();
-            renderMainDashboard();
         }
 
-        // دالة فتح وإغلاق القائمة الجانبية المنزلقة
-        function toggleSidebar(open) {
-            const drawer = document.getElementById('sideDrawer');
-            const overlay = document.getElementById('sidebarOverlay');
-            if (!drawer || !overlay) return;
-
-            if (open) {
-                drawer.classList.remove('translate-x-full');
-                overlay.classList.remove('hidden');
-            } else {
-                drawer.classList.add('translate-x-full');
-                overlay.classList.add('hidden');
-            }
-        }
-
-        // ================= جلب عناصر القائمة الجانبية من قاعدة البيانات =================
-        async function loadDynamicSidebarMenu() {
+        // ================= دالة جلب العناصر الديناميكية من Supabase RPC وتحميلها في القائمة الجانبية =================
+        async function loadDynamicMenuIntoSidebar() {
             try {
                 const { data: menuItems, error } = await supabaseClient.rpc('get_menu_items', {
                     p_user_type: currentUserType
@@ -284,96 +342,98 @@
 
                 if (error) throw error;
 
-                const navContainer = document.getElementById('sidebarNavItems');
-                if (!navContainer) return;
+                setTimeout(() => {
+                    const sidebarContainer = document.getElementById('sidebarContent');
+                    if (!sidebarContainer) return;
 
-                let html = `
-                    <a href="#" onclick="toggleSidebar(false); renderMainDashboard(); return false;" class="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-all">
-                        <span>الرئيسية</span>
-                    </a>
-                    <a href="#" onclick="toggleSidebar(false); renderBrandsScreen(); return false;" class="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-all">
-                        <span>الماركات</span>
-                    </a>
-                `;
+                    // بناء محتوى القائمة الجانبية
+                    let menuHtml = `
+                        <button onclick="toggleSidebar(); renderMainDashboard();" class="w-full text-right px-4 py-3 rounded-xl bg-gray-50 hover:bg-blue-50 text-gray-700 hover:text-blue-600 font-semibold text-sm transition-all flex items-center gap-3">
+                            <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                            <span>الرئيسية</span>
+                        </button>
+                    `;
 
-                if (menuItems && menuItems.length > 0) {
-                    menuItems.forEach(item => {
-                        html += `
-                            <a href="#" onclick="toggleSidebar(false); handleMenuAction('${item.action}'); return false;" class="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-all">
-                                <span>${item.title}</span>
-                            </a>
-                        `;
-                    });
-                }
+                    if (menuItems && menuItems.length > 0) {
+                        menuItems.forEach(item => {
+                            menuHtml += `
+                                <button onclick="toggleSidebar(); handleMenuAction('${item.action}');" class="w-full text-right px-4 py-3 rounded-xl bg-gray-50 hover:bg-blue-50 text-gray-700 hover:text-blue-600 font-semibold text-sm transition-all flex items-center gap-3">
+                                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                                    <span>${item.title}</span>
+                                </button>
+                            `;
+                        });
+                    }
 
-                navContainer.innerHTML = html;
+                    // زر تسجيل الخروج في أسفل القائمة الجانبية
+                    menuHtml += `
+                        <div class="pt-4 mt-4 border-t border-gray-100">
+                            <button onclick="toggleSidebar(); renderLoginScreen();" class="w-full text-right px-4 py-3 rounded-xl bg-red-50 hover:bg-red-100 text-red-600 font-semibold text-sm transition-all flex items-center gap-3">
+                                <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                                <span>تسجيل الخروج</span>
+                            </button>
+                        </div>
+                    `;
+
+                    sidebarContainer.innerHTML = menuHtml;
+                }, 100);
+
             } catch (err) {
-                console.error('خطأ في جلب القائمة الجانبية:', err.message);
+                console.error('خطأ في جلب عناصر القائمة:', err.message);
             }
         }
 
-        function handleMenuAction(action) {
-            if (typeof window[action] === 'function') {
-                window[action]();
+        function handleMenuAction(actionName) {
+            if (typeof window[actionName] === 'function') {
+                window[actionName]();
             } else {
-                alert(`الإجراء غير معرف: ${action}`);
+                alert(`تم اختيار الإجراء (غير معرف بعد): ${actionName}`);
             }
         }
 
-        // الهيدر العلوي يحتوي الآن على زر القائمة (زر البرجر)
-        function getHeaderTemplate() {
-            return `
-                <div class="border-b border-gray-100 pb-4 mb-4 flex-shrink-0 flex items-center gap-3">
-                    <!-- زر القائمة (يفتح القائمة الجانبية عند الضغط عليه) -->
-                    <button onclick="toggleSidebar(true)" class="bg-blue-50 hover:bg-blue-100 border border-blue-200 p-2.5 rounded-xl text-blue-600 transition-all shadow-sm flex items-center justify-center" title="فتح القائمة">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
-                    </button>
-
-                    <div class="flex-1 relative">
-                        <input type="text" placeholder="ابحث في المنتجات والموديلات..." 
-                              class="w-full bg-gray-50 border border-gray-200 text-gray-700 text-xs sm:text-sm rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm">
-                    </div>
-                </div>
-            `;
-        }
-
-        // ================= 2. محتوى لوحة التحكم (الرئيسية) =================
+        // ================= 2. الصفحة الرئيسية =================
         function renderMainDashboard() {
             const html = `
                 ${getHeaderTemplate()}
+
                 <div class="flex-1 overflow-y-auto space-y-4 px-1">
-                    <div class="mb-2">
+                    <div class="mb-4">
                         <img src="https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?auto=format&fit=crop&w=800&q=80" 
-                             alt="Banner" class="w-full h-32 sm:h-44 object-cover rounded-2xl shadow-md">
+                             alt="Banner" class="w-full h-36 sm:h-48 object-cover rounded-2xl shadow-md">
                     </div>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pb-4">
-                        <div onclick="renderBrandsScreen()" class="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white p-4 sm:p-5 rounded-2xl shadow-md cursor-pointer transition-all flex items-center justify-between">
-                            <span class="font-bold text-base sm:text-lg">الماركات</span>
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                    <div class="space-y-3.5 pb-4">
+                        <div onclick="renderBrandsScreen()" class="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white p-5 sm:p-6 rounded-2xl shadow-md cursor-pointer transition-all flex items-center justify-between">
+                            <span class="font-bold text-lg sm:text-xl">الماركات</span>
+                            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
                         </div>
-                        <div onclick="alert('قسم التوافقات')" class="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white p-4 sm:p-5 rounded-2xl shadow-md cursor-pointer transition-all flex items-center justify-between">
-                            <span class="font-bold text-base sm:text-lg">التوافقات</span>
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+
+                        <div onclick="alert('قسم التوافقات')" class="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white p-5 sm:p-6 rounded-2xl shadow-md cursor-pointer transition-all flex items-center justify-between">
+                            <span class="font-bold text-lg sm:text-xl">التوافقات</span>
+                            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
                         </div>
-                        <div onclick="alert('تنبيهات بعد التركيب')" class="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white p-4 sm:p-5 rounded-2xl shadow-md cursor-pointer transition-all flex items-center justify-between">
-                            <span class="font-bold text-base sm:text-lg">تنبيهات بعد التركيب</span>
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+
+                        <div onclick="alert('تنبيهات بعد التركيب')" class="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white p-5 sm:p-6 rounded-2xl shadow-md cursor-pointer transition-all flex items-center justify-between">
+                            <span class="font-bold text-lg sm:text-xl">تنبيهات بعد التركيب</span>
+                            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
                         </div>
-                        <div onclick="alert('للتواصل مع الشركة')" class="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white p-4 sm:p-5 rounded-2xl shadow-md cursor-pointer transition-all flex items-center justify-between">
-                            <span class="font-bold text-base sm:text-lg">التواصل مع الشركة</span>
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+
+                        <div onclick="alert('للتواصل مع الشركة')" class="w-full bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white p-5 sm:p-6 rounded-2xl shadow-md cursor-pointer transition-all flex items-center justify-between">
+                            <span class="font-bold text-lg sm:text-xl">التواصل مع الشركة</span>
+                            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
                         </div>
                     </div>
                 </div>
             `;
-            document.getElementById('contentArea').innerHTML = html;
+            document.getElementById('appContainer').innerHTML = html;
+            loadDynamicMenuIntoSidebar();
         }
 
-        // ================= 3. شاشة عرض الماركات =================
+        // ================= 3. شاشة الماركات =================
         async function renderBrandsScreen() {
             let brands = [];
             const { data, error } = await supabaseClient.from('brands').select('*');
+            
             if (!error && data) {
                 brands = data.map(item => item.brand_name || item.name || Object.values(item)[1]); 
             }
@@ -383,47 +443,135 @@
                 brandsHtml = brands.map((brand, index) => {
                     const style = getRotatingCardStyle(index);
                     return `
-                        <div onclick="renderModelsScreen('${brand}')" class="w-full ${style.bg} border ${style.border} p-3.5 rounded-2xl shadow-sm flex items-center justify-between cursor-pointer transition-all text-sm sm:text-base">
+                        <div onclick="renderModelsScreen('${brand}')" class="w-full ${style.bg} border ${style.border} p-4 rounded-2xl shadow-sm flex items-center justify-between cursor-pointer transition-all text-sm sm:text-base">
                             <span class="font-bold text-gray-800">${brand}</span>
                             <svg class="w-5 h-5 ${style.icon} flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
                         </div>
                     `;
                 }).join('');
             } else {
-                brandsHtml = `<div class="text-center text-gray-500 py-6">لا توجد ماركات متاحة حالياً</div>`;
+                brandsHtml = `<div class="text-center text-gray-500 py-6">لا توجد ماركات متاحة حالياً أو تأكد من تفعيل RLS والسماح بالقراءة</div>`;
             }
 
             const html = `
                 ${getHeaderTemplate()}
                 <div class="flex items-center justify-between mb-4 flex-shrink-0">
-                    <h2 class="text-sm font-bold text-gray-800">اختر الماركة</h2>
+                    <button onclick="renderMainDashboard()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center gap-1.5">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                        <span>رجوع</span>
+                    </button>
+                    <h2 class="text-sm sm:text-base font-bold text-gray-800">اختر الماركة</h2>
                 </div>
-                <div class="flex-1 overflow-y-auto space-y-2.5 p-1">
+                <div class="flex-1 overflow-y-auto space-y-3 p-1">
                     ${brandsHtml}
                 </div>
             `;
-            document.getElementById('contentArea').innerHTML = html;
+            document.getElementById('appContainer').innerHTML = html;
+            loadDynamicMenuIntoSidebar();
         }
 
-        // ================= 4. شاشة عرض الموديلات =================
+        // ================= 4. شاشة الموديلات =================
         async function renderModelsScreen(brand) {
             selectedBrand = brand;
-            let tableName = "", nameColumn = "device_name", codeColumn = "model_code", compatColumn = "screen_compatibility", batteryColumn = "battery_model";
+            
+            let tableName = "";
+            let nameColumn = "device_name";
+            let codeColumn = "model_code";
+            let compatColumn = "screen_compatibility";
+            let batteryColumn = "battery_model";
             
             const b = brand.toLowerCase();
-            if (b.includes('samsung')) { tableName = 'samsung_models'; nameColumn = 'samsung_phone_name'; codeColumn = 'samsung_phone_code'; compatColumn = 'samsung_screen_compatibility'; batteryColumn = 'samsung_battery_model'; }
-            else if (b.includes('iphone') || b.includes('apple')) { tableName = 'apple_models'; nameColumn = 'apple_phone_name'; codeColumn = 'apple_phone_code'; compatColumn = 'apple_screen_compatibility'; batteryColumn = 'apple_battery_model'; }
-            else if (b.includes('xiaomi') || b.includes('poco')) { tableName = 'xiaomi_models'; nameColumn = 'xiaomi_phone_name'; codeColumn = 'xiaomi_phone_code'; compatColumn = 'xiaomi_screen_compatibility'; batteryColumn = 'xiaomi_battery_model'; }
-            else if (b.includes('redmi')) { tableName = 'redmi_models'; nameColumn = 'redmi_phone_name'; codeColumn = 'redmi_phone_code'; compatColumn = 'redmi_screen_compatibility'; batteryColumn = 'redmi_battery_model'; }
-            else if (b.includes('huawei')) { tableName = 'huawei_models'; nameColumn = 'huawei_phone_name'; codeColumn = 'huawei_phone_code'; compatColumn = 'huawei_screen_compatibility'; batteryColumn = 'huawei_battery_model'; }
-            else if (b.includes('honor')) { tableName = 'honor_models'; nameColumn = 'honor_phone_name'; codeColumn = 'honor_phone_code'; compatColumn = 'honor_screen_compatibility'; batteryColumn = 'honor_battery_model'; }
-            else if (b.includes('oppo')) { tableName = 'oppo_models'; nameColumn = 'oppo_phone_name'; codeColumn = 'oppo_phone_code'; compatColumn = 'oppo_screen_compatibility'; batteryColumn = 'oppo_battery_model'; }
-            else if (b.includes('realme')) { tableName = 'realme_models'; nameColumn = 'realme_phone_name'; codeColumn = 'realme_phone_code'; compatColumn = 'realme_screen_compatibility'; batteryColumn = 'realme_battery_model'; }
-            else if (b.includes('itel')) { tableName = 'itel_models'; nameColumn = 'itel_phone_name'; codeColumn = 'itel_phone_code'; compatColumn = 'itel_screen_compatibility'; batteryColumn = 'itel_battery_model'; }
-            else if (b.includes('nokia')) { tableName = 'nokia_models'; nameColumn = 'nokia_phone_name'; codeColumn = 'nokia_phone_code'; compatColumn = 'nokia_screen_compatibility'; batteryColumn = 'nokia_battery_model'; }
-            else if (b.includes('vivo')) { tableName = 'vivo_models'; nameColumn = 'vivo_phone_name'; codeColumn = 'vivo_phone_code'; compatColumn = 'vivo_screen_compatibility'; batteryColumn = 'vivo_battery_model'; }
-            else if (b.includes('techno') || b.includes('tecno')) { tableName = 'tecno_models'; nameColumn = 'tecno_phone_name'; codeColumn = 'tecno_phone_code'; compatColumn = 'tecno_screen_compatibility'; batteryColumn = 'tecno_battery_model'; }
-            else if (b.includes('infinix')) { tableName = 'infinix_models'; nameColumn = 'infinix_phone_name'; codeColumn = 'infinix_phone_code'; compatColumn = 'infinix_screen_compatibility'; batteryColumn = 'infinix_battery_model'; }
+            if (b.includes('samsung')) {
+                tableName = 'samsung_models';
+                nameColumn = 'samsung_phone_name';
+                codeColumn = 'samsung_phone_code';
+                compatColumn = 'samsung_screen_compatibility';
+                batteryColumn = 'samsung_battery_model';
+            }
+            else if (b.includes('iphone') || b.includes('apple')) {
+                tableName = 'apple_models';
+                nameColumn = 'apple_phone_name';
+                codeColumn = 'apple_phone_code';
+                compatColumn = 'apple_screen_compatibility';
+                batteryColumn = 'apple_battery_model';
+            }
+            else if (b.includes('xiaomi') || b.includes('poco')) {
+                tableName = 'xiaomi_models';
+                nameColumn = 'xiaomi_phone_name';
+                codeColumn = 'xiaomi_phone_code';
+                compatColumn = 'xiaomi_screen_compatibility';
+                batteryColumn = 'xiaomi_battery_model';
+            }
+            else if (b.includes('redmi')) {
+                tableName = 'redmi_models';
+                nameColumn = 'redmi_phone_name';
+                codeColumn = 'redmi_phone_code';
+                compatColumn = 'redmi_screen_compatibility';
+                batteryColumn = 'redmi_battery_model';
+            }
+            else if (b.includes('huawei')) {
+                tableName = 'huawei_models';
+                nameColumn = 'huawei_phone_name';
+                codeColumn = 'huawei_phone_code';
+                compatColumn = 'huawei_screen_compatibility';
+                batteryColumn = 'huawei_battery_model';
+            }
+            else if (b.includes('honor')) {
+                tableName = 'honor_models';
+                nameColumn = 'honor_phone_name';
+                codeColumn = 'honor_phone_code';
+                compatColumn = 'honor_screen_compatibility';
+                batteryColumn = 'honor_battery_model';
+            }
+            else if (b.includes('oppo')) {
+                tableName = 'oppo_models';
+                nameColumn = 'oppo_phone_name';
+                codeColumn = 'oppo_phone_code';
+                compatColumn = 'oppo_screen_compatibility';
+                batteryColumn = 'oppo_battery_model';
+            }
+            else if (b.includes('realme')) {
+                tableName = 'realme_models';
+                nameColumn = 'realme_phone_name';
+                codeColumn = 'realme_phone_code';
+                compatColumn = 'realme_screen_compatibility';
+                batteryColumn = 'realme_battery_model';
+            }
+            else if (b.includes('itel')) {
+                tableName = 'itel_models';
+                nameColumn = 'itel_phone_name';
+                codeColumn = 'itel_phone_code';
+                compatColumn = 'itel_screen_compatibility';
+                batteryColumn = 'itel_battery_model';
+            }
+            else if (b.includes('nokia')) {
+                tableName = 'nokia_models';
+                nameColumn = 'nokia_phone_name';
+                codeColumn = 'nokia_phone_code';
+                compatColumn = 'nokia_screen_compatibility';
+                batteryColumn = 'nokia_battery_model';
+            }
+            else if (b.includes('vivo')) {
+                tableName = 'vivo_models';
+                nameColumn = 'vivo_phone_name';
+                codeColumn = 'vivo_phone_code';
+                compatColumn = 'vivo_screen_compatibility';
+                batteryColumn = 'vivo_battery_model';
+            }
+            else if (b.includes('techno') || b.includes('tecno')) {
+                tableName = 'tecno_models';
+                nameColumn = 'tecno_phone_name';
+                codeColumn = 'tecno_phone_code';
+                compatColumn = 'tecno_screen_compatibility';
+                batteryColumn = 'tecno_battery_model';
+            }
+            else if (b.includes('infinix')) {
+                tableName = 'infinix_models';
+                nameColumn = 'infinix_phone_name';
+                codeColumn = 'infinix_phone_code';
+                compatColumn = 'infinix_screen_compatibility';
+                batteryColumn = 'infinix_battery_model';
+            }
 
             let models = [];
             if (tableName) {
@@ -445,30 +593,33 @@
                     const escapedCompat = m.screen_compatibility ? encodeURIComponent(m.screen_compatibility) : '';
                     const escapedBattery = m.battery_model ? encodeURIComponent(m.battery_model) : '';
                     return `
-                        <div onclick="selectModelAndProceed('${m.device_name}', '${m.model_code}', '${escapedCompat}', '${escapedBattery}')" class="w-full ${style.bg} border ${style.border} p-3.5 rounded-2xl shadow-sm flex items-center justify-between cursor-pointer transition-all text-sm">
-                            <span class="font-bold text-gray-800">${m.device_name} <span class="text-xs ${style.icon} font-normal">(${m.model_code})</span></span>
+                        <div onclick="selectModelAndProceed('${m.device_name}', '${m.model_code}', '${escapedCompat}', '${escapedBattery}')" class="w-full ${style.bg} border ${style.border} p-4 rounded-2xl shadow-sm flex items-center justify-between cursor-pointer transition-all text-sm sm:text-base">
+                            <span class="font-bold text-gray-800">
+                                ${m.device_name} <span class="text-xs ${style.icon} font-normal">(${m.model_code})</span>
+                            </span>
                             <svg class="w-5 h-5 ${style.icon} flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
                         </div>
                     `;
                 }).join('');
             } else {
-                modelsHtml = `<div class="text-center text-gray-500 py-6">لا توجد موديلات متاحة</div>`;
+                modelsHtml = `<div class="text-center text-gray-500 py-6">لا توجد موديلات متاحة حالياً لهذه الماركة</div>`;
             }
 
             const html = `
                 ${getHeaderTemplate()}
                 <div class="flex items-center justify-between mb-4 flex-shrink-0">
-                    <button onclick="renderBrandsScreen()" class="bg-blue-50 hover:bg-blue-100 text-blue-600 px-3 py-1.5 rounded-xl text-xs sm:text-sm font-bold transition-all border border-blue-200 flex items-center gap-1">
+                    <button onclick="renderBrandsScreen()" class="bg-blue-50 hover:bg-blue-100 text-blue-600 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all border border-blue-200 flex items-center gap-1.5">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
-                        <span>رجوع للماركات</span>
+                        <span>رجوع</span>
                     </button>
                     <h2 class="text-xs sm:text-sm font-bold text-gray-800">موديلات ${brand}</h2>
                 </div>
-                <div class="flex-1 overflow-y-auto space-y-2.5 p-1">
+                <div class="flex-1 overflow-y-auto space-y-3 p-1">
                     ${modelsHtml}
                 </div>
             `;
-            document.getElementById('contentArea').innerHTML = html;
+            document.getElementById('appContainer').innerHTML = html;
+            loadDynamicMenuIntoSidebar();
         }
 
         function selectModelAndProceed(deviceName, modelCode, compatEncoded, batteryEncoded) {
@@ -482,10 +633,11 @@
         // ================= 5. شاشة قطع الغيار =================
         function renderPartsScreen(model) {
             selectedModel = model;
+
             let partsHtml = sparePartsList.map((part, index) => {
                 const style = getRotatingCardStyle(index);
                 return `
-                    <div onclick="renderProductDetailScreen('${part}')" class="w-full ${style.bg} border ${style.border} p-3.5 rounded-2xl shadow-sm flex items-center justify-between cursor-pointer transition-all text-sm">
+                    <div onclick="renderProductDetailScreen('${part}')" class="w-full ${style.bg} border ${style.border} p-4 rounded-2xl shadow-sm flex items-center justify-between cursor-pointer transition-all text-sm sm:text-base">
                         <span class="font-bold text-gray-800">${part}</span>
                         <svg class="w-5 h-5 ${style.icon} flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
                     </div>
@@ -495,28 +647,32 @@
             const html = `
                 ${getHeaderTemplate()}
                 <div class="flex items-center justify-between mb-4 flex-shrink-0">
-                    <button onclick="renderModelsScreen('${selectedBrand}')" class="bg-blue-50 hover:bg-blue-100 text-blue-600 px-3 py-1.5 rounded-xl text-xs sm:text-sm font-bold transition-all border border-blue-200 flex items-center gap-1">
+                    <button onclick="renderModelsScreen('${selectedBrand}')" class="bg-blue-50 hover:bg-blue-100 text-blue-600 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all border border-blue-200 flex items-center gap-1.5">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
-                        <span>رجوع للموديلات</span>
+                        <span>رجوع</span>
                     </button>
                     <h2 class="text-xs sm:text-sm font-bold text-gray-800">${selectedBrand} - ${model}</h2>
                 </div>
-                <div class="flex-1 overflow-y-auto space-y-2.5 p-1">
+                <div class="flex-1 overflow-y-auto space-y-3 p-1">
                     ${partsHtml}
                 </div>
             `;
-            document.getElementById('contentArea').innerHTML = html;
+            document.getElementById('appContainer').innerHTML = html;
+            loadDynamicMenuIntoSidebar();
         }
 
-        // ================= 6. صفحة تفاصيل المنتج =================
+        // ================= 6. صفحة المنتج النهائية =================
         function renderProductDetailScreen(part) {
             selectedPart = part;
+
             let compatibilityText = "هذه القطعة متوافقة مع الإصدارات والنسخ المتطابقة من الماركة.";
             if (part === "شاشة") {
                 if (currentScreenCompatibility) {
-                    compatibilityText = currentScreenCompatibility.toLowerCase() === 'none' 
-                        ? "هذه الشاشة غير متوافقة مع موديلات أخرى (خاصة بهذا الموديل فقط)." 
-                        : `الموديلات المتوافقة مع هذه الشاشة: ${currentScreenCompatibility}`;
+                    if (currentScreenCompatibility.toLowerCase() === 'none') {
+                        compatibilityText = "هذه الشاشة غير متوافقة مع موديلات أخرى (خاصة بهذا الموديل فقط).";
+                    } else {
+                        compatibilityText = `الموديلات المتوافقة مع هذه الشاشة: ${currentScreenCompatibility}`;
+                    }
                 } else {
                     compatibilityText = "لا توجد توافقات مسجلة لهذه الشاشة حالياً.";
                 }
@@ -526,9 +682,9 @@
             if (part === "بطارية") {
                 let batteryDisplay = currentBatteryModel ? currentBatteryModel : "غير متوفر طراز مسجل لهذا الموديل";
                 batterySectionHtml = `
-                    <div class="bg-indigo-50/70 border border-indigo-100 p-5 rounded-2xl shadow-sm">
-                        <h3 class="font-bold text-indigo-800 mb-2 text-base">🔋 طراز البطارية</h3>
-                        <p class="text-sm text-gray-600 font-medium">${batteryDisplay}</p>
+                    <div class="bg-indigo-50/70 border border-indigo-100 p-6 sm:p-7 rounded-2xl shadow-sm">
+                        <h3 class="font-bold text-indigo-800 mb-3 text-base sm:text-lg">🔋 طراز البطارية</h3>
+                        <p class="text-sm sm:text-base text-gray-600 font-medium">${batteryDisplay}</p>
                     </div>
                 `;
             }
@@ -536,35 +692,40 @@
             const html = `
                 ${getHeaderTemplate()}
                 <div class="flex items-center justify-between mb-4 flex-shrink-0">
-                    <button onclick="renderPartsScreen('${selectedModel}')" class="bg-blue-50 hover:bg-blue-100 text-blue-600 px-3 py-1.5 rounded-xl text-xs sm:text-sm font-bold transition-all border border-blue-200 flex items-center gap-1">
+                    <button onclick="renderPartsScreen('${selectedModel}')" class="bg-blue-50 hover:bg-blue-100 text-blue-600 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all border border-blue-200 flex items-center gap-1.5">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
-                        <span>رجوع لقطع الغيار</span>
+                        <span>رجوع</span>
                     </button>
                     <h2 class="text-xs sm:text-sm font-bold text-gray-800">${part} (${selectedModel})</h2>
                 </div>
 
-                <div class="flex-1 overflow-y-auto space-y-4 p-1">
+                <div class="flex-1 overflow-y-auto space-y-5 p-1">
                     ${batterySectionHtml}
-                    <div class="bg-blue-50/70 border border-blue-100 p-5 rounded-2xl shadow-sm">
-                        <h3 class="font-bold text-blue-800 mb-2 text-base">🛒 شراء المنتج</h3>
-                        <p class="text-sm text-gray-600 mb-3">القطعة متوفرة بالضمان الكامل.</p>
-                        <button onclick="alert('تمت إضافة الطلب بنجاح!')" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl text-sm shadow-md transition-all">
+
+                    <div class="bg-blue-50/70 border border-blue-100 p-6 sm:p-7 rounded-2xl shadow-sm">
+                        <h3 class="font-bold text-blue-800 mb-3 text-base sm:text-lg">🛒 شراء المنتج</h3>
+                        <p class="text-sm sm:text-base text-gray-600 mb-4">القطعة متوفرة بالضمان الكامل.</p>
+                        <button onclick="alert('تمت إضافة الطلب بنجاح!')" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl text-sm sm:text-base shadow-md transition-all">
                             شراء المنتج / اطلب الآن
                         </button>
                     </div>
-                    <div class="bg-emerald-50/70 border border-emerald-100 p-5 rounded-2xl shadow-sm">
-                        <h3 class="font-bold text-emerald-800 mb-2 text-base">🔗 التوافقات</h3>
-                        <p class="text-sm text-gray-600 font-medium">${compatibilityText}</p>
+
+                    <div class="bg-emerald-50/70 border border-emerald-100 p-6 sm:p-7 rounded-2xl shadow-sm">
+                        <h3 class="font-bold text-emerald-800 mb-3 text-base sm:text-lg">🔗 التوافقات</h3>
+                        <p class="text-sm sm:text-base text-gray-600 font-medium">${compatibilityText}</p>
                     </div>
-                    <div class="bg-amber-50/70 border border-amber-100 p-5 rounded-2xl shadow-sm">
-                        <h3 class="font-bold text-amber-800 mb-2 text-base">⚠️ تنبيهات بعد التركيب</h3>
-                        <p class="text-sm text-gray-600">يُرجى التجربة الفورية قبل التثبيت النهائي وإزالة اللزقات.</p>
+
+                    <div class="bg-amber-50/70 border border-amber-100 p-6 sm:p-7 rounded-2xl shadow-sm">
+                        <h3 class="font-bold text-amber-800 mb-3 text-base sm:text-lg">⚠️ تنبيهات بعد التركيب</h3>
+                        <p class="text-sm sm:text-base text-gray-600">يُرجى التجربة الفورية قبل التثبيت النهائي وإزالة اللزقات.</p>
                     </div>
                 </div>
             `;
-            document.getElementById('contentArea').innerHTML = html;
+            document.getElementById('appContainer').innerHTML = html;
+            loadDynamicMenuIntoSidebar();
         }
 
+        // التشغيل المبدئي عند تحميل الصفحة
         window.onload = function() {
             renderLoginScreen();
         };
