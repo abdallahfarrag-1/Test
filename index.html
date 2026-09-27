@@ -226,7 +226,7 @@
             }
         }
 
-        // دالة تسجيل الدخول عبر RPC (مربط مع دالة login_user)
+        // دالة تسجيل الدخول عبر RPC
         async function handleLoginSubmit(e) {
             e.preventDefault();
             const phone = document.getElementById('loginPhone').value.trim();
@@ -260,7 +260,7 @@
             loadDynamicMenuIntoSidebar(); 
         }
 
-        // دالة إنشاء الحساب عبر RPC (مربط مع دالة register_user الصحيحة)
+        // دالة إنشاء الحساب عبر RPC
         async function handleRegisterSubmit(e) {
             e.preventDefault();
             const user_name = document.getElementById('regUserName').value.trim();
@@ -345,26 +345,15 @@
             `;
         }
 
-        // ================= دالة جلب عناصر القائمة للأدمن عبر دالة get_menu_items_for_admin =================
+        // ================= دالة جلب عناصر القائمة (مصححة لاسم العمود menu_items) =================
         async function loadDynamicMenuIntoSidebar() {
             try {
-                // جلب العناصر عبر دالة الـ RPC الخاصة بالمدير الموجودة في السيرفر
                 let menuItems = [];
-                if (currentUserId) {
-                    const { data, error } = await supabaseClient.rpc('get_menu_items_for_admin', {
-                        p_user_id: currentUserId
-                    });
-                    if (!error && data) {
-                        menuItems = Array.isArray(data) ? data : [data];
-                    }
-                }
-
-                // إذا لم ترجع الدالة عناصر أو كان زائراً، نقوم بجلب جدول menu_items العام كخيار بديل
-                if (!menuItems || menuItems.length === 0) {
-                    const { data: generalMenu, error: genError } = await supabaseClient.from('menu_items').select('*');
-                    if (!genError && generalMenu) {
-                        menuItems = generalMenu;
-                    }
+                
+                // محاولة جلب عناصر القائمة العامة من جدول menu_items مباشرة
+                const { data: generalMenu, error: genError } = await supabaseClient.from('menu_items').select('*');
+                if (!genError && generalMenu) {
+                    menuItems = generalMenu;
                 }
 
                 setTimeout(() => {
@@ -375,7 +364,8 @@
 
                     if (menuItems && menuItems.length > 0) {
                         menuItems.forEach(item => {
-                            const title = item.title || item.menu_items || "عنصر القائمة";
+                            // التعديل هنا: استخدام اسم العمود الصحيح الموجود في قاعدة البيانات (item.menu_items)
+                            const title = item.menu_items || item.title || "عنصر القائمة";
                             const action = item.action || 'defaultAction';
                             menuHtml += `
                                 <button onclick="toggleSidebar(); handleMenuAction('${action}');" class="w-full text-right px-4 py-3 rounded-xl bg-gray-50 hover:bg-blue-50 text-gray-700 hover:text-blue-600 font-semibold text-sm transition-all flex items-center gap-3">
