@@ -319,7 +319,7 @@
 
             currentUserRole = resObj.phone_number || phone;
             currentUserType = resObj.user_type || "ادمن"; 
-            currentUserId = resObj.id || resObj.user_id || resObj.ID || null; 
+            currentUserId = resObj.user?.id || resObj.id || null; 
             renderMainDashboard();
             loadDynamicMenuIntoSidebar(); 
         }
@@ -358,7 +358,7 @@
             alert('تم إنشاء الحساب بنجاح!');
             currentUserRole = phone_number;
             currentUserType = "ادمن"; 
-            currentUserId = resObj?.id || resObj?.user_id || resObj?.ID || null;
+            currentUserId = resObj.user?.id || resObj.id || null;
             renderMainDashboard();
             loadDynamicMenuIntoSidebar();
         }
