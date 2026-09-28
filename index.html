@@ -161,7 +161,7 @@
                     idStatusDesc = `✅ تم جلب الـ ID بنجاح (القيمة: ${currentUserId})`;
                 }
 
-                const { data, error } = await supabaseClient.rpc('get_menu_items_for_admin', {
+                const { data, error }  = await supabaseClient.rpc('get_menu_items_for_admin', {
                     p_user_id: currentUserId
                 });
 
@@ -182,9 +182,9 @@
                     if (menuItems && menuItems.length > 0) {
                         menuItems.forEach(item => {
                             const title = item.menu_items || "عنصر القائمة"; 
-                            const action = item.action || 'defaultAction';
+                            const action = item.action || title; 
                             menuHtml += `
-                                <button onclick="toggleSidebar(); handleMenuAction('${action}');" class="w-full text-right px-4 py-3 rounded-xl bg-gray-50 hover:bg-blue-50 text-gray-700 hover:text-blue-600 font-semibold text-sm transition-all flex items-center gap-3">
+                                <button onclick="toggleSidebar(); handleMenuAction('${action}', '${title}');" class="w-full text-right px-4 py-3 rounded-xl bg-gray-50 hover:bg-blue-50 text-gray-700 hover:text-blue-600 font-semibold text-sm transition-all flex items-center gap-3">
                                     <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
                                     <span>${title}</span>
                                 </button>
@@ -208,11 +208,19 @@
             }
         }
 
-        function handleMenuAction(actionName) {
-            if (typeof window[actionName] === 'function') {
-                window[actionName]();
+        // دالة معالجة الإجراءات مع إضافة تنبيه فوري (alert) عند اختيار البيانات الشخصية أو عدم تطابق الوظيفة
+        function handleMenuAction(actionName, title = "") {
+            const cleanAction = (actionName || "").trim();
+            const cleanTitle = (title || "").trim();
+
+            alert(`تنفيذ الإجراء: العنوان (${cleanTitle}) | الأمر (${cleanAction})`);
+
+            if (cleanAction.includes('البيانات الشخصية') || cleanTitle.includes('البيانات الشخصية') || cleanAction === 'renderUserProfile' || cleanAction === 'profile') {
+                renderUserProfileScreen();
+            } else if (typeof window[cleanAction] === 'function') {
+                window[cleanAction]();
             } else {
-                alert(`تم اختيار الإجراء: ${actionName}`);
+                alert(`⚠️ تنبيه: تم اختيار العنصر (${cleanTitle || cleanAction}) ولا يوجد دالة برمجية مطابقة له بالاسم.`);
             }
         }
 
@@ -223,7 +231,6 @@
                 return;
             }
 
-            // رسم هيكل الشاشة مؤقتاً أثناء التحميل
             const htmlLoading = `
                 ${getHeaderTemplate()}
                 <div class="flex items-center justify-between mb-4 flex-shrink-0">
@@ -241,16 +248,14 @@
             loadDynamicMenuIntoSidebar();
 
             try {
-                // جلب بيانات المستخدم من جدول الـ Admins أو المستخدمين بناءً على الـ ID
                 const { data, error } = await supabaseClient
-                    .from('admins') // أو جدول المستخدمين الخاص بك
+                    .from('admins')
                     .select('*')
                     .eq('id', currentUserId)
                     .single();
 
                 let userData = data;
                 if (error || !userData) {
-                    // محاولة جلب البيانات من جدول بديل إذا لم تكن موجودة في admins
                     const { data: altData } = await supabaseClient
                         .from('users')
                         .select('*')
@@ -304,11 +309,10 @@
 
             } catch (err) {
                 console.error("خطأ في جلب بيانات المستخدم:", err);
-                alert("حدث خطأ أثناء جلب البيانات الشخصية.");
+                alert("حدث خطأ أثناء جلب البيانات الشخصية: " + err.message);
             }
         }
 
-        // ربط الإجراء المطلوب بالدالة المعرفة تلقائياً
         function renderUserProfile() {
             renderUserProfileScreen();
         }
