@@ -29,7 +29,7 @@
         </div>
         <!-- محتوى القائمة الجانبية الديناميكي -->
         <div id="sidebarContent" class="flex-1 overflow-y-auto p-4 space-y-2">
-            <!-- يتم تعبئتها ديناميكياً بناءً على صلاحية الـ Admin عبر الـ UUID -->
+            <!-- يتم تعبئتها ديناميكياً -->
         </div>
     </div>
 
@@ -67,10 +67,10 @@
 
         // ================= نظام التنبيهات المخصص للأعطال والحالة =================
         function showSystemAlert(title, idStatus, menuStatus, errorDetails = "") {
-            let message = `--- 🔍 تقرير حالة النظام عند الدخول --- \n\n`;
+            let message = `--- 🔍 تقرير حالة النظام --- \n\n`;
             message += `📌 الحدث: ${title}\n`;
             message += `🆔 حالة الـ ID: ${idStatus}\n`;
-            message += `📋 حالة جلب المنيو/الأيتيمز: ${menuStatus}\n`;
+            message += `📋 حالة جلب المنيو: ${menuStatus}\n`;
             if (errorDetails) {
                 message += `⚠️ تفاصيل العطل / السبب: ${errorDetails}\n`;
             } else {
@@ -148,14 +148,12 @@
                 if (!currentUserId) {
                     idStatusDesc = "❌ لم يتم جلب الـ ID (المستخدم زائر أو غير مسجل دخول)";
                     menuStatusDesc = "❌ فشل جلب محتويات المنيو";
-                    errorReason = "لا يوجد مستخدم مسجل دخول حالياً لجلب عناصر الصلاحيات الخاصة به.";
+                    errorReason = "لا يوجد مستخدم مسجل دخول حالياً لجلب الصلاحيات.";
                     
                     const sidebarContainer = document.getElementById('sidebarContent');
                     if (sidebarContainer) {
                         sidebarContainer.innerHTML = `<div class="text-center text-gray-400 text-xs py-4">الرجاء تسجيل الدخول أولاً</div>`;
                     }
-                    
-                    showSystemAlert("تحميل القائمة الجانبية", idStatusDesc, menuStatusDesc, errorReason);
                     return;
                 } else {
                     idStatusDesc = `✅ تم جلب الـ ID بنجاح (القيمة: ${currentUserId})`;
@@ -170,15 +168,13 @@
                     menuStatusDesc = "✅ تم جلب محتويات المنيو بنجاح";
                 } else {
                     menuStatusDesc = "❌ فشل جلب محتويات المنيو";
-                    errorReason = error ? error.message : "حدث خطأ غير معروف أو أن دالة جلب المنيو أرجعت بيانات فارغة.";
+                    errorReason = error ? error.message : "دالة جلب المنيو أرجعت بيانات فارغة.";
+                    alert("⚠️ تنبيه عطل في المنيو: " + errorReason);
                 }
 
-                setTimeout(() => {
-                    const sidebarContainer = document.getElementById('sidebarContent');
-                    if (!sidebarContainer) return;
-
+                const sidebarContainer = document.getElementById('sidebarContent');
+                if (sidebarContainer) {
                     let menuHtml = "";
-
                     if (menuItems && menuItems.length > 0) {
                         menuItems.forEach(item => {
                             const title = item.menu_items || "عنصر القائمة"; 
@@ -193,41 +189,31 @@
                     } else {
                         menuHtml = `<div class="text-center text-gray-400 text-xs py-4">لا توجد عناصر مضافة للقائمة</div>`;
                     }
-
                     sidebarContainer.innerHTML = menuHtml;
-                }, 100);
-
-                showSystemAlert("تحميل عناصر القائمة", idStatusDesc, menuStatusDesc, errorReason);
+                }
 
             } catch (err) {
-                errorReason = err.message;
-                idStatusDesc = currentUserId ? `⚠️ تم جلب الـ ID جزئياً ولكن حدث استثناء` : `❌ لم يتم جلب الـ ID`;
-                menuStatusDesc = "❌ فشل جلب محتويات المنيو بسبب عطل برمجي";
-                console.error('خطأ في جلب عناصر القائمة:', err.message);
-                showSystemAlert("عطل في النظام أثناء جلب القائمة", idStatusDesc, menuStatusDesc, errorReason);
+                alert("❌ عطل برمجي خطير أثناء تحميل القائمة الجانبية:\n" + err.message);
             }
         }
 
-        // دالة معالجة الإجراءات مع إضافة تنبيه فوري (alert) عند اختيار البيانات الشخصية أو عدم تطابق الوظيفة
         function handleMenuAction(actionName, title = "") {
             const cleanAction = (actionName || "").trim();
             const cleanTitle = (title || "").trim();
-
-            alert(`تنفيذ الإجراء: العنوان (${cleanTitle}) | الأمر (${cleanAction})`);
 
             if (cleanAction.includes('البيانات الشخصية') || cleanTitle.includes('البيانات الشخصية') || cleanAction === 'renderUserProfile' || cleanAction === 'profile') {
                 renderUserProfileScreen();
             } else if (typeof window[cleanAction] === 'function') {
                 window[cleanAction]();
             } else {
-                alert(`⚠️ تنبيه: تم اختيار العنصر (${cleanTitle || cleanAction}) ولا يوجد دالة برمجية مطابقة له بالاسم.`);
+                alert(`⚠️ تنبيه: تم اختيار العنصر (${cleanTitle || cleanAction}) ولا توجد دالة برمجية مطابقة له بالاسم.`);
             }
         }
 
-        // ================= دالة فتح شاشة البيانات الشخصية (محدثة للجدول الصحيح) =================
+        // ================= دالة فتح شاشة البيانات الشخصية المحدثة =================
         async function renderUserProfileScreen() {
             if (!currentUserId && currentUserRole === "زائر") {
-                alert("يجب تسجيل الدخول أولاً لعرض البيانات الشخصية!");
+                alert("⚠️ تنبيه: يجب تسجيل الدخول أولاً لعرض البيانات الشخصية!");
                 return;
             }
 
@@ -250,31 +236,38 @@
             try {
                 let userData = null;
 
-                // 1. محاولة الجلب بالـ ID من جدول users
+                // استخدام دالة RPC المخصصة get_user_profile الموجودة لديك في قاعدة البيانات
                 if (currentUserId) {
-                    const { data: userById, error: errId } = await supabaseClient
-                        .from('users')
-                        .select('*')
-                        .eq('id', currentUserId)
-                        .single();
-                    if (!errId && userById) {
-                        userData = userById;
+                    const { data: rpcData, error: rpcError } = await supabaseClient.rpc('get_user_profile', { 
+                        user_id: currentUserId 
+                    });
+
+                    if (rpcError) {
+                        alert(`❌ فشل استدعاء دالة الـ RPC (get_user_profile):\n${rpcError.message}`);
+                    } else if (rpcData) {
+                        userData = Array.isArray(rpcData) ? rpcData[0] : rpcData;
                     }
                 }
 
-                // 2. إذا لم يتم العثور بالـ ID، يتم الجلب برقم الهاتف
+                // خطة بديلة: جلب البيانات مباشرة برقم الهاتف في حال لم يرجع الـ RPC نتيجة
                 if (!userData && currentUserRole && currentUserRole !== "زائر") {
                     const { data: userByPhone, error: errPhone } = await supabaseClient
                         .from('users')
                         .select('*')
                         .eq('phone_number', currentUserRole)
                         .single();
-                    if (!errPhone && userByPhone) {
+                        
+                    if (errPhone) {
+                        alert(`❌ فشل خطة جلب البيانات البديلة برقم الهاتف:\n${errPhone.message}`);
+                    } else if (userByPhone) {
                         userData = userByPhone;
                     }
                 }
 
-                // استخراج البيانات بناءً على أعمدة جدول public.users الموضحة (user_name, shop_name, shop_address)
+                if (!userData) {
+                    alert("⚠️ تنبيه: تعذر العثور على بيانات المستخدم في قاعدة البيانات. تأكد من صحة الحساب أو صلاحيات الوصول (RLS).");
+                }
+
                 const name = userData?.user_name || userData?.name || "غير متوفر";
                 const shopName = userData?.shop_name || "غير متوفر";
                 const shopAddress = userData?.shop_address || "غير متوفر";
@@ -319,8 +312,7 @@
                 loadDynamicMenuIntoSidebar();
 
             } catch (err) {
-                console.error("خطأ في جلب بيانات المستخدم:", err);
-                alert("حدث خطأ أثناء جلب البيانات الشخصية: " + err.message);
+                alert("❌ حدث خطأ كارثي أثناء عرض البيانات الشخصية:\n" + err.message);
             }
         }
 
@@ -328,7 +320,7 @@
             renderUserProfileScreen();
         }
 
-        // ================= 3. شاشات المصادقة (تسجيل الدخول / إنشاء حساب) =================
+        // ================= 3. شاشات المصادقة =================
         function renderLoginScreen() {
             const html = `
                 <div class="flex-1 overflow-y-auto px-2">
@@ -359,12 +351,6 @@
                                 <div>
                                     <label class="block text-xs font-semibold text-gray-600 mb-1">رمز المرور</label>
                                     <input type="password" id="loginPassword" required class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-gray-50">
-                                </div>
-                                <div class="flex items-center justify-between text-sm">
-                                    <label class="flex items-center space-x-2 space-x-reverse cursor-pointer">
-                                        <input type="checkbox" class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
-                                        <span class="text-gray-600 text-xs">تذكرني</span>
-                                    </label>
                                 </div>
                                 <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl shadow-lg shadow-blue-500/35 transition-all text-sm">
                                     تسجيل الدخول
@@ -446,7 +432,7 @@
             });
 
             if (error) {
-                alert('خطأ في الاتصال أو بيانات الدخول: ' + error.message);
+                alert('❌ عطل في دالة تسجيل الدخول (login_user):\n' + error.message);
                 return;
             }
 
@@ -456,13 +442,19 @@
             }
 
             if (!resObj || resObj.success === false) {
-                alert(resObj?.message || 'خطأ في رقم الهاتف أو رمز المرور!');
+                alert(resObj?.message || '❌ خطأ: بيانات الدخول غير صحيحة أو لم يتم إرجاع نتيجة.');
                 return;
             }
 
             currentUserRole = resObj.phone_number || phone;
             currentUserType = resObj.user_type || "ادمن"; 
+            
+            // جلب واستخراج الـ ID بدقة تامة من النتيجة المُرجعة
             currentUserId = resObj.user?.id || resObj.user_id || resObj.id || resObj.ID || resObj.uuid || null; 
+
+            if (!currentUserId) {
+                alert("⚠️ تحذير: تم تسجيل الدخول بنجاح، لكن الخادم لم يُرسل معرف المستخدم (ID)، مما قد يمنع ظهور البيانات الشخصية!");
+            }
             
             renderMainDashboard();
             loadDynamicMenuIntoSidebar(); 
@@ -485,7 +477,7 @@
             });
 
             if (error) {
-                alert('حدث خطأ أثناء إنشاء الحساب أو الرقم مسجل مسبقاً: ' + error.message);
+                alert('❌ خطأ أثناء إنشاء الحساب:\n' + error.message);
                 return;
             }
 
@@ -495,11 +487,11 @@
             }
 
             if (resObj && resObj.success === false) {
-                alert(resObj.message || 'حدث خطأ أثناء إنشاء الحساب');
+                alert('❌ ' + (resObj.message || 'حدث خطأ أثناء إنشاء الحساب'));
                 return;
             }
 
-            alert('تم إنشاء الحساب بنجاح!');
+            alert('✅ تم إنشاء الحساب بنجاح!');
             currentUserRole = phone_number;
             currentUserType = "ادمن"; 
             currentUserId = resObj?.user?.id || resObj?.id || resObj?.user_id || resObj?.ID || resObj?.uuid || null;
@@ -516,7 +508,7 @@
             loadDynamicMenuIntoSidebar();
         }
 
-        // ================= 4. الشاشات الرئيسية والداخلية =================
+        // ================= 4. الشاشات الرئيسية =================
         function renderMainDashboard() {
             const html = `
                 ${getHeaderTemplate()}
@@ -560,7 +552,7 @@
             if (!error && data) {
                 brands = data.map(item => item.brand_name || item.name || Object.values(item)[1]); 
             } else if (error) {
-                alert("⚠️ عطل أثناء جلب الماركات: " + error.message);
+                alert("⚠️ عطل أثناء جلب الماركات من جدول brands:\n" + error.message);
             }
 
             let brandsHtml = "";
@@ -575,7 +567,7 @@
                     `;
                 }).join('');
             } else {
-                brandsHtml = `<div class="text-center text-gray-500 py-6">لا توجد ماركات متاحة حالياً أو تأكد من تفعيل RLS والسماح بالقراءة</div>`;
+                brandsHtml = `<div class="text-center text-gray-500 py-6">لا توجد ماركات متاحة حالياً أو تأكد من إعدادات RLS</div>`;
             }
 
             const html = `
@@ -597,7 +589,6 @@
 
         async function renderModelsScreen(brand) {
             selectedBrand = brand;
-            
             let tableName = "";
             let nameColumn = "device_name";
             let codeColumn = "model_code";
@@ -644,7 +635,7 @@
                         battery_model: item[batteryColumn] || item['battery_model'] || null
                     }));
                 } else if (error) {
-                    alert("⚠️ عطل أثناء جلب الموديلات من جدول (" + tableName + "): " + error.message);
+                    alert("⚠️ عطل أثناء جلب الموديلات من جدول (" + tableName + "):\n" + error.message);
                 }
             }
 
@@ -775,18 +766,20 @@
                     .ilike('spare_part', `%${part}%`);
 
                 if (!error && data && data.length > 0) {
-                    postsHtml = data.map((post, idx) => `
+                    postsHtml = data.map((post) => `
                         <div class="bg-white border border-gray-200 p-4 rounded-2xl shadow-sm space-y-2">
                             <h3 class="font-bold text-gray-800 text-base">${post.title || 'ملاحظة صيانة'}</h3>
                             <p class="text-gray-600 text-sm leading-relaxed">${post.content || post.description || ''}</p>
                         </div>
                     `).join('');
                 } else if (error) {
-                    postsHtml = `<div class="text-center text-red-400 text-sm py-4">حدث خطأ أثناء جلب المنشورات: ${error.message}</div>`;
+                    alert("⚠️ عطل أثناء جلب المنشورات (posts):\n" + error.message);
+                    postsHtml = `<div class="text-center text-red-400 text-sm py-4">حدث خطأ أثناء جلب المنشورات</div>`;
                 } else {
                     postsHtml = `<div class="text-center text-gray-400 text-sm py-4">لا توجد ملاحظات صيانة إضافية مسجلة لهذه القطعة حالياً</div>`;
                 }
             } catch (err) {
+                alert("❌ عطل برمجي أثناء الاتصال بجدول المنشورات:\n" + err.message);
                 postsHtml = `<div class="text-center text-red-400 text-sm py-4">حدث خطأ أثناء الاتصال</div>`;
             }
 
@@ -812,7 +805,7 @@
             loadDynamicMenuIntoSidebar();
         }
 
-        // تشغيل شاشة تسجيل الدخول عند فتح التطبيق لأول مرة
+        // تشغيل شاشة تسجيل الدخول عند فتح التطبيق
         window.onload = function() {
             renderLoginScreen();
         };
