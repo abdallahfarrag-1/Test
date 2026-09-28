@@ -307,6 +307,8 @@
                 return;
             }
 
+            console.log("Login Response Data:", data);
+
             let resObj = data;
             if (Array.isArray(data)) {
                 resObj = data[0];
@@ -319,7 +321,10 @@
 
             currentUserRole = resObj.phone_number || phone;
             currentUserType = resObj.user_type || "ادمن"; 
-            currentUserId = resObj.user?.id || resObj.id || null; 
+            
+            // استخراج شامل للـ ID لتجنب أي فقدان للبيانات
+            currentUserId = resObj.user?.id || resObj.user_id || resObj.id || resObj.ID || resObj.uuid || null; 
+            
             renderMainDashboard();
             loadDynamicMenuIntoSidebar(); 
         }
@@ -345,6 +350,8 @@
                 return;
             }
 
+            console.log("Register Response Data:", data);
+
             let resObj = data;
             if (Array.isArray(data)) {
                 resObj = data[0];
@@ -358,7 +365,10 @@
             alert('تم إنشاء الحساب بنجاح!');
             currentUserRole = phone_number;
             currentUserType = "ادمن"; 
-            currentUserId = resObj.user?.id || resObj.id || null;
+
+            // استخدام الصيغة المطلوبة مع إضافة ضمانات بديلة في حال اختلاف اسم المفتاح القادم من الـ RPC
+            currentUserId = resObj?.user?.id || resObj?.id || resObj?.user_id || resObj?.ID || resObj?.uuid || null;
+            
             renderMainDashboard();
             loadDynamicMenuIntoSidebar();
         }
