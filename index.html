@@ -197,7 +197,6 @@
                     sidebarContainer.innerHTML = menuHtml;
                 }, 100);
 
-                // إظهار التقرير التفصيلي
                 showSystemAlert("تحميل عناصر القائمة", idStatusDesc, menuStatusDesc, errorReason);
 
             } catch (err) {
@@ -351,7 +350,6 @@
 
             currentUserRole = resObj.phone_number || phone;
             currentUserType = resObj.user_type || "ادمن"; 
-            
             currentUserId = resObj.user?.id || resObj.user_id || resObj.id || resObj.ID || resObj.uuid || null; 
             
             renderMainDashboard();
@@ -392,7 +390,6 @@
             alert('تم إنشاء الحساب بنجاح!');
             currentUserRole = phone_number;
             currentUserType = "ادمن"; 
-
             currentUserId = resObj?.user?.id || resObj?.id || resObj?.user_id || resObj?.ID || resObj?.uuid || null;
             
             renderMainDashboard();
@@ -548,11 +545,13 @@
                     const escapedCode = m.model_code ? encodeURIComponent(m.model_code) : '';
                     return `
                         <div onclick="renderPartsScreen('${m.device_name}', '${escapedCode}', '${escapedCompat}', '${escapedBattery}')" class="w-full ${style.bg} border ${style.border} p-4 rounded-2xl shadow-sm flex items-center justify-between cursor-pointer transition-all text-sm sm:text-base">
-                            <div>
+                            <div class="flex items-center gap-2 text-gray-400">
+                                <svg class="w-5 h-5 ${style.icon} flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                            </div>
+                            <div class="text-left">
                                 <span class="font-bold text-gray-800 block">${m.device_name}</span>
                                 ${m.model_code ? `<span class="text-xs text-gray-500 block mt-0.5">الكود: ${m.model_code}</span>` : ''}
                             </div>
-                            <svg class="w-5 h-5 ${style.icon} flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
                         </div>
                     `;
                 }).join('');
@@ -616,21 +615,46 @@
             let extraInfoHtml = "";
             if (part === "شاشة" && currentScreenCompatibility) {
                 extraInfoHtml = `
-                    <div class="bg-blue-50 border border-blue-200 p-4 rounded-2xl mb-4">
-                        <h4 class="font-bold text-blue-900 text-sm mb-1">توافق الشاشات:</h4>
-                        <p class="text-blue-800 text-sm">${currentScreenCompatibility}</p>
+                    <div class="bg-blue-50 border border-blue-200 p-4 rounded-2xl mb-4 shadow-sm">
+                        <div class="flex items-center gap-2 mb-1">
+                            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            <h4 class="font-bold text-blue-900 text-sm">قسم توافق الشاشات:</h4>
+                        </div>
+                        <p class="text-blue-800 text-sm leading-relaxed">${currentScreenCompatibility}</p>
                     </div>
                 `;
             } else if (part === "بطارية" && currentBatteryModel) {
                 extraInfoHtml = `
-                    <div class="bg-emerald-50 border border-emerald-200 p-4 rounded-2xl mb-4">
-                        <h4 class="font-bold text-emerald-900 text-sm mb-1">موديل البطارية:</h4>
-                        <p class="text-emerald-800 text-sm">${currentBatteryModel}</p>
+                    <div class="bg-emerald-50 border border-emerald-200 p-4 rounded-2xl mb-4 shadow-sm">
+                        <div class="flex items-center gap-2 mb-1">
+                            <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                            <h4 class="font-bold text-emerald-900 text-sm">موديل البطارية / التوافق:</h4>
+                        </div>
+                        <p class="text-emerald-800 text-sm leading-relaxed">${currentBatteryModel}</p>
                     </div>
                 `;
             }
 
+            let purchaseSectionHtml = `
+                <div class="bg-gradient-to-r from-indigo-500 to-blue-600 p-4 rounded-2xl shadow-md text-white flex items-center justify-between mb-4">
+                    <div>
+                        <span class="block font-bold text-base">قسم شراء المنتج</span>
+                        <span class="text-xs text-indigo-100">اطلب قطعة الغيار المتوفرة لهذه الشاشة الآن</span>
+                    </div>
+                    <button onclick="alert('تم إرسال طلب شراء قطعة: ${part} لجهاز ${selectedModel} بنجاح!')" class="bg-white text-blue-700 hover:bg-blue-50 font-bold px-4 py-2 rounded-xl text-xs sm:text-sm shadow transition-all">
+                        طلب الشراء
+                    </button>
+                </div>
+            `;
+
             let postsHtml = "";
+            let maintenanceAlertsHtml = `
+                <div class="bg-amber-50 border border-amber-200 p-3 rounded-xl mb-3 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-amber-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                    <span class="text-amber-900 text-xs sm:text-sm font-semibold">تنبيهات الصيانة: يرجى التأكد من التجربة قبل الفك والتركيب نهائياً.</span>
+                </div>
+            `;
+
             try {
                 const { data, error } = await supabaseClient
                     .from('posts')
@@ -646,15 +670,12 @@
                         </div>
                     `).join('');
                 } else if (error) {
-                    alert("⚠️ عطل أثناء جلب تفاصيل المنشورات: " + error.message);
-                    postsHtml = `<div class="text-center text-red-400 text-sm py-6">حدث خطأ أثناء جلب البيانات</div>`;
+                    postsHtml = `<div class="text-center text-red-400 text-sm py-4">حدث خطأ أثناء جلب المنشورات: ${error.message}</div>`;
                 } else {
-                    postsHtml = `<div class="text-center text-gray-400 text-sm py-6">لا توجد منشورات أو ملاحظات مسجلة لهذه القطعة حالياً</div>`;
+                    postsHtml = `<div class="text-center text-gray-400 text-sm py-4">لا توجد ملاحظات صيانة إضافية مسجلة لهذه القطعة حالياً</div>`;
                 }
             } catch (err) {
-                console.error("خطأ في جلب تفاصيل المنشورات:", err);
-                alert("⚠️ عطل برمجى أثناء جلب تفاصيل المنشورات: " + err.message);
-                postsHtml = `<div class="text-center text-red-400 text-sm py-6">حدث خطأ أثناء جلب البيانات</div>`;
+                postsHtml = `<div class="text-center text-red-400 text-sm py-4">حدث خطأ أثناء الاتصال</div>`;
             }
 
             const html = `
@@ -668,6 +689,8 @@
                 </div>
                 <div class="flex-1 overflow-y-auto space-y-4 p-1">
                     ${extraInfoHtml}
+                    ${purchaseSectionHtml}
+                    ${maintenanceAlertsHtml}
                     <div class="space-y-3">
                         ${postsHtml}
                     </div>
@@ -677,7 +700,7 @@
             loadDynamicMenuIntoSidebar();
         }
 
-        // تشغيل شاشة تسجيل الدخول عند فتح التطبيق لأول مرة مع تقرير الحالة الفوري
+        // تشغيل شاشة تسجيل الدخول عند فتح التطبيق لأول مرة
         window.onload = function() {
             renderLoginScreen();
         };
