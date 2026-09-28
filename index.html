@@ -159,7 +159,8 @@
                     idStatusDesc = `✅ تم جلب الـ ID بنجاح (القيمة: ${currentUserId})`;
                 }
 
-                const { data, error }  = await supabaseClient.rpc('get_menu_items_for_admin', {
+                // تم التحديث لاستخدام الدالة الجديدة get_user_menu_items المكتوبة في قاعدة البيانات
+                const { data, error }  = await supabaseClient.rpc('get_user_menu_items', {
                     p_user_id: currentUserId
                 });
 
