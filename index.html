@@ -159,10 +159,23 @@
                     idStatusDesc = `✅ تم جلب الـ ID بنجاح (القيمة: ${currentUserId})`;
                 }
 
-                // تم التحديث لاستخدام الدالة الجديدة get_user_menu_items المكتوبة في قاعدة البيانات
-                const { data, error }  = await supabaseClient.rpc('get_user_menu_items', {
-                    p_user_id: currentUserId
-                });
+                let data = null;
+                let error = null;
+
+                // إذا كان المستخدم أدمن، نستخدم دالة الأدمن، وإذا كان فني (tech) نستخدم دالة get_user_menu_items الجديدة بناءً على الصورة
+                if (currentUserType === "ادمن" || currentUserRole === "ادمن") {
+                    const resAdmin = await supabaseClient.rpc('get_menu_items_for_admin', {
+                        p_user_id: currentUserId
+                    });
+                    data = resAdmin.data;
+                    error = resAdmin.error;
+                } else {
+                    const resTech = await supabaseClient.rpc('get_user_menu_items', {
+                        p_user_id: currentUserId
+                    });
+                    data = resTech.data;
+                    error = resTech.error;
+                }
 
                 if (!error && data) {
                     menuItems = data;
@@ -170,7 +183,6 @@
                 } else {
                     menuStatusDesc = "❌ فشل جلب محتويات المنيو";
                     errorReason = error ? error.message : "دالة جلب المنيو أرجعت بيانات فارغة.";
-                    alert("⚠️ تنبيه عطل في المنيو: " + errorReason);
                 }
 
                 const sidebarContainer = document.getElementById('sidebarContent');
@@ -178,7 +190,7 @@
                     let menuHtml = "";
                     if (menuItems && menuItems.length > 0) {
                         menuItems.forEach(item => {
-                            const title = item.menu_items || "عنصر القائمة"; 
+                            const title = item.menu_items || item.title || "عنصر القائمة"; 
                             const action = item.action || title; 
                             menuHtml += `
                                 <button onclick="toggleSidebar(); handleMenuAction('${action}', '${title}');" class="w-full text-right px-4 py-3 rounded-xl bg-gray-50 hover:bg-blue-50 text-gray-700 hover:text-blue-600 font-semibold text-sm transition-all flex items-center gap-3">
@@ -216,7 +228,7 @@
         // ================= دالة عرض شاشة بيانات المستخدمين للأدمن =================
         async function renderAllUsersScreen() {
             if (!currentUserId) {
-                alert("⚠️ عذراً، يجب تسجيل الدخول أولاً كأدمن!");
+                alert("⚠️ عذراً، يجب تسجيل الدخول أولاً!");
                 return;
             }
 
@@ -339,10 +351,6 @@
                     } else if (userByPhone) {
                         userData = userByPhone;
                     }
-                }
-
-                if (!userData) {
-                    alert("⚠️ تنبيه: تعذر العثور على بيانات المستخدم في قاعدة البيانات. تأكد من صحة الحساب أو صلاحيات الوصول (RLS).");
                 }
 
                 const name = userData?.user_name || userData?.name || "غير متوفر";
@@ -524,12 +532,8 @@
             }
 
             currentUserRole = resObj.phone_number || phone;
-            currentUserType = resObj.user_type || "ادمن"; 
+            currentUserType = resObj.user_type || resObj.user_role || "ادمن"; 
             currentUserId = resObj.user?.id || resObj.user_id || resObj.id || resObj.ID || resObj.uuid || null; 
-
-            if (!currentUserId) {
-                alert("⚠️ تحذير: تم تسجيل الدخول بنجاح، لكن الخادم لم يُرسل معرف المستخدم (ID)، مما قد يمنع ظهور البيانات الشخصية!");
-            }
             
             renderMainDashboard();
             loadDynamicMenuIntoSidebar(); 
