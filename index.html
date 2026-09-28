@@ -125,7 +125,6 @@
 
         async function loadDynamicMenuIntoSidebar() {
             try {
-                // التنبيه المطلوب كما هو دون تغيير
                 alert("Current User ID: " + currentUserId);
 
                 let menuItems = [];
@@ -506,27 +505,29 @@
                     const style = getRotatingCardStyle(index);
                     const escapedCompat = m.screen_compatibility ? encodeURIComponent(m.screen_compatibility) : '';
                     const escapedBattery = m.battery_model ? encodeURIComponent(m.battery_model) : '';
+                    const escapedCode = m.model_code ? encodeURIComponent(m.model_code) : '';
                     return `
-                        <div onclick="selectModelAndProceed('${m.device_name}', '${m.model_code}', '${escapedCompat}', '${escapedBattery}')" class="w-full ${style.bg} border ${style.border} p-4 rounded-2xl shadow-sm flex items-center justify-between cursor-pointer transition-all text-sm sm:text-base">
-                            <span class="font-bold text-gray-800">
-                                ${m.device_name} <span class="text-xs ${style.icon} font-normal">(${m.model_code})</span>
-                            </span>
+                        <div onclick="renderPartsScreen('${m.device_name}', '${escapedCode}', '${escapedCompat}', '${escapedBattery}')" class="w-full ${style.bg} border ${style.border} p-4 rounded-2xl shadow-sm flex items-center justify-between cursor-pointer transition-all text-sm sm:text-base">
+                            <div>
+                                <span class="font-bold text-gray-800 block">${m.device_name}</span>
+                                ${m.model_code ? `<span class="text-xs text-gray-500 block mt-0.5">الكود: ${m.model_code}</span>` : ''}
+                            </div>
                             <svg class="w-5 h-5 ${style.icon} flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
                         </div>
                     `;
                 }).join('');
             } else {
-                modelsHtml = `<div class="text-center text-gray-500 py-6">لا توجد موديلات متاحة حالياً لهذه الماركة</div>`;
+                modelsHtml = `<div class="text-center text-gray-500 py-6">لا توجد موديلات متاحة لهذه الماركة حالياً</div>`;
             }
 
             const html = `
                 ${getHeaderTemplate()}
                 <div class="flex items-center justify-between mb-4 flex-shrink-0">
-                    <button onclick="renderBrandsScreen()" class="bg-blue-50 hover:bg-blue-100 text-blue-600 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all border border-blue-200 flex items-center gap-1.5">
+                    <button onclick="renderBrandsScreen()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center gap-1.5">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
                         <span>رجوع</span>
                     </button>
-                    <h2 class="text-xs sm:text-sm font-bold text-gray-800">موديلات ${brand}</h2>
+                    <h2 class="text-sm sm:text-base font-bold text-gray-800">اختر موديل (${brand})</h2>
                 </div>
                 <div class="flex-1 overflow-y-auto space-y-3 p-1">
                     ${modelsHtml}
@@ -536,21 +537,16 @@
             loadDynamicMenuIntoSidebar();
         }
 
-        function selectModelAndProceed(deviceName, modelCode, compatEncoded, batteryEncoded) {
-            selectedModel = `${deviceName} (${modelCode})`;
-            selectedModelCode = modelCode;
-            currentScreenCompatibility = compatEncoded ? decodeURIComponent(compatEncoded) : "";
-            currentBatteryModel = batteryEncoded ? decodeURIComponent(batteryEncoded) : "";
-            renderPartsScreen(selectedModel);
-        }
-
-        function renderPartsScreen(model) {
-            selectedModel = model;
+        function renderPartsScreen(modelName, modelCode, screenCompat, batteryModel) {
+            selectedModel = modelName;
+            selectedModelCode = modelCode ? decodeURIComponent(modelCode) : '';
+            currentScreenCompatibility = screenCompat ? decodeURIComponent(screenCompat) : '';
+            currentBatteryModel = batteryModel ? decodeURIComponent(batteryModel) : '';
 
             let partsHtml = sparePartsList.map((part, index) => {
                 const style = getRotatingCardStyle(index);
                 return `
-                    <div onclick="renderProductDetailScreen('${part}')" class="w-full ${style.bg} border ${style.border} p-4 rounded-2xl shadow-sm flex items-center justify-between cursor-pointer transition-all text-sm sm:text-base">
+                    <div onclick="renderPartDetails('${part}')" class="w-full ${style.bg} border ${style.border} p-4 rounded-2xl shadow-sm flex items-center justify-between cursor-pointer transition-all text-sm sm:text-base">
                         <span class="font-bold text-gray-800">${part}</span>
                         <svg class="w-5 h-5 ${style.icon} flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
                     </div>
@@ -560,11 +556,11 @@
             const html = `
                 ${getHeaderTemplate()}
                 <div class="flex items-center justify-between mb-4 flex-shrink-0">
-                    <button onclick="renderModelsScreen('${selectedBrand}')" class="bg-blue-50 hover:bg-blue-100 text-blue-600 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all border border-blue-200 flex items-center gap-1.5">
+                    <button onclick="renderModelsScreen('${selectedBrand}')" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center gap-1.5">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
                         <span>رجوع</span>
                     </button>
-                    <h2 class="text-xs sm:text-sm font-bold text-gray-800">${selectedBrand} - ${model}</h2>
+                    <h2 class="text-sm sm:text-base font-bold text-gray-800">اختر قطعة الغيار (${selectedModel})</h2>
                 </div>
                 <div class="flex-1 overflow-y-auto space-y-3 p-1">
                     ${partsHtml}
@@ -574,62 +570,62 @@
             loadDynamicMenuIntoSidebar();
         }
 
-        function renderProductDetailScreen(part) {
+        async function renderPartDetails(part) {
             selectedPart = part;
-
-            let compatibilityText = "هذه القطعة متوافقة مع الإصدارات والنسخ المتطابقة من الماركة.";
-            if (part === "شاشة") {
-                if (currentScreenCompatibility) {
-                    if (currentScreenCompatibility.toLowerCase() === 'none') {
-                        compatibilityText = "هذه الشاشة غير متوافقة مع موديلات أخرى (خاصة بهذا الموديل فقط).";
-                    } else {
-                        compatibilityText = `الموديلات المتوافقة مع هذه الشاشة: ${currentScreenCompatibility}`;
-                    }
-                } else {
-                    compatibilityText = "لا توجد توافقات مسجلة لهذه الشاشة حالياً.";
-                }
-            }
-
-            let batterySectionHtml = "";
-            if (part === "بطارية") {
-                let batteryDisplay = currentBatteryModel ? currentBatteryModel : "غير متوفر طراز مسجل لهذا الموديل";
-                batterySectionHtml = `
-                    <div class="bg-indigo-50/70 border border-indigo-100 p-6 sm:p-7 rounded-2xl shadow-sm">
-                        <h3 class="font-bold text-indigo-800 mb-3 text-base sm:text-lg">🔋 طراز البطارية</h3>
-                        <p class="text-sm sm:text-base text-gray-600 font-medium">${batteryDisplay}</p>
+            
+            let extraInfoHtml = "";
+            if (part === "شاشة" && currentScreenCompatibility) {
+                extraInfoHtml = `
+                    <div class="bg-blue-50 border border-blue-200 p-4 rounded-2xl mb-4">
+                        <h4 class="font-bold text-blue-900 text-sm mb-1">توافق الشاشات:</h4>
+                        <p class="text-blue-800 text-sm">${currentScreenCompatibility}</p>
                     </div>
                 `;
+            } else if (part === "بطارية" && currentBatteryModel) {
+                extraInfoHtml = `
+                    <div class="bg-emerald-50 border border-emerald-200 p-4 rounded-2xl mb-4">
+                        <h4 class="font-bold text-emerald-900 text-sm mb-1">موديل البطارية:</h4>
+                        <p class="text-emerald-800 text-sm">${currentBatteryModel}</p>
+                    </div>
+                `;
+            }
+
+            let postsHtml = "";
+            try {
+                const { data, error } = await supabaseClient
+                    .from('posts')
+                    .select('*')
+                    .ilike('device_model', `%${selectedModel}%`)
+                    .ilike('spare_part', `%${part}%`);
+
+                if (!error && data && data.length > 0) {
+                    postsHtml = data.map((post, idx) => `
+                        <div class="bg-white border border-gray-200 p-4 rounded-2xl shadow-sm space-y-2">
+                            <h3 class="font-bold text-gray-800 text-base">${post.title || 'ملاحظة صيانة'}</h3>
+                            <p class="text-gray-600 text-sm leading-relaxed">${post.content || post.description || ''}</p>
+                        </div>
+                    `).join('');
+                } else {
+                    postsHtml = `<div class="text-center text-gray-400 text-sm py-6">لا توجد منشورات أو ملاحظات مسجلة لهذه القطعة حالياً</div>`;
+                }
+            } catch (err) {
+                console.error("خطأ في جلب تفاصيل المنشورات:", err);
+                postsHtml = `<div class="text-center text-red-400 text-sm py-6">حدث خطأ أثناء جلب البيانات</div>`;
             }
 
             const html = `
                 ${getHeaderTemplate()}
                 <div class="flex items-center justify-between mb-4 flex-shrink-0">
-                    <button onclick="renderPartsScreen('${selectedModel}')" class="bg-blue-50 hover:bg-blue-100 text-blue-600 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all border border-blue-200 flex items-center gap-1.5">
+                    <button onclick="renderPartsScreen('${selectedModel}', '${encodeURIComponent(selectedModelCode)}', '${encodeURIComponent(currentScreenCompatibility)}', '${encodeURIComponent(currentBatteryModel)}')" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center gap-1.5">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
                         <span>رجوع</span>
                     </button>
-                    <h2 class="text-xs sm:text-sm font-bold text-gray-800">${part} (${selectedModel})</h2>
+                    <h2 class="text-sm sm:text-base font-bold text-gray-800">${selectedModel} - ${part}</h2>
                 </div>
-
-                <div class="flex-1 overflow-y-auto space-y-5 p-1">
-                    ${batterySectionHtml}
-
-                    <div class="bg-blue-50/70 border border-blue-100 p-6 sm:p-7 rounded-2xl shadow-sm">
-                        <h3 class="font-bold text-blue-800 mb-3 text-base sm:text-lg">🛒 شراء المنتج</h3>
-                        <p class="text-sm sm:text-base text-gray-600 mb-4">القطعة متوفرة بالضمان الكامل.</p>
-                        <button onclick="alert('تمت إضافة الطلب بنجاح!')" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl text-sm sm:text-base shadow-md transition-all">
-                            شراء المنتج / اطلب الآن
-                        </button>
-                    </div>
-
-                    <div class="bg-emerald-50/70 border border-emerald-100 p-6 sm:p-7 rounded-2xl shadow-sm">
-                        <h3 class="font-bold text-emerald-800 mb-3 text-base sm:text-lg">🔗 التوافقات</h3>
-                        <p class="text-sm sm:text-base text-gray-600 font-medium">${compatibilityText}</p>
-                    </div>
-
-                    <div class="bg-amber-50/70 border border-amber-100 p-6 sm:p-7 rounded-2xl shadow-sm">
-                        <h3 class="font-bold text-amber-800 mb-3 text-base sm:text-lg">⚠️ تنبيهات بعد التركيب</h3>
-                        <p class="text-sm sm:text-base text-gray-600">يُرجى التجربة الفورية قبل التثبيت النهائي وإزالة اللزقات.</p>
+                <div class="flex-1 overflow-y-auto space-y-4 p-1">
+                    ${extraInfoHtml}
+                    <div class="space-y-3">
+                        ${postsHtml}
                     </div>
                 </div>
             `;
@@ -637,7 +633,7 @@
             loadDynamicMenuIntoSidebar();
         }
 
-        // ================= التشغيل المبدئي =================
+        // تشغيل شاشة تسجيل الدخول عند فتح التطبيق لأول مرة
         window.onload = function() {
             renderLoginScreen();
         };
