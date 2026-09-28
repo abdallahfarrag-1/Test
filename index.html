@@ -262,6 +262,7 @@
                         </div>
                         <p class="text-gray-600 text-sm">🏪 المحل: ${user.shop_name || 'غير متوفر'}</p>
                         <p class="text-gray-500 text-xs">📍 العنوان: ${user.shop_address || 'غير متوفر'}</p>
+                        <p class="text-xs text-gray-700 font-semibold" dir="ltr">🔑 كلمة السر: ${user.password || user.pass || 'غير متوفر'}</p>
                         <p class="text-xs text-indigo-500 font-semibold">الصلاحية: ${user.user_role || 'عضو'}</p>
                     </div>
                 `).join('');
@@ -347,7 +348,7 @@
                 const shopName = userData?.shop_name || "غير متوفر";
                 const shopAddress = userData?.shop_address || "غير متوفر";
                 const phone = userData?.phone_number || currentUserRole;
-                const password = userData?.password || "********";
+                const password = userData?.password || userData?.pass || "********";
 
                 const htmlContent = `
                     ${getHeaderTemplate()}
