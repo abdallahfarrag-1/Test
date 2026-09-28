@@ -216,6 +216,103 @@
             }
         }
 
+        // ================= دالة فتح شاشة البيانات الشخصية =================
+        async function renderUserProfileScreen() {
+            if (!currentUserId) {
+                alert("يجب تسجيل الدخول أولاً لعرض البيانات الشخصية!");
+                return;
+            }
+
+            // رسم هيكل الشاشة مؤقتاً أثناء التحميل
+            const htmlLoading = `
+                ${getHeaderTemplate()}
+                <div class="flex items-center justify-between mb-4 flex-shrink-0">
+                    <button onclick="renderMainDashboard()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center gap-1.5">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                        <span>رجوع</span>
+                    </button>
+                    <h2 class="text-sm sm:text-base font-bold text-gray-800">البيانات الشخصية</h2>
+                </div>
+                <div class="flex-1 flex items-center justify-center">
+                    <p class="text-gray-500 text-sm">جاري جلب البيانات الشخصية...</p>
+                </div>
+            `;
+            document.getElementById('appContainer').innerHTML = htmlLoading;
+            loadDynamicMenuIntoSidebar();
+
+            try {
+                // جلب بيانات المستخدم من جدول الـ Admins أو المستخدمين بناءً على الـ ID
+                const { data, error } = await supabaseClient
+                    .from('admins') // أو جدول المستخدمين الخاص بك
+                    .select('*')
+                    .eq('id', currentUserId)
+                    .single();
+
+                let userData = data;
+                if (error || !userData) {
+                    // محاولة جلب البيانات من جدول بديل إذا لم تكن موجودة في admins
+                    const { data: altData } = await supabaseClient
+                        .from('users')
+                        .select('*')
+                        .eq('id', currentUserId)
+                        .single();
+                    userData = altData;
+                }
+
+                const name = userData?.user_name || userData?.name || "غير متوفر";
+                const shopName = userData?.shop_name || "غير متوفر";
+                const shopAddress = userData?.shop_address || "غير متوفر";
+                const phone = userData?.phone_number || userData?.phone || currentUserRole;
+                const password = userData?.password || "********";
+
+                const htmlContent = `
+                    ${getHeaderTemplate()}
+                    <div class="flex items-center justify-between mb-4 flex-shrink-0">
+                        <button onclick="renderMainDashboard()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center gap-1.5">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                            <span>رجوع</span>
+                        </button>
+                        <h2 class="text-sm sm:text-base font-bold text-gray-800">البيانات الشخصية</h2>
+                    </div>
+                    <div class="flex-1 overflow-y-auto space-y-4 p-2 max-w-xl mx-auto w-full">
+                        <div class="bg-white border border-gray-200 p-5 rounded-2xl shadow-sm space-y-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-500 mb-1">الاسم</label>
+                                <div class="w-full bg-gray-50 border border-gray-200 text-gray-800 font-semibold px-4 py-3 rounded-xl text-sm">${name}</div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-500 mb-1">اسم المحل</label>
+                                <div class="w-full bg-gray-50 border border-gray-200 text-gray-800 font-semibold px-4 py-3 rounded-xl text-sm">${shopName}</div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-500 mb-1">العنوان</label>
+                                <div class="w-full bg-gray-50 border border-gray-200 text-gray-800 font-semibold px-4 py-3 rounded-xl text-sm">${shopAddress}</div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-500 mb-1">رقم التليفون</label>
+                                <div class="w-full bg-gray-50 border border-gray-200 text-gray-800 font-semibold px-4 py-3 rounded-xl text-sm" dir="ltr">${phone}</div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-500 mb-1">كلمة السر</label>
+                                <div class="w-full bg-gray-50 border border-gray-200 text-gray-800 font-semibold px-4 py-3 rounded-xl text-sm" dir="ltr">${password}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                document.getElementById('appContainer').innerHTML = htmlContent;
+                loadDynamicMenuIntoSidebar();
+
+            } catch (err) {
+                console.error("خطأ في جلب بيانات المستخدم:", err);
+                alert("حدث خطأ أثناء جلب البيانات الشخصية.");
+            }
+        }
+
+        // ربط الإجراء المطلوب بالدالة المعرفة تلقائياً
+        function renderUserProfile() {
+            renderUserProfileScreen();
+        }
+
         // ================= 3. شاشات المصادقة (تسجيل الدخول / إنشاء حساب) =================
         function renderLoginScreen() {
             const html = `
