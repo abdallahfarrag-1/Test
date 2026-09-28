@@ -224,9 +224,9 @@
             }
         }
 
-        // ================= دالة فتح شاشة البيانات الشخصية =================
+        // ================= دالة فتح شاشة البيانات الشخصية (محدثة للجدول الصحيح) =================
         async function renderUserProfileScreen() {
-            if (!currentUserId) {
+            if (!currentUserId && currentUserRole === "زائر") {
                 alert("يجب تسجيل الدخول أولاً لعرض البيانات الشخصية!");
                 return;
             }
@@ -248,26 +248,37 @@
             loadDynamicMenuIntoSidebar();
 
             try {
-                const { data, error } = await supabaseClient
-                    .from('admins')
-                    .select('*')
-                    .eq('id', currentUserId)
-                    .single();
+                let userData = null;
 
-                let userData = data;
-                if (error || !userData) {
-                    const { data: altData } = await supabaseClient
+                // 1. محاولة الجلب بالـ ID من جدول users
+                if (currentUserId) {
+                    const { data: userById, error: errId } = await supabaseClient
                         .from('users')
                         .select('*')
                         .eq('id', currentUserId)
                         .single();
-                    userData = altData;
+                    if (!errId && userById) {
+                        userData = userById;
+                    }
                 }
 
+                // 2. إذا لم يتم العثور بالـ ID، يتم الجلب برقم الهاتف
+                if (!userData && currentUserRole && currentUserRole !== "زائر") {
+                    const { data: userByPhone, error: errPhone } = await supabaseClient
+                        .from('users')
+                        .select('*')
+                        .eq('phone_number', currentUserRole)
+                        .single();
+                    if (!errPhone && userByPhone) {
+                        userData = userByPhone;
+                    }
+                }
+
+                // استخراج البيانات بناءً على أعمدة جدول public.users الموضحة (user_name, shop_name, shop_address)
                 const name = userData?.user_name || userData?.name || "غير متوفر";
                 const shopName = userData?.shop_name || "غير متوفر";
                 const shopAddress = userData?.shop_address || "غير متوفر";
-                const phone = userData?.phone_number || userData?.phone || currentUserRole;
+                const phone = userData?.phone_number || currentUserRole;
                 const password = userData?.password || "********";
 
                 const htmlContent = `
