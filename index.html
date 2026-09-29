@@ -220,7 +220,6 @@
             }
         }
 
-        // ================= دالة عرض شاشة سجل تسجيل الدخول (تم التعديل لقراءة login_time) =================
         async function renderLoginHistoryScreen() {
             if (!currentUserId) {
                 showSystemAlert("خطأ صلاحيات مستخدم", "❌ مفقود (زائر)", "⛔ مرفوض", "عذراً، يجب تسجيل الدخول أولاً للاطلاع على سجل تسجيل الدخول!");
@@ -308,7 +307,6 @@
             loadDynamicMenuIntoSidebar();
         }
 
-        // ================= دالة عرض شاشة بيانات المستخدمين كجدول للأدمن =================
         async function renderAllUsersScreen() {
             if (!currentUserId) {
                 showSystemAlert("خطأ صلاحيات مستخدم", "❌ مفقود (زائر)", "⛔ مرفوض", "عذراً، يجب تسجيل الدخول أولاً للاطلاع على بيانات المستخدمين!");
@@ -396,7 +394,6 @@
             loadDynamicMenuIntoSidebar();
         }
 
-        // ================= دالة فتح شاشة البيانات الشخصية =================
         async function renderUserProfileScreen() {
             if (!currentUserId && currentUserRole === "زائر") {
                 showSystemAlert("تنبيه حساب زائر", "❌ غير متوفر", "⚠️ تنبيه", "يجب تسجيل الدخول أولاً لعرض البيانات الشخصية!");
@@ -503,7 +500,6 @@
             }
         }
 
-        // ================= شاشة ودالة تعديل البيانات الشخصية =================
         function renderEditProfileScreen() {
             if (!currentUserId) {
                 showSystemAlert("خطأ", "❌ غير متوفر", "⚠️ تنبيه", "يجب تسجيل الدخول أولاً لتعديل بياناتك!");
@@ -624,7 +620,6 @@
             renderUserProfileScreen();
         }
 
-        // ================= 3. شاشات المصادقة =================
         function renderLoginScreen() {
             const html = `
                 <div class="flex-1 overflow-y-auto px-2">
@@ -806,7 +801,6 @@
             loadDynamicMenuIntoSidebar();
         }
 
-        // ================= 4. الشاشات الرئيسية =================
         function renderMainDashboard() {
             const html = `
                 ${getHeaderTemplate()}
