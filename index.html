@@ -194,6 +194,15 @@
                     } else {
                         menuHtml = `<div class="text-center text-gray-400 text-xs py-4">لا توجد عناصر مضافة للقائمة</div>`;
                     }
+                    
+                    // إضافة زر إضافي مخصص لسجل تسجيل الدخول المتوافق مع دالة get_login_history_data
+                    menuHtml += `
+                        <button onclick="toggleSidebar(); renderLoginHistoryScreen();" class="w-full text-right px-4 py-3 rounded-xl bg-gray-50 hover:bg-blue-50 text-gray-700 hover:text-blue-600 font-semibold text-sm transition-all flex items-center gap-3">
+                            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            <span>سجل تسجيل الدخول</span>
+                        </button>
+                    `;
+
                     sidebarContainer.innerHTML = menuHtml;
                 }
 
@@ -210,11 +219,97 @@
                 renderUserProfileScreen();
             } else if (cleanAction.includes('بيانات المستخدمين') || cleanTitle.includes('بيانات المستخدمين') || cleanAction === 'renderAllUsersScreen') {
                 renderAllUsersScreen();
+            } else if (cleanAction.includes('سجل تسجيل الدخول') || cleanTitle.includes('سجل تسجيل الدخول') || cleanAction === 'renderLoginHistoryScreen') {
+                renderLoginHistoryScreen();
             } else if (typeof window[cleanAction] === 'function') {
                 window[cleanAction]();
             } else {
                 showSystemAlert("تنبيه عدم مطابقة وظيفة القائمة", `المُعرف الحالي: ${currentUserId || 'زائر'}`, "⚠️ تنبيه وظيفة", `تم اختيار العنصر (${cleanTitle || cleanAction}) ولا توجد دالة برمجية مطابقة له بالاسم.`);
             }
+        }
+
+        // ================= دالة عرض شاشة سجل تسجيل الدخول المتوافقة مع الصورة =================
+        async function renderLoginHistoryScreen() {
+            if (!currentUserId) {
+                showSystemAlert("خطأ صلاحيات مستخدم", "❌ مفقود (زائر)", "⛔ مرفوض", "عذراً، يجب تسجيل الدخول أولاً للاطلاع على سجل تسجيل الدخول!");
+                return;
+            }
+
+            document.getElementById('appContainer').innerHTML = `
+                ${getHeaderTemplate()}
+                <div class="flex items-center justify-between mb-4 flex-shrink-0">
+                    <button onclick="renderMainDashboard()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center gap-1.5">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                        <span>رجوع</span>
+                    </button>
+                    <h2 class="text-sm sm:text-base font-bold text-gray-800">سجل تسجيل الدخول</h2>
+                </div>
+                <div class="flex-1 flex items-center justify-center">
+                    <p class="text-gray-500 text-sm">جاري التحقق من الصلاحيات وجلب سجلات الدخول...</p>
+                </div>
+            `;
+            loadDynamicMenuIntoSidebar();
+
+            const { data: response, error } = await supabaseClient.rpc('get_login_history_data', {
+                p_user_id: currentUserId
+            });
+
+            if (error) {
+                showSystemAlert("عطل اتصال قاعدة البيانات (get_login_history_data)", `✅ تم إرسال الـ ID: ${currentUserId}`, "❌ فشل الاتصال", error.message);
+                renderMainDashboard();
+                return;
+            }
+
+            if (!response || response.success === false) {
+                showSystemAlert("رفض صلاحية عرض سجل الدخول", `✅ تم إرسال الـ ID: ${currentUserId}`, "⛔ صلاحية مرفوضة", response?.message || 'غير مسموح لك بالاطلاع على هذه البيانات');
+                renderMainDashboard();
+                return;
+            }
+
+            const historyData = response.data || [];
+
+            let rowsHtml = "";
+            if (historyData.length > 0) {
+                rowsHtml = historyData.map((item, index) => `
+                    <tr class="${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'} hover:bg-blue-50/50 transition-colors">
+                        <td class="px-4 py-3 text-xs sm:text-sm text-indigo-600 font-bold whitespace-nowrap">${item.user_role || 'غير محدد'}</td>
+                        <td class="px-4 py-3 text-xs sm:text-sm text-gray-800 font-bold whitespace-nowrap">${item.user_name || item.name || 'بدون اسم'}</td>
+                        <td class="px-4 py-3 text-xs sm:text-sm text-gray-700 whitespace-nowrap">${item.shop_name || 'غير متوفر'}</td>
+                        <td class="px-4 py-3 text-xs sm:text-sm text-blue-600 font-semibold whitespace-nowrap" dir="ltr">${item.phone_number || ''}</td>
+                    </tr>
+                `).join('');
+            } else {
+                rowsHtml = `<tr><td colspan="4" class="text-center text-gray-400 py-6 text-sm">لا توجد سجلات متاحة حالياً</td></tr>`;
+            }
+
+            const html = `
+                ${getHeaderTemplate()}
+                <div class="flex items-center justify-between mb-4 flex-shrink-0">
+                    <button onclick="renderMainDashboard()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center gap-1.5">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                        <span>رجوع</span>
+                    </button>
+                    <h2 class="text-sm sm:text-base font-bold text-gray-800">سجل تسجيل الدخول</h2>
+                </div>
+                <div class="flex-1 overflow-auto border border-gray-200 rounded-2xl shadow-sm">
+                    <table class="w-full text-right border-collapse">
+                        <thead class="bg-gray-100 sticky top-0 z-10 border-b border-gray-200">
+                            <tr>
+                                <th class="px-4 py-3 text-xs sm:text-sm font-bold text-gray-700 whitespace-nowrap">الرتبة</th>
+                                <th class="px-4 py-3 text-xs sm:text-sm font-bold text-gray-700 whitespace-nowrap">اسم المستخدم</th>
+                                <th class="px-4 py-3 text-xs sm:text-sm font-bold text-gray-700 whitespace-nowrap">المحل</th>
+                                <th class="px-4 py-3 text-xs sm:text-sm font-bold text-gray-700 whitespace-nowrap">رقم الهاتف</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200">
+                            ${rowsHtml}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            
+            document.getElementById('appContainer').innerHTML = html;
+            loadDynamicMenuIntoSidebar();
         }
 
         // ================= دالة عرض شاشة بيانات المستخدمين كجدول للأدمن =================
