@@ -444,6 +444,11 @@
                             حفظ التعديلات
                         </button>
                     </form>
+
+                    <!-- زر حذف الحساب المضاف حديثاً -->
+                    <button type="button" onclick="handleDeleteAccount()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl shadow-lg transition-all text-sm mt-4">
+                        حذف الحساب نهائياً
+                    </button>
                 </div>
             `;
             document.getElementById('appContainer').innerHTML = html;
@@ -478,6 +483,40 @@
                 renderUserProfileScreen(); // العودة لشاشة البيانات الشخصية لتحديث العرض
             } else {
                 alert('⚠️ ' + (data?.message || 'تعذر حفظ التعديلات'));
+            }
+        }
+
+        // ================= دالة حذف الحساب =================
+        async function handleDeleteAccount() {
+            if (!currentUserId) {
+                alert("لا يوجد مستخدم مسجل حالياً!");
+                return;
+            }
+
+            // رسالة تأكيد لمنع الحذف الخاطئ
+            const confirmDelete = confirm("هل أنت متأكد من رغبتك في حذف حسابك نهائياً؟ لا يمكن التراجع عن هذا الإجراء.");
+            if (!confirmDelete) return;
+
+            try {
+                const { data, error } = await supabaseClient.rpc('delete_user_profile', {
+                    p_user_id: currentUserId
+                });
+
+                if (error) {
+                    alert("حدث خطأ أثناء الاتصال بقاعدة البيانات: " + error.message);
+                    return;
+                }
+
+                if (data && data.success) {
+                    alert(data.message);
+                    // إعادة ضبط التطبيق للوضع الافتراضي (زائر) ونقله لشاشة تسجيل الدخول
+                    loginAsVisitor();
+                    renderLoginScreen();
+                } else {
+                    alert(data?.message || "تعذر حذف الحساب");
+                }
+            } catch (err) {
+                alert("عطل استثنائي: " + err.message);
             }
         }
 
@@ -785,7 +824,6 @@
 
             let models = [];
             if (tableName) {
-                // تم إضافة أمر الترتيب هنا حسب الـ id تصاعدياً لضمان ثبات الترتيب مثل قاعدة البيانات تماماً
                 const { data, error } = await supabaseClient.from(tableName).select('*').order('id', { ascending: true });
                 if (!error && data) {
                     models = data.map(item => ({
