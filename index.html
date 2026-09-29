@@ -174,6 +174,7 @@
                 } else {
                     menuStatusDesc = "❌ فشل جلب محتويات المنيو";
                     errorReason = error ? error.message : "دالة جلب المنيو أرجعت بيانات فارغة.";
+                    showSystemAlert("تحذير جلب قائمة المنيو", idStatusDesc, menuStatusDesc, errorReason);
                 }
 
                 const sidebarContainer = document.getElementById('sidebarContent');
@@ -194,7 +195,7 @@
                         menuHtml = `<div class="text-center text-gray-400 text-xs py-4">لا توجد عناصر مضافة للقائمة</div>`;
                     }
                     
-                    // زر سجل تسجيل الدخول المتوافق مع الدالة
+                    // إضافة زر إضافي مخصص لسجل تسجيل الدخول المتوافق مع دالة get_login_history_data
                     menuHtml += `
                         <button onclick="toggleSidebar(); renderLoginHistoryScreen();" class="w-full text-right px-4 py-3 rounded-xl bg-gray-50 hover:bg-blue-50 text-gray-700 hover:text-blue-600 font-semibold text-sm transition-all flex items-center gap-3">
                             <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
@@ -214,7 +215,7 @@
             const cleanAction = (actionName || "").trim();
             const cleanTitle = (title || "").trim();
 
-            if (cleanAction.includes('البيانات الشخصية') || cleanTitle.includes('البيانات الشخصية') || cleanAction === 'renderUserProfile') {
+            if (cleanAction.includes('البيانات الشخصية') || cleanTitle.includes('البيانات الشخصية') || cleanAction === 'renderUserProfile' || cleanAction === 'profile') {
                 renderUserProfileScreen();
             } else if (cleanAction.includes('بيانات المستخدمين') || cleanTitle.includes('بيانات المستخدمين') || cleanAction === 'renderAllUsersScreen') {
                 renderAllUsersScreen();
@@ -227,7 +228,7 @@
             }
         }
 
-        // ================= دالة عرض شاشة سجل تسجيل الدخول =================
+        // ================= دالة عرض شاشة سجل تسجيل الدخول المتوافقة مع الصورة =================
         async function renderLoginHistoryScreen() {
             if (!currentUserId) {
                 showSystemAlert("خطأ صلاحيات مستخدم", "❌ مفقود (زائر)", "⛔ مرفوض", "عذراً، يجب تسجيل الدخول أولاً للاطلاع على سجل تسجيل الدخول!");
@@ -259,19 +260,13 @@
                 return;
             }
 
-            // فحص الاستجابة بناءً على بنية الـ JSON المعادة من الدالة
-            let historyData = [];
-            if (response) {
-                if (Array.isArray(response)) {
-                    historyData = response;
-                } else if (response.success === false) {
-                    showSystemAlert("رفض صلاحية عرض سجل الدخول", `✅ تم إرسال الـ ID: ${currentUserId}`, "⛔ صلاحية مرفوضة", response?.message || 'غير مسموح لك بالاطلاع على هذه البيانات');
-                    renderMainDashboard();
-                    return;
-                } else if (response.data) {
-                    historyData = response.data;
-                }
+            if (!response || response.success === false) {
+                showSystemAlert("رفض صلاحية عرض سجل الدخول", `✅ تم إرسال الـ ID: ${currentUserId}`, "⛔ صلاحية مرفوضة", response?.message || 'غير مسموح لك بالاطلاع على هذه البيانات');
+                renderMainDashboard();
+                return;
             }
+
+            const historyData = response.data || [];
 
             let rowsHtml = "";
             if (historyData.length > 0) {
@@ -317,7 +312,7 @@
             loadDynamicMenuIntoSidebar();
         }
 
-        // ================= دالة عرض شاشة بيانات المستخدمين للأدمن =================
+        // ================= دالة عرض شاشة بيانات المستخدمين كجدول للأدمن =================
         async function renderAllUsersScreen() {
             if (!currentUserId) {
                 showSystemAlert("خطأ صلاحيات مستخدم", "❌ مفقود (زائر)", "⛔ مرفوض", "عذراً، يجب تسجيل الدخول أولاً للاطلاع على بيانات المستخدمين!");
@@ -349,18 +344,13 @@
                 return;
             }
 
-            let allUsers = [];
-            if (response) {
-                if (Array.isArray(response)) {
-                    allUsers = response;
-                } else if (response.success === false) {
-                    showSystemAlert("رفض صلاحية عرض المستخدمين", `✅ تم إرسال الـ ID: ${currentUserId}`, "⛔ صلاحية مرفوضة", response?.message || 'غير مسموح لك بالاطلاع على هذه البيانات');
-                    renderMainDashboard();
-                    return;
-                } else if (response.data) {
-                    allUsers = response.data;
-                }
+            if (!response || response.success === false) {
+                showSystemAlert("رفض صلاحية عرض المستخدمين", `✅ تم إرسال الـ ID: ${currentUserId}`, "⛔ صلاحية مرفوضة", response?.message || 'غير مسموح لك بالاطلاع على هذه البيانات');
+                renderMainDashboard();
+                return;
             }
+
+            const allUsers = response.data || [];
 
             let rowsHtml = "";
             if (allUsers.length > 0) {
@@ -410,7 +400,235 @@
             loadDynamicMenuIntoSidebar();
         }
 
-        // ================= شاشات المصادقة والتنقل العامة =================
+        // ================= دالة فتح شاشة البيانات الشخصية =================
+        async function renderUserProfileScreen() {
+            if (!currentUserId && currentUserRole === "زائر") {
+                showSystemAlert("تنبيه حساب زائر", "❌ غير متوفر", "⚠️ تنبيه", "يجب تسجيل الدخول أولاً لعرض البيانات الشخصية!");
+                return;
+            }
+
+            const htmlLoading = `
+                ${getHeaderTemplate()}
+                <div class="flex items-center justify-between mb-4 flex-shrink-0">
+                    <button onclick="renderMainDashboard()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center gap-1.5">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                        <span>رجوع</span>
+                    </button>
+                    <h2 class="text-sm sm:text-base font-bold text-gray-800">البيانات الشخصية</h2>
+                </div>
+                <div class="flex-1 flex items-center justify-center">
+                    <p class="text-gray-500 text-sm">جاري جلب البيانات الشخصية...</p>
+                </div>
+            `;
+            document.getElementById('appContainer').innerHTML = htmlLoading;
+            loadDynamicMenuIntoSidebar();
+
+            try {
+                let userData = null;
+
+                if (currentUserId) {
+                    const { data: rpcData, error: rpcError } = await supabaseClient.rpc('get_user_profile', { 
+                        user_id: currentUserId 
+                    });
+
+                    if (rpcError) {
+                        showSystemAlert("عطل دالة get_user_profile", `✅ الـ ID: ${currentUserId}`, "❌ فشل استدعاء RPC", rpcError.message);
+                    } else if (rpcData) {
+                        userData = Array.isArray(rpcData) ? rpcData[0] : rpcData;
+                    }
+                }
+
+                if (!userData && currentUserRole && currentUserRole !== "زائر") {
+                    const { data: userByPhone, error: errPhone } = await supabaseClient
+                        .from('users')
+                        .select('*')
+                        .eq('phone_number', currentUserRole)
+                        .single();
+                        
+                    if (errPhone) {
+                        showSystemAlert("فشل جلب البيانات البديلة برقم الهاتف", "⚠️ تعذر المطابقة", "❌ فشل جدول users", errPhone.message);
+                    } else if (userByPhone) {
+                        userData = userByPhone;
+                    }
+                }
+
+                currentUserDataGlobal = userData; 
+
+                const name = userData?.user_name || userData?.name || "غير متوفر";
+                const shopName = userData?.shop_name || "غير متوفر";
+                const shopAddress = userData?.shop_address || "غير متوفر";
+                const phone = userData?.phone_number || currentUserRole;
+                const password = userData?.password || userData?.pass || "********";
+
+                const htmlContent = `
+                    ${getHeaderTemplate()}
+                    <div class="flex items-center justify-between mb-4 flex-shrink-0">
+                        <div class="flex items-center gap-2">
+                            <button onclick="renderMainDashboard()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center gap-1.5">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                                <span>رجوع</span>
+                            </button>
+                            <button onclick="renderEditProfileScreen()" class="bg-blue-600 hover:bg-blue-700 text-white px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all shadow-sm">
+                                تعديل البيانات
+                            </button>
+                        </div>
+                        <h2 class="text-sm sm:text-base font-bold text-gray-800">البيانات الشخصية</h2>
+                    </div>
+                    <div class="flex-1 overflow-y-auto space-y-4 p-2 max-w-xl mx-auto w-full">
+                        <div class="bg-white border border-gray-200 p-5 rounded-2xl shadow-sm space-y-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-500 mb-1">الاسم</label>
+                                <div class="w-full bg-gray-50 border border-gray-200 text-gray-800 font-semibold px-4 py-3 rounded-xl text-sm">${name}</div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-500 mb-1">اسم المحل</label>
+                                <div class="w-full bg-gray-50 border border-gray-200 text-gray-800 font-semibold px-4 py-3 rounded-xl text-sm">${shopName}</div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-500 mb-1">العنوان</label>
+                                <div class="w-full bg-gray-50 border border-gray-200 text-gray-800 font-semibold px-4 py-3 rounded-xl text-sm">${shopAddress}</div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-500 mb-1">رقم التليفون</label>
+                                <div class="w-full bg-gray-50 border border-gray-200 text-gray-800 font-semibold px-4 py-3 rounded-xl text-sm" dir="ltr">${phone}</div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-500 mb-1">رمز المرور</label>
+                                <div class="w-full bg-gray-50 border border-gray-200 text-gray-800 font-semibold px-4 py-3 rounded-xl text-sm" dir="ltr">${password}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                document.getElementById('appContainer').innerHTML = htmlContent;
+                loadDynamicMenuIntoSidebar();
+
+            } catch (err) {
+                showSystemAlert("خطأ استثنائي أثناء عرض البيانات الشخصية", "⚠️ جاري الفحص", "❌ عطل برمجي", err.message);
+            }
+        }
+
+        // ================= شاشة ودالة تعديل البيانات الشخصية =================
+        function renderEditProfileScreen() {
+            if (!currentUserId) {
+                showSystemAlert("خطأ", "❌ غير متوفر", "⚠️ تنبيه", "يجب تسجيل الدخول أولاً لتعديل بياناتك!");
+                return;
+            }
+
+            const uData = currentUserDataGlobal || {};
+
+            const html = `
+                ${getHeaderTemplate()}
+                <div class="flex items-center justify-between mb-4 flex-shrink-0">
+                    <button onclick="renderUserProfileScreen()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center gap-1.5">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                        <span>رجوع</span>
+                    </button>
+                    <h2 class="text-sm sm:text-base font-bold text-gray-800">تعديل البيانات الشخصية</h2>
+                </div>
+                <div class="flex-1 overflow-y-auto space-y-4 p-2 max-w-xl mx-auto w-full">
+                    <form onsubmit="handleUpdateProfile(event)" class="bg-white border border-gray-200 p-5 rounded-2xl shadow-sm space-y-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-500 mb-1">الاسم</label>
+                            <input type="text" id="editUserName" value="${uData.user_name || uData.name || ''}" required class="w-full bg-gray-50 border border-gray-200 text-gray-800 font-semibold px-4 py-3 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-500 mb-1">اسم المحل</label>
+                            <input type="text" id="editShopName" value="${uData.shop_name || ''}" required class="w-full bg-gray-50 border border-gray-200 text-gray-800 font-semibold px-4 py-3 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-500 mb-1">العنوان</label>
+                            <input type="text" id="editShopAddress" value="${uData.shop_address || ''}" required class="w-full bg-gray-50 border border-gray-200 text-gray-800 font-semibold px-4 py-3 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-500 mb-1">رقم التليفون</label>
+                            <input type="text" id="editPhone" value="${uData.phone_number || ''}" required class="w-full bg-gray-50 border border-gray-200 text-gray-800 font-semibold px-4 py-3 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" dir="ltr">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-500 mb-1">رمز المرور</label>
+                            <input type="text" id="editPassword" value="${uData.password || uData.pass || ''}" required class="w-full bg-gray-50 border border-gray-200 text-gray-800 font-semibold px-4 py-3 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" dir="ltr">
+                        </div>
+                        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl shadow-lg transition-all text-sm">
+                            حفظ التعديلات
+                        </button>
+                    </form>
+
+                    <!-- زر حذف الحساب -->
+                    <button type="button" onclick="handleDeleteAccount()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl shadow-lg transition-all text-sm mt-4">
+                        حذف الحساب نهائياً
+                    </button>
+                </div>
+            `;
+            document.getElementById('appContainer').innerHTML = html;
+            loadDynamicMenuIntoSidebar();
+        }
+
+        async function handleUpdateProfile(e) {
+            e.preventDefault();
+            
+            const newName = document.getElementById('editUserName').value.trim();
+            const newShopName = document.getElementById('editShopName').value.trim();
+            const newAddress = document.getElementById('editShopAddress').value.trim();
+            const newPhone = document.getElementById('editPhone').value.trim();
+            const newPassword = document.getElementById('editPassword').value.trim();
+
+            const { data, error } = await supabaseClient.rpc('update_user_profile', {
+                p_user_id: currentUserId,
+                p_user_name: newName,
+                p_shop_name: newShopName,
+                p_shop_address: newAddress,
+                p_phone_number: newPhone,
+                p_password: newPassword
+            });
+
+            if (error) {
+                showSystemAlert("خطأ في الاتصال", `ID: ${currentUserId}`, "❌ فشل التحديث", error.message);
+                return;
+            }
+
+            if (data && data.success) {
+                alert('✅ ' + data.message);
+                renderUserProfileScreen(); 
+            } else {
+                alert('⚠️ ' + (data?.message || 'تعذر حفظ التعديلات'));
+            }
+        }
+
+        async function handleDeleteAccount() {
+            if (!currentUserId) {
+                alert("لا يوجد مستخدم مسجل حالياً!");
+                return;
+            }
+
+            const confirmDelete = confirm("هل أنت متأكد من رغبتك في حذف حسابك نهائياً؟ لا يمكن التراجع عن هذا الإجراء.");
+            if (!confirmDelete) return;
+
+            try {
+                const { data, error } = await supabaseClient.rpc('delete_user_profile', {
+                    p_user_id: currentUserId
+                });
+
+                if (error) {
+                    alert("حدث خطأ أثناء الاتصال بقاعدة البيانات: " + error.message);
+                    return;
+                }
+
+                if (data && data.success) {
+                    alert(data.message);
+                    loginAsVisitor();
+                    renderLoginScreen();
+                } else {
+                    alert(data?.message || "تعذر حذف الحساب");
+                }
+            } catch (err) {
+                alert("عطل استثنائي: " + err.message);
+            }
+        }
+
+        function renderUserProfile() {
+            renderUserProfileScreen();
+        }
+
+        // ================= 3. شاشات المصادقة =================
         function renderLoginScreen() {
             const html = `
                 <div class="flex-1 overflow-y-auto px-2">
@@ -592,9 +810,11 @@
             loadDynamicMenuIntoSidebar();
         }
 
+        // ================= 4. الشاشات الرئيسية =================
         function renderMainDashboard() {
             const html = `
                 ${getHeaderTemplate()}
+
                 <div class="flex-1 overflow-y-auto space-y-4 px-1">
                     <div class="mb-4">
                         <img src="https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?auto=format&fit=crop&w=800&q=80" alt="Banner" class="w-full h-36 sm:h-48 object-cover rounded-2xl shadow-md">
@@ -605,8 +825,19 @@
                             <span class="font-bold text-lg sm:text-xl">الماركات</span>
                             <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
                         </div>
+
                         <div onclick="alert('قسم التوافقات')" class="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white p-5 sm:p-6 rounded-2xl shadow-md cursor-pointer transition-all flex items-center justify-between">
                             <span class="font-bold text-lg sm:text-xl">التوافقات</span>
+                            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                        </div>
+
+                        <div onclick="alert('تنبيهات بعد التركيب')" class="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white p-5 sm:p-6 rounded-2xl shadow-md cursor-pointer transition-all flex items-center justify-between">
+                            <span class="font-bold text-lg sm:text-xl">تنبيهات بعد التركيب</span>
+                            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                        </div>
+
+                        <div onclick="alert('للتواصل مع الشركة')" class="w-full bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white p-5 sm:p-6 rounded-2xl shadow-md cursor-pointer transition-all flex items-center justify-between">
+                            <span class="font-bold text-lg sm:text-xl">التواصل مع الشركة</span>
                             <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
                         </div>
                     </div>
@@ -626,15 +857,20 @@
                 showSystemAlert("عطل جدول الماركات (brands)", "✅ متصل", "❌ فشل الجلب", error.message);
             }
 
-            let brandsHtml = brands.map((brand, index) => {
-                const style = getRotatingCardStyle(index);
-                return `
-                    <div onclick="renderModelsScreen('${brand}')" class="w-full ${style.bg} border ${style.border} p-4 rounded-2xl shadow-sm flex items-center justify-between cursor-pointer transition-all text-sm sm:text-base">
-                        <span class="font-bold text-gray-800">${brand}</span>
-                        <svg class="w-5 h-5 ${style.icon} flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
-                    </div>
-                `;
-            }).join('');
+            let brandsHtml = "";
+            if (brands.length > 0) {
+                brandsHtml = brands.map((brand, index) => {
+                    const style = getRotatingCardStyle(index);
+                    return `
+                        <div onclick="renderModelsScreen('${brand}')" class="w-full ${style.bg} border ${style.border} p-4 rounded-2xl shadow-sm flex items-center justify-between cursor-pointer transition-all text-sm sm:text-base">
+                            <span class="font-bold text-gray-800">${brand}</span>
+                            <svg class="w-5 h-5 ${style.icon} flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                        </div>
+                    `;
+                }).join('');
+            } else {
+                brandsHtml = `<div class="text-center text-gray-500 py-6">لا توجد ماركات متاحة حالياً أو تأكد من إعدادات RLS</div>`;
+            }
 
             const html = `
                 ${getHeaderTemplate()}
@@ -647,6 +883,226 @@
                 </div>
                 <div class="flex-1 overflow-y-auto space-y-3 p-1">
                     ${brandsHtml}
+                </div>
+            `;
+            document.getElementById('appContainer').innerHTML = html;
+            loadDynamicMenuIntoSidebar();
+        }
+
+        async function renderModelsScreen(brand) {
+            selectedBrand = brand;
+            let tableName = "";
+            let nameColumn = "device_name";
+            let codeColumn = "model_code";
+            let compatColumn = "screen_compatibility";
+            let batteryColumn = "battery_model";
+            
+            const b = brand.toLowerCase();
+            if (b.includes('samsung')) {
+                tableName = 'samsung_models'; nameColumn = 'samsung_phone_name'; codeColumn = 'samsung_phone_code'; compatColumn = 'samsung_screen_compatibility'; batteryColumn = 'samsung_battery_model';
+            } else if (b.includes('iphone') || b.includes('apple')) {
+                tableName = 'apple_models'; nameColumn = 'apple_phone_name'; codeColumn = 'apple_phone_code'; compatColumn = 'apple_screen_compatibility'; batteryColumn = 'apple_battery_model';
+            } else if (b.includes('xiaomi') || b.includes('poco')) {
+                tableName = 'xiaomi_models'; nameColumn = 'xiaomi_phone_name'; codeColumn = 'xiaomi_phone_code'; compatColumn = 'xiaomi_screen_compatibility'; batteryColumn = 'xiaomi_battery_model';
+            } else if (b.includes('redmi')) {
+                tableName = 'redmi_models'; nameColumn = 'redmi_phone_name'; codeColumn = 'redmi_phone_code'; compatColumn = 'redmi_screen_compatibility'; batteryColumn = 'redmi_battery_model';
+            } else if (b.includes('huawei')) {
+                tableName = 'huawei_models'; nameColumn = 'huawei_phone_name'; codeColumn = 'huawei_phone_code'; compatColumn = 'huawei_screen_compatibility'; batteryColumn = 'huawei_battery_model';
+            } else if (b.includes('honor')) {
+                tableName = 'honor_models'; nameColumn = 'honor_phone_name'; codeColumn = 'honor_phone_code'; compatColumn = 'honor_screen_compatibility'; batteryColumn = 'honor_battery_model';
+            } else if (b.includes('oppo')) {
+                tableName = 'oppo_models'; nameColumn = 'oppo_phone_name'; codeColumn = 'oppo_phone_code'; compatColumn = 'oppo_screen_compatibility'; batteryColumn = 'oppo_battery_model';
+            } else if (b.includes('realme')) {
+                tableName = 'realme_models'; nameColumn = 'realme_phone_name'; codeColumn = 'realme_phone_code'; compatColumn = 'realme_screen_compatibility'; batteryColumn = 'realme_battery_model';
+            } else if (b.includes('itel')) {
+                tableName = 'itel_models'; nameColumn = 'itel_phone_name'; codeColumn = 'itel_phone_code'; compatColumn = 'itel_screen_compatibility'; batteryColumn = 'itel_battery_model';
+            } else if (b.includes('nokia')) {
+                tableName = 'nokia_models'; nameColumn = 'nokia_phone_name'; codeColumn = 'nokia_phone_code'; compatColumn = 'nokia_screen_compatibility'; batteryColumn = 'nokia_battery_model';
+            } else if (b.includes('vivo')) {
+                tableName = 'vivo_models'; nameColumn = 'vivo_phone_name'; codeColumn = 'vivo_phone_code'; compatColumn = 'vivo_screen_compatibility'; batteryColumn = 'vivo_battery_model';
+            } else if (b.includes('techno') || b.includes('tecno')) {
+                tableName = 'tecno_models'; nameColumn = 'tecno_phone_name'; codeColumn = 'tecno_phone_code'; compatColumn = 'tecno_screen_compatibility'; batteryColumn = 'tecno_battery_model';
+            } else if (b.includes('infinix')) {
+                tableName = 'infinix_models'; nameColumn = 'infinix_phone_name'; codeColumn = 'infinix_phone_code'; compatColumn = 'infinix_screen_compatibility'; batteryColumn = 'infinix_battery_model';
+            }
+
+            let models = [];
+            if (tableName) {
+                const { data, error } = await supabaseClient.from(tableName).select('*').order('id', { ascending: true });
+                if (!error && data) {
+                    models = data.map(item => ({
+                        device_name: item[nameColumn] || item['device_name'],
+                        model_code: item[codeColumn] || item['model_code'],
+                        screen_compatibility: item[compatColumn] || item['screen_compatibility'] || null,
+                        battery_model: item[batteryColumn] || item['battery_model'] || null
+                    }));
+                } else if (error) {
+                    showSystemAlert(`عطل جلب موديلات (${tableName})`, `الماركة: ${brand}`, "❌ خطأ استعلام جدول", error.message);
+                }
+            } else {
+                showSystemAlert("تحذير عدم مطابقة اسم الجدول للماركة", `الماركة: ${brand}`, "⚠️ تحذير نظام", "لم يتم العثور على جدول مطابق لاسم هذه الماركة في قاعدة البيانات.");
+            }
+
+            let modelsHtml = "";
+            if (models.length > 0) {
+                modelsHtml = models.map((m, index) => {
+                    const style = getRotatingCardStyle(index);
+                    const escapedCompat = m.screen_compatibility ? encodeURIComponent(m.screen_compatibility) : '';
+                    const escapedBattery = m.battery_model ? encodeURIComponent(m.battery_model) : '';
+                    const escapedCode = m.model_code ? encodeURIComponent(m.model_code) : '';
+                    return `
+                        <div onclick="renderPartsScreen('${m.device_name}', '${escapedCode}', '${escapedCompat}', '${escapedBattery}')" class="w-full ${style.bg} border ${style.border} p-4 rounded-2xl shadow-sm flex items-center justify-between cursor-pointer transition-all text-sm sm:text-base">
+                            <div class="flex items-center gap-2 text-gray-400">
+                                <svg class="w-5 h-5 ${style.icon} flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                            </div>
+                            <div class="text-left">
+                                <span class="font-bold text-gray-800 block">${m.device_name}</span>
+                                ${m.model_code ? `<span class="text-xs text-gray-500 block mt-0.5">الكود: ${m.model_code}</span>` : ''}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            } else {
+                modelsHtml = `<div class="text-center text-gray-500 py-6">لا توجد موديلات متاحة لهذه الماركة حالياً</div>`;
+            }
+
+            const html = `
+                ${getHeaderTemplate()}
+                <div class="flex items-center justify-between mb-4 flex-shrink-0">
+                    <button onclick="renderBrandsScreen()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center gap-1.5">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                        <span>رجوع</span>
+                    </button>
+                    <h2 class="text-sm sm:text-base font-bold text-gray-800">اختر موديل (${brand})</h2>
+                </div>
+                <div class="flex-1 overflow-y-auto space-y-3 p-1">
+                    ${modelsHtml}
+                </div>
+            `;
+            document.getElementById('appContainer').innerHTML = html;
+            loadDynamicMenuIntoSidebar();
+        }
+
+        function renderPartsScreen(modelName, modelCode, screenCompat, batteryModel) {
+            selectedModel = modelName;
+            selectedModelCode = modelCode ? decodeURIComponent(modelCode) : '';
+            currentScreenCompatibility = screenCompat ? decodeURIComponent(screenCompat) : '';
+            currentBatteryModel = batteryModel ? decodeURIComponent(batteryModel) : '';
+
+            let partsHtml = sparePartsList.map((part, index) => {
+                const style = getRotatingCardStyle(index);
+                return `
+                    <div onclick="renderPartDetails('${part}')" class="w-full ${style.bg} border ${style.border} p-4 rounded-2xl shadow-sm flex items-center justify-between cursor-pointer transition-all text-sm sm:text-base">
+                        <span class="font-bold text-gray-800">${part}</span>
+                        <svg class="w-5 h-5 ${style.icon} flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                    </div>
+                `;
+            }).join('');
+
+            const html = `
+                ${getHeaderTemplate()}
+                <div class="flex items-center justify-between mb-4 flex-shrink-0">
+                    <button onclick="renderModelsScreen('${selectedBrand}')" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center gap-1.5">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                        <span>رجوع</span>
+                    </button>
+                    <h2 class="text-sm sm:text-base font-bold text-gray-800">اختر قطعة الغيار (${selectedModel})</h2>
+                </div>
+                <div class="flex-1 overflow-y-auto space-y-3 p-1">
+                    ${partsHtml}
+                </div>
+            `;
+            document.getElementById('appContainer').innerHTML = html;
+            loadDynamicMenuIntoSidebar();
+        }
+
+        async function renderPartDetails(part) {
+            selectedPart = part;
+            
+            let extraInfoHtml = "";
+            if (part === "شاشة" && currentScreenCompatibility) {
+                extraInfoHtml = `
+                    <div class="bg-blue-50 border border-blue-200 p-4 rounded-2xl mb-4 shadow-sm">
+                        <div class="flex items-center gap-2 mb-1">
+                            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            <h4 class="font-bold text-blue-900 text-sm">قسم توافق الشاشات:</h4>
+                        </div>
+                        <p class="text-blue-800 text-sm leading-relaxed">${currentScreenCompatibility}</p>
+                    </div>
+                `;
+            } else if (part === "بطارية" && currentBatteryModel) {
+                extraInfoHtml = `
+                    <div class="bg-emerald-50 border border-emerald-200 p-4 rounded-2xl mb-4 shadow-sm">
+                        <div class="flex items-center gap-2 mb-1">
+                            <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                            <h4 class="font-bold text-emerald-900 text-sm">موديل البطارية / التوافق:</h4>
+                        </div>
+                        <p class="text-emerald-800 text-sm leading-relaxed">${currentBatteryModel}</p>
+                    </div>
+                `;
+            }
+
+            let purchaseSectionHtml = `
+                <div class="bg-gradient-to-r from-indigo-500 to-blue-600 p-4 rounded-2xl shadow-md text-white flex items-center justify-between mb-4">
+                    <div>
+                        <span class="block font-bold text-base">قسم شراء المنتج</span>
+                        <span class="text-xs text-indigo-100">اطلب قطعة الغيار المتوفرة لهذه الشاشة الآن</span>
+                    </div>
+                    <button onclick="alert('تم إرسال طلب شراء قطعة: ${part} لجهاز ${selectedModel} بنجاح!')" class="bg-white text-blue-700 hover:bg-blue-50 font-bold px-4 py-2 rounded-xl text-xs sm:text-sm shadow transition-all">
+                        طلب الشراء
+                    </button>
+                </div>
+            `;
+
+            let postsHtml = "";
+            let maintenanceAlertsHtml = `
+                <div class="bg-amber-50 border border-amber-200 p-3 rounded-xl mb-3 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-amber-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                    <span class="text-amber-900 text-xs sm:text-sm font-semibold">تنبيهات الصيانة: يرجى التأكد من التجربة قبل الفك والتركيب نهائياً.</span>
+                </div>
+            `;
+
+            try {
+                const { data, error } = await supabaseClient
+                    .from('posts')
+                    .select('*')
+                    .ilike('device_model', `%${selectedModel}%`)
+                    .ilike('spare_part', `%${part}%`);
+
+                if (!error && data && data.length > 0) {
+                    postsHtml = data.map((post) => `
+                        <div class="bg-white border border-gray-200 p-4 rounded-2xl shadow-sm space-y-2">
+                            <h3 class="font-bold text-gray-800 text-base">${post.title || 'ملاحظة صيانة'}</h3>
+                            <p class="text-gray-600 text-sm leading-relaxed">${post.content || post.description || ''}</p>
+                        </div>
+                    `).join('');
+                } else if (error) {
+                    showSystemAlert("عطل جلب المنشورات (posts)", `الموديل: ${selectedModel} | القطعة: ${part}`, "❌ فشل جدول posts", error.message);
+                    postsHtml = `<div class="text-center text-red-400 text-sm py-4">حدث خطأ أثناء جلب المنشورات</div>`;
+                } else {
+                    postsHtml = `<div class="text-center text-gray-400 text-sm py-4">لا توجد ملاحظات صيانة إضافية مسجلة لهذه القطعة حالياً</div>`;
+                }
+            } catch (err) {
+                showSystemAlert("عطل استثنائي في جدول المنشورات", `الموديل: ${selectedModel}`, "❌ خطأ برمجي", err.message);
+                postsHtml = `<div class="text-center text-red-400 text-sm py-4">حدث خطأ أثناء الاتصال</div>`;
+            }
+
+            const html = `
+                ${getHeaderTemplate()}
+                <div class="flex items-center justify-between mb-4 flex-shrink-0">
+                    <button onclick="renderPartsScreen('${selectedModel}', '${encodeURIComponent(selectedModelCode)}', '${encodeURIComponent(currentScreenCompatibility)}', '${encodeURIComponent(currentBatteryModel)}')" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center gap-1.5">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                        <span>رجوع</span>
+                    </button>
+                    <h2 class="text-sm sm:text-base font-bold text-gray-800">${selectedModel} - ${part}</h2>
+                </div>
+                <div class="flex-1 overflow-y-auto space-y-4 p-1">
+                    ${extraInfoHtml}
+                    ${purchaseSectionHtml}
+                    ${maintenanceAlertsHtml}
+                    <div class="space-y-3">
+                        ${postsHtml}
+                    </div>
                 </div>
             `;
             document.getElementById('appContainer').innerHTML = html;
