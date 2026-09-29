@@ -216,11 +216,11 @@
             } else if (typeof window[cleanAction] === 'function') {
                 window[cleanAction]();
             } else {
-                showSystemAlert("تنبيه عدم مطابقة وظيفة القائمة", `المُعرف الحالي: ${currentUserId || 'زائر'}`, "⚠️️ تنبيه وظيفة", `تم اختيار العنصر (${cleanTitle || cleanAction}) ولا توجد دالة برمجية مطابقة له بالاسم.`);
+                showSystemAlert("تنبيه عدم مطابقة وظيفة القائمة", `المُعرف الحالي: ${currentUserId || 'زائر'}`, "⚠ تنبيه وظيفة", `تم اختيار العنصر (${cleanTitle || cleanAction}) ولا توجد دالة برمجية مطابقة له بالاسم.`);
             }
         }
 
-        // ================= دالة عرض شاشة سجل تسجيل الدخول (بالترتيب المطلوب) =================
+        // ================= دالة عرض شاشة سجل تسجيل الدخول (تم التعديل لقراءة login_time) =================
         async function renderLoginHistoryScreen() {
             if (!currentUserId) {
                 showSystemAlert("خطأ صلاحيات مستخدم", "❌ مفقود (زائر)", "⛔ مرفوض", "عذراً، يجب تسجيل الدخول أولاً للاطلاع على سجل تسجيل الدخول!");
@@ -264,7 +264,7 @@
             if (historyData.length > 0) {
                 rowsHtml = historyData.map((item, index) => `
                     <tr class="${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'} hover:bg-blue-50/50 transition-colors">
-                        <td class="px-4 py-3 text-xs sm:text-sm text-gray-600 whitespace-nowrap" dir="ltr">${item.last_login || item.created_at || 'غير متوفر'}</td>
+                        <td class="px-4 py-3 text-xs sm:text-sm text-gray-600 whitespace-nowrap" dir="ltr">${item.login_time || item.last_login || item.created_at || 'غير متوفر'}</td>
                         <td class="px-4 py-3 text-xs sm:text-sm text-indigo-600 font-bold whitespace-nowrap">${item.user_role || 'غير محدد'}</td>
                         <td class="px-4 py-3 text-xs sm:text-sm text-gray-800 font-bold whitespace-nowrap">${item.user_name || item.name || 'بدون اسم'}</td>
                         <td class="px-4 py-3 text-xs sm:text-sm text-gray-700 whitespace-nowrap">${item.shop_name || 'غير متوفر'}</td>
