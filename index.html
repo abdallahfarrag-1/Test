@@ -211,7 +211,7 @@
                 renderUserProfileScreen();
             } else if (cleanAction.includes('بيانات المستخدمين') || cleanTitle.includes('بيانات المستخدمين') || cleanAction === 'renderAllUsersScreen') {
                 renderAllUsersScreen();
-            } else if (cleanAction.includes('سجل تسجيل الدخول') || cleanTitle.includes('سجل تسجيل الدخول') || cleanAction === 'renderLoginHistoryScreen') {
+            } else if (cleanAction.includes('سجل تسجيل الدخول') || cleanTitle.includes('سجل تسجيل الدخول') || cleanAction === 'renderLoginHistoryScreen' || cleanAction.includes('سجل دخول المستخدمين')) {
                 renderLoginHistoryScreen();
             } else if (typeof window[cleanAction] === 'function') {
                 window[cleanAction]();
@@ -731,7 +731,7 @@
             });
 
             if (error) {
-                alert(`❌ خطأ في دالة تسجيل الدخول (login_user):\n📱 الهاتف المدخل: ${phone}\n⚠️ السبب: ${error.message}`);
+                alert(`❌ خطأ في دالة تسجيل الدخول (login_user):\n📱 الهاتف المدخل: ${phone}\n⚠️️ السبب: ${error.message}`);
                 return;
             }
 
@@ -780,7 +780,7 @@
             }
 
             if (resObj && resObj.success === false) {
-                alert(`⚠️️ رفض إنشاء الحساب من القاعدة:\n📱 الهاتف: ${phone_number}\nالسبب: ${resObj.message || 'حدث خطأ أثناء إنشاء الحساب'}`);
+                alert(`⚠ رفض إنشاء الحساب من القاعدة:\n📱 الهاتف: ${phone_number}\nالسبب: ${resObj.message || 'حدث خطأ أثناء إنشاء الحساب'}`);
                 return;
             }
 
@@ -1067,7 +1067,7 @@
                         </div>
                     `).join('');
                 } else if (error) {
-                    alert(`❌ خطأ في جلب جدول المنشورات (posts):\n⚠️ السبب: ${error.message}`);
+                    alert(`❌ خطأ في جلب جدول المنشورات (posts):\n⚠️️ السبب: ${error.message}`);
                     postsHtml = `<div class="text-center text-red-400 text-sm py-4">حدث خطأ أثناء جلب المنشورات</div>`;
                 } else {
                     postsHtml = `<div class="text-center text-gray-400 text-sm py-4">لا توجد ملاحظات صيانة إضافية مسجلة لهذه القطعة حالياً</div>`;
