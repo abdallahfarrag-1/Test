@@ -222,7 +222,7 @@
 
         async function renderLoginHistoryScreen() {
             if (!currentUserId) {
-                alert("❌ خطأ: لم يتم جلب الـ ID (المستخدم زائر أو غير مسجل دخول).\n⚠️️ تفاصيل العطل: يجب تسجيل الدخول أولاً للاطلاع على سجل تسجيل الدخول!");
+                alert("❌ خطأ: لم يتم جلب الـ ID (المستخدم زائر أو غير مسجل دخول).\n⚠ تفاصيل العطل: يجب تسجيل الدخول أولاً للاطلاع على سجل تسجيل الدخول!");
                 return;
             }
 
@@ -308,12 +308,9 @@
         }
 
         async function renderAllUsersScreen() {
-            // تنبيه فوري وفحص للـ ID عند الضغط على زر بيانات المستخدمين
             if (!currentUserId) {
                 alert(`❌ خطأ: لم يتم جلب الـ ID!\n📌 الحدث: الضغط على زر بيانات المستخدمين\n🆔 حالة الـ ID: غير موجود (المستخدم زائر أو لم يسجل دخوله)\n⚠️ السبب: الدالة تحتاج إلى مُعرف مستخدم صالح لتنفيذ الاستعلام.`);
                 return;
-            } else {
-                alert(`✅ تم التحقق من الـ ID بنجاح قبل جلب بيانات المستخدمين:\n🆔 قيمة الـ ID الحالي: ${currentUserId}`);
             }
 
             document.getElementById('appContainer').innerHTML = `
@@ -358,7 +355,7 @@
                         <td class="px-4 py-3 text-xs sm:text-sm text-gray-700 whitespace-nowrap">${user.shop_name || 'غير متوفر'}</td>
                         <td class="px-4 py-3 text-xs sm:text-sm text-gray-600">${user.shop_address || 'غير متوفر'}</td>
                         <td class="px-4 py-3 text-xs sm:text-sm text-blue-600 font-semibold whitespace-nowrap" dir="ltr">${user.phone_number || ''}</td>
-                        <td class="px-4 py-3 text-xs sm:text-sm text-gray-700 font-semibold whitespace-nowrap" dir="ltr">${user.password || user.pass || 'غير متوفر'}</td>
+                        <td class="px-4 py-3 text-xs sm:text-sm text-gray-700 font-semibold whitespace-nowrap" dir="ltr">${user.password || user.pass || 'غير مسموح'}</td>
                     </tr>
                 `).join('');
             } else {
@@ -783,7 +780,7 @@
             }
 
             if (resObj && resObj.success === false) {
-                alert(`⚠️ رفض إنشاء الحساب من القاعدة:\n📱 الهاتف: ${phone_number}\nالسبب: ${resObj.message || 'حدث خطأ أثناء إنشاء الحساب'}`);
+                alert(`⚠️️ رفض إنشاء الحساب من القاعدة:\n📱 الهاتف: ${phone_number}\nالسبب: ${resObj.message || 'حدث خطأ أثناء إنشاء الحساب'}`);
                 return;
             }
 
