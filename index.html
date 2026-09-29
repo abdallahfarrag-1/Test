@@ -222,7 +222,7 @@
 
         async function renderLoginHistoryScreen() {
             if (!currentUserId) {
-                showSystemAlert("خطأ صلاحيات مستخدم", "❌ مفقود (زائر)", "⛔ مرفوض", "عذراً، يجب تسجيل الدخول أولاً للاطلاع على سجل تسجيل الدخول!");
+                alert("❌ خطأ: لم يتم جلب الـ ID (المستخدم زائر أو غير مسجل دخول).\n⚠️️ تفاصيل العطل: يجب تسجيل الدخول أولاً للاطلاع على سجل تسجيل الدخول!");
                 return;
             }
 
@@ -246,13 +246,13 @@
             });
 
             if (error) {
-                showSystemAlert("عطل اتصال قاعدة البيانات (get_login_history_data)", `✅ تم إرسال الـ ID: ${currentUserId}`, "❌ فشل الاتصال", error.message);
+                alert(`❌ خطأ في الاتصال بقاعدة البيانات (get_login_history_data):\n🆔 الـ ID المُرسل: ${currentUserId}\n⚠️ السبب: ${error.message}`);
                 renderMainDashboard();
                 return;
             }
 
             if (!response || response.success === false) {
-                showSystemAlert("رفض صلاحية عرض سجل الدخول", `✅ تم إرسال الـ ID: ${currentUserId}`, "⛔ صلاحية مرفوضة", response?.message || 'غير مسموح لك بالاطلاع على هذه البيانات');
+                alert(`⛔ تم رفض صلاحية عرض سجل الدخول بواسطة قاعدة البيانات!\n🆔 الـ ID المُرسل: ${currentUserId}\n⚠️ رسالة الخادم: ${response?.message || 'غير مسموح لك بالاطلاع على هذه البيانات'}`);
                 renderMainDashboard();
                 return;
             }
@@ -308,9 +308,12 @@
         }
 
         async function renderAllUsersScreen() {
+            // تنبيه فوري وفحص للـ ID عند الضغط على زر بيانات المستخدمين
             if (!currentUserId) {
-                showSystemAlert("خطأ صلاحيات مستخدم", "❌ مفقود (زائر)", "⛔ مرفوض", "عذراً، يجب تسجيل الدخول أولاً للاطلاع على بيانات المستخدمين!");
+                alert(`❌ خطأ: لم يتم جلب الـ ID!\n📌 الحدث: الضغط على زر بيانات المستخدمين\n🆔 حالة الـ ID: غير موجود (المستخدم زائر أو لم يسجل دخوله)\n⚠️ السبب: الدالة تحتاج إلى مُعرف مستخدم صالح لتنفيذ الاستعلام.`);
                 return;
+            } else {
+                alert(`✅ تم التحقق من الـ ID بنجاح قبل جلب بيانات المستخدمين:\n🆔 قيمة الـ ID الحالي: ${currentUserId}`);
             }
 
             document.getElementById('appContainer').innerHTML = `
@@ -333,13 +336,13 @@
             });
 
             if (error) {
-                showSystemAlert("عطل اتصال قاعدة البيانات (get_all_users_data)", `✅ تم إرسال الـ ID: ${currentUserId}`, "❌ فشل الاتصال", error.message);
+                alert(`❌ خطأ في الاتصال بقاعدة البيانات (get_all_users_data):\n🆔 الـ ID المُرسل: ${currentUserId}\n⚠️ تفاصيل الخطأ: ${error.message}`);
                 renderMainDashboard();
                 return;
             }
 
             if (!response || response.success === false) {
-                showSystemAlert("رفض صلاحية عرض المستخدمين", `✅ تم إرسال الـ ID: ${currentUserId}`, "⛔ صلاحية مرفوضة", response?.message || 'غير مسموح لك بالاطلاع على هذه البيانات');
+                alert(`⛔ تم رفض الصلاحية من قاعدة البيانات أثناء جلب بيانات المستخدمين!\n🆔 الـ ID المُرسل: ${currentUserId}\n⚠️ السبب من الخادم: ${response?.message || 'غير مسموح لك بالاطلاع على هذه البيانات'}`);
                 renderMainDashboard();
                 return;
             }
@@ -396,7 +399,7 @@
 
         async function renderUserProfileScreen() {
             if (!currentUserId && currentUserRole === "زائر") {
-                showSystemAlert("تنبيه حساب زائر", "❌ غير متوفر", "⚠️ تنبيه", "يجب تسجيل الدخول أولاً لعرض البيانات الشخصية!");
+                alert("❌ خطأ: الحساب الحالي زائر.\n⚠️ السبب: يجب تسجيل الدخول أولاً لعرض البيانات الشخصية!");
                 return;
             }
 
@@ -425,7 +428,7 @@
                     });
 
                     if (rpcError) {
-                        showSystemAlert("عطل دالة get_user_profile", `✅ الـ ID: ${currentUserId}`, "❌ فشل استدعاء RPC", rpcError.message);
+                        alert(`❌ خطأ في دالة get_user_profile:\n🆔 الـ ID: ${currentUserId}\n⚠️ السبب: ${rpcError.message}`);
                     } else if (rpcData) {
                         userData = Array.isArray(rpcData) ? rpcData[0] : rpcData;
                     }
@@ -439,7 +442,7 @@
                         .single();
                         
                     if (errPhone) {
-                        showSystemAlert("فشل جلب البيانات البديلة برقم الهاتف", "⚠️ تعذر المطابقة", "❌ فشل جدول users", errPhone.message);
+                        alert(`❌ فشل جلب البيانات البديلة برقم الهاتف:\n⚠️ السبب: ${errPhone.message}`);
                     } else if (userByPhone) {
                         userData = userByPhone;
                     }
@@ -496,13 +499,13 @@
                 loadDynamicMenuIntoSidebar();
 
             } catch (err) {
-                showSystemAlert("خطأ استثنائي أثناء عرض البيانات الشخصية", "⚠️ جاري الفحص", "❌ عطل برمجي", err.message);
+                alert(`❌ خطأ استثنائي أثناء عرض البيانات الشخصية:\n⚠️ السبب: ${err.message}`);
             }
         }
 
         function renderEditProfileScreen() {
             if (!currentUserId) {
-                showSystemAlert("خطأ", "❌ غير متوفر", "⚠️ تنبيه", "يجب تسجيل الدخول أولاً لتعديل بياناتك!");
+                alert("❌ خطأ: يجب تسجيل الدخول أولاً لتعديل بياناتك!");
                 return;
             }
 
@@ -573,7 +576,7 @@
             });
 
             if (error) {
-                showSystemAlert("خطأ في الاتصال", `ID: ${currentUserId}`, "❌ فشل التحديث", error.message);
+                alert(`❌ خطأ في تحديث البيانات:\n⚠️ السبب: ${error.message}`);
                 return;
             }
 
@@ -731,7 +734,7 @@
             });
 
             if (error) {
-                showSystemAlert("عطل دالة تسجيل الدخول (login_user)", `📱 الهاتف المدخل: ${phone}`, "❌ فشل RPC", error.message);
+                alert(`❌ خطأ في دالة تسجيل الدخول (login_user):\n📱 الهاتف المدخل: ${phone}\n⚠️ السبب: ${error.message}`);
                 return;
             }
 
@@ -741,7 +744,7 @@
             }
 
             if (!resObj || resObj.success === false) {
-                showSystemAlert("خطأ في بيانات الاعتماد", `📱 الهاتف: ${phone}`, "⚠️ بيانات خاطئة", resObj?.message || 'خطأ: بيانات الدخول غير صحيحة أو لم يتم إرجاع نتيجة.');
+                alert(`⚠️ بيانات الدخول غير صحيحة أو لم يتم إرجاع نتيجة!\n📱 الهاتف: ${phone}\nملاحظة: ${resObj?.message || 'تأكد من صحة رقم الهاتف وكلمة المرور'}`);
                 return;
             }
 
@@ -770,7 +773,7 @@
             });
 
             if (error) {
-                showSystemAlert("عطل دالة إنشاء الحساب (register_user)", `📱 الهاتف: ${phone_number}`, "❌ فشل تسجيل الحساب", error.message);
+                alert(`❌ خطأ في إنشاء الحساب (register_user):\n📱 الهاتف: ${phone_number}\n⚠️ السبب: ${error.message}`);
                 return;
             }
 
@@ -780,7 +783,7 @@
             }
 
             if (resObj && resObj.success === false) {
-                showSystemAlert("تعذر إنشاء الحساب", `📱 الهاتف: ${phone_number}`, "⚠️ رفض القاعدة", resObj.message || 'حدث خطأ أثناء إنشاء الحساب');
+                alert(`⚠️ رفض إنشاء الحساب من القاعدة:\n📱 الهاتف: ${phone_number}\nالسبب: ${resObj.message || 'حدث خطأ أثناء إنشاء الحساب'}`);
                 return;
             }
 
@@ -844,7 +847,7 @@
             if (!error && data) {
                 brands = data.map(item => item.brand_name || item.name || Object.values(item)[1]); 
             } else if (error) {
-                showSystemAlert("عطل جدول الماركات (brands)", "✅ متصل", "❌ فشل الجلب", error.message);
+                alert(`❌ خطأ في جدول الماركات (brands):\n⚠️ السبب: ${error.message}`);
             }
 
             let brandsHtml = "";
@@ -927,10 +930,10 @@
                         battery_model: item[batteryColumn] || item['battery_model'] || null
                     }));
                 } else if (error) {
-                    showSystemAlert(`عطل جلب موديلات (${tableName})`, `الماركة: ${brand}`, "❌ خطأ استعلام جدول", error.message);
+                    alert(`❌ خطأ في جلب موديلات جدول (${tableName}):\n⚠️ السبب: ${error.message}`);
                 }
             } else {
-                showSystemAlert("تحذير عدم مطابقة اسم الجدول للماركة", `الماركة: ${brand}`, "⚠️ تحذير نظام", "لم يتم العثور على جدول مطابق لاسم هذه الماركة في قاعدة البيانات.");
+                alert(`⚠️ تنبيه: لم يتم العثور على اسم جدول مطابق للماركة (${brand}) في قاعدة البيانات.`);
             }
 
             let modelsHtml = "";
@@ -1067,13 +1070,13 @@
                         </div>
                     `).join('');
                 } else if (error) {
-                    showSystemAlert("عطل جلب المنشورات (posts)", `الموديل: ${selectedModel} | القطعة: ${part}`, "❌ فشل جدول posts", error.message);
+                    alert(`❌ خطأ في جلب جدول المنشورات (posts):\n⚠️ السبب: ${error.message}`);
                     postsHtml = `<div class="text-center text-red-400 text-sm py-4">حدث خطأ أثناء جلب المنشورات</div>`;
                 } else {
                     postsHtml = `<div class="text-center text-gray-400 text-sm py-4">لا توجد ملاحظات صيانة إضافية مسجلة لهذه القطعة حالياً</div>`;
                 }
             } catch (err) {
-                showSystemAlert("عطل استثنائي في جدول المنشورات", `الموديل: ${selectedModel}`, "❌ خطأ برمجي", err.message);
+                alert(`❌ خطأ استثنائي في جدول المنشورات:\n⚠️ السبب: ${err.message}`);
                 postsHtml = `<div class="text-center text-red-400 text-sm py-4">حدث خطأ أثناء الاتصال</div>`;
             }
 
