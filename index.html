@@ -57,7 +57,7 @@
         let selectedModelCode = ""; 
         let currentScreenCompatibility = "";
         let currentBatteryModel = "";
-        let currentUserDataGlobal = null; // لتخزين بيانات المستخدم المؤقتة لتعبئة نموذج التعديل
+        let currentUserDataGlobal = null; 
 
         // قطع الغيار المطلوبة
         const sparePartsList = [
@@ -268,7 +268,7 @@
                         <p class="text-gray-600 text-sm">🏪 المحل: ${user.shop_name || 'غير متوفر'}</p>
                         <p class="text-gray-500 text-xs">📍 العنوان: ${user.shop_address || 'غير متوفر'}</p>
                         <p class="text-xs text-gray-700 font-semibold" dir="ltr">🔑 كلمة السر: ${user.password || user.pass || 'غير متوفر'}</p>
-                        <p class="text-xs text-indigo-500 font-semibold">الصلاحية: ${user.user_role || 'عضو'}</p>
+                        <p class="text-xs text-indigo-500 font-semibold">الرتبة: ${user.user_role || 'غير محدد'}</p>
                     </div>
                 `).join('');
             } else {
@@ -345,7 +345,7 @@
                     }
                 }
 
-                currentUserDataGlobal = userData; // حفظ البيانات مؤقتاً للتعديل
+                currentUserDataGlobal = userData; 
 
                 const name = userData?.user_name || userData?.name || "غير متوفر";
                 const shopName = userData?.shop_name || "غير متوفر";
@@ -445,7 +445,7 @@
                         </button>
                     </form>
 
-                    <!-- زر حذف الحساب المضاف حديثاً -->
+                    <!-- زر حذف الحساب -->
                     <button type="button" onclick="handleDeleteAccount()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl shadow-lg transition-all text-sm mt-4">
                         حذف الحساب نهائياً
                     </button>
@@ -480,20 +480,18 @@
 
             if (data && data.success) {
                 alert('✅ ' + data.message);
-                renderUserProfileScreen(); // العودة لشاشة البيانات الشخصية لتحديث العرض
+                renderUserProfileScreen(); 
             } else {
                 alert('⚠️ ' + (data?.message || 'تعذر حفظ التعديلات'));
             }
         }
 
-        // ================= دالة حذف الحساب =================
         async function handleDeleteAccount() {
             if (!currentUserId) {
                 alert("لا يوجد مستخدم مسجل حالياً!");
                 return;
             }
 
-            // رسالة تأكيد لمنع الحذف الخاطئ
             const confirmDelete = confirm("هل أنت متأكد من رغبتك في حذف حسابك نهائياً؟ لا يمكن التراجع عن هذا الإجراء.");
             if (!confirmDelete) return;
 
@@ -509,7 +507,6 @@
 
                 if (data && data.success) {
                     alert(data.message);
-                    // إعادة ضبط التطبيق للوضع الافتراضي (زائر) ونقله لشاشة تسجيل الدخول
                     loginAsVisitor();
                     renderLoginScreen();
                 } else {
@@ -1005,7 +1002,6 @@
             loadDynamicMenuIntoSidebar();
         }
 
-        // تشغيل شاشة تسجيل الدخول عند فتح التطبيق
         window.onload = function() {
             renderLoginScreen();
         };
