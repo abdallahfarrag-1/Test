@@ -785,7 +785,8 @@
 
             let models = [];
             if (tableName) {
-                const { data, error } = await supabaseClient.from(tableName).select('*');
+                // تم إضافة أمر الترتيب هنا حسب الـ id تصاعدياً لضمان ثبات الترتيب مثل قاعدة البيانات تماماً
+                const { data, error } = await supabaseClient.from(tableName).select('*').order('id', { ascending: true });
                 if (!error && data) {
                     models = data.map(item => ({
                         device_name: item[nameColumn] || item['device_name'],
