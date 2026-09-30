@@ -69,14 +69,12 @@
             "سماعة خارجية مكبر الصوت", "سوكيت", "ايسيهات"
         ];
 
-        // تحديث نشاط المستخدم بصيغة ISO المطلوبة عند أي حدث هام أو تفاعل
+        // تحديث نشاط المستخدم عند الأحداث الهامة (بدون نبضات خلفية متكررة)
         async function updateMyActivity(userId) {
             if (!userId) return;
             try {
-                const currentIsoTime = new Date().toISOString();
                 await supabaseClient.rpc('update_user_activity', {
-                    target_user_id: userId,
-                    last_active_at: currentIsoTime
+                    target_user_id: userId
                 });
             } catch (err) {
                 console.error("خطأ في تحديث النشاط:", err);
@@ -222,10 +220,6 @@
 
             clearActiveScreenIntervals();
 
-            if (currentUserId) {
-                updateMyActivity(currentUserId);
-            }
-
             if (cleanAction.includes('البيانات الشخصية') || cleanTitle.includes('البيانات الشخصية') || cleanAction === 'renderUserProfile' || cleanAction === 'profile') {
                 renderUserProfileScreen();
             } else if (cleanAction.includes('بيانات المستخدمين') || cleanTitle.includes('بيانات المستخدمين') || cleanAction === 'renderAllUsersScreen') {
@@ -241,7 +235,7 @@
             }
         }
 
-        // ================= شاشة المستخدمين النشطين =================
+        // ================= شاشة المستخدمين النشطين (مع Realtime حقيقي وتحديث فوري) =================
         async function renderActiveUsersScreen() {
             if (!currentUserId) {
                 alert("يجب تسجيل الدخول أولاً!");
@@ -249,7 +243,6 @@
             }
 
             clearActiveScreenIntervals();
-            updateMyActivity(currentUserId);
 
             document.getElementById('appContainer').innerHTML = `
                 ${getHeaderTemplate()}
@@ -338,6 +331,7 @@
 
             await fetchAndUpdateActiveUsers(false);
 
+            // تفعيل نظام الـ Realtime عبر Supabase Channels لمراقبة جدول المستخدمين مباشرةً
             activeUsersSubscription = supabaseClient
                 .channel('public:users')
                 .on('postgres_changes', { event: '*', schema: 'public', table: 'users' }, () => {
@@ -352,8 +346,6 @@
                 alert("❌ خطأ: لم يتم جلب الـ ID (المستخدم زائر أو غير مسجل دخول).\n⚠ تفاصيل العطل: يجب تسجيل الدخول أولاً للاطلاع على سجل تسجيل الدخول!");
                 return;
             }
-
-            updateMyActivity(currentUserId);
 
             document.getElementById('appContainer').innerHTML = `
                 ${getHeaderTemplate()}
@@ -479,8 +471,6 @@
                 return;
             }
 
-            updateMyActivity(currentUserId);
-
             document.getElementById('appContainer').innerHTML = `
                 ${getHeaderTemplate()}
                 <div class="flex items-center justify-between mb-4 flex-shrink-0">
@@ -567,10 +557,6 @@
             if (!currentUserId && currentUserRole === "زائر") {
                 alert("❌ خطأ: الحساب الحالي زائر.");
                 return;
-            }
-
-            if (currentUserId) {
-                updateMyActivity(currentUserId);
             }
 
             const htmlLoading = `
@@ -962,10 +948,6 @@
 
         function renderMainDashboard() {
             clearActiveScreenIntervals();
-            if (currentUserId) {
-                updateMyActivity(currentUserId);
-            }
-
             const html = `
                 ${getHeaderTemplate()}
 
@@ -1003,8 +985,6 @@
 
         async function renderBrandsScreen() {
             clearActiveScreenIntervals();
-            if (currentUserId) updateMyActivity(currentUserId);
-
             let brands = [];
             const { data, error } = await supabaseClient.from('brands').select('*');
             
@@ -1048,7 +1028,6 @@
 
         async function renderModelsScreen(brand) {
             clearActiveScreenIntervals();
-            if (currentUserId) updateMyActivity(currentUserId);
             selectedBrand = brand;
             let tableName = "";
             let nameColumn = "device_name";
@@ -1140,7 +1119,6 @@
 
         function renderPartsScreen(modelName, modelCode, screenCompat, batteryModel) {
             clearActiveScreenIntervals();
-            if (currentUserId) updateMyActivity(currentUserId);
             selectedModel = modelName;
             selectedModelCode = modelCode ? decodeURIComponent(modelCode) : '';
             currentScreenCompatibility = screenCompat ? decodeURIComponent(screenCompat) : '';
@@ -1175,7 +1153,6 @@
 
         async function renderPartDetails(part) {
             clearActiveScreenIntervals();
-            if (currentUserId) updateMyActivity(currentUserId);
             selectedPart = part;
             
             let extraInfoHtml = "";
