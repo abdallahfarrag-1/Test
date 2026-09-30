@@ -73,13 +73,10 @@
         // ================= 2. دوال النبضات (Heartbeat & Activity) =================
         function startActiveHeartbeat(userId) {
             if (!userId) return;
-            // إرسال النبضة فوراً
             sendHeartbeat(userId);
 
-            // مسح أي مؤتمر سابق تفادياً للتكرار
             if (activeHeartbeatInterval) clearInterval(activeHeartbeatInterval);
 
-            // إرسال النبضة كل 15 ثانية
             activeHeartbeatInterval = setInterval(() => {
                 sendHeartbeat(userId);
             }, 15000);
@@ -99,7 +96,6 @@
             }
         }
 
-        // مستمعات الأحداث لخفاء/إغلاق أو مغادرة الصفحة
         window.addEventListener('beforeunload', () => {
             if (currentUserId) {
                 sendHeartbeat(currentUserId);
@@ -112,7 +108,6 @@
             }
         });
 
-        // دوال مساعدة عامة لتنظيف الـ Intervals عند مغادرة الشاشات الحساسة
         function clearActiveScreenIntervals() {
             if (activeUsersRefreshInterval) {
                 clearInterval(activeUsersRefreshInterval);
@@ -120,7 +115,6 @@
             }
         }
 
-        // ================= نظام التنبيهات المخصص للأعطال والحالة =================
         function showSystemAlert(title, idStatus, menuStatus, errorDetails = "") {
             let message = `--- 🔍 تقرير حالة النظام والتنبيهات ---\n\n`;
             message += `📌 الحدث: ${title}\n`;
@@ -245,7 +239,7 @@
             const cleanAction = (actionName || "").trim();
             const cleanTitle = (title || "").trim();
 
-            clearActiveScreenIntervals(); // تفريغ أي تحديث حي سابق عند التنقل
+            clearActiveScreenIntervals();
 
             if (cleanAction.includes('البيانات الشخصية') || cleanTitle.includes('البيانات الشخصية') || cleanAction === 'renderUserProfile' || cleanAction === 'profile') {
                 renderUserProfileScreen();
@@ -262,7 +256,7 @@
             }
         }
 
-        // ================= شاشة المستخدمين النشطين (Live Auto-Refresh) =================
+        // ================= شاشة المستخدمين النشطين (مع زر تحديث وتحديث حي تلقائي) =================
         async function renderActiveUsersScreen() {
             if (!currentUserId) {
                 alert("يجب تسجيل الدخول أولاً!");
@@ -271,7 +265,6 @@
 
             clearActiveScreenIntervals();
 
-            // رسم الهيكل الأولي لشاشة المتصلين
             document.getElementById('appContainer').innerHTML = `
                 ${getHeaderTemplate()}
                 <div class="flex items-center justify-between mb-4 flex-shrink-0">
@@ -279,9 +272,18 @@
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
                         <span>رجوع</span>
                     </button>
+                    
                     <div class="flex items-center gap-2">
-                        <span class="w-3 h-3 bg-emerald-500 rounded-full animate-pulse"></span>
-                        <h2 id="activeUsersTitle" class="text-sm sm:text-base font-bold text-gray-800">المستخدمون النشطون حالياً (...)</h2>
+                        <!-- زر التحديث اليدوي -->
+                        <button onclick="fetchAndUpdateActiveUsers(true)" id="manualRefreshBtn" class="bg-blue-50 hover:bg-blue-100 text-blue-600 border border-blue-200 px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center gap-1.5 shadow-sm" title="تحديث القائمة يدوياً">
+                            <svg id="refreshIcon" class="w-4 h-4 transition-transform duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                            <span>تحديث</span>
+                        </button>
+                        
+                        <div class="flex items-center gap-1.5 bg-gray-50 border border-gray-200 px-3 py-2 rounded-xl">
+                            <span class="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-pulse"></span>
+                            <h2 id="activeUsersTitle" class="text-xs sm:text-sm font-bold text-gray-800">المستخدمون (...)</h2>
+                        </div>
                     </div>
                 </div>
                 <div id="activeUsersTableContainer" class="flex-1 overflow-auto border border-gray-200 rounded-2xl shadow-sm">
@@ -292,8 +294,15 @@
             `;
             loadDynamicMenuIntoSidebar();
 
-            // دالة جلب البيانات وتحديث الجدول حياً
-            const fetchAndUpdateActiveUsers = async () => {
+            window.fetchAndUpdateActiveUsers = async function(isManual = false) {
+                if (isManual) {
+                    const icon = document.getElementById('refreshIcon');
+                    if (icon) icon.classList.add('rotate-180');
+                    setTimeout(() => {
+                        if (icon) icon.classList.remove('rotate-180');
+                    }, 500);
+                }
+
                 const { data: users, error } = await supabaseClient.rpc('get_active_users');
 
                 if (error) {
@@ -318,7 +327,7 @@
 
                 const titleEl = document.getElementById('activeUsersTitle');
                 if (titleEl) {
-                    titleEl.innerText = `المستخدمون النشطون حالياً (${users ? users.length : 0})`;
+                    titleEl.innerText = `المستخدمون النشطون (${users ? users.length : 0})`;
                 }
 
                 const tableContainerEl = document.getElementById('activeUsersTableContainer');
@@ -342,11 +351,9 @@
                 }
             };
 
-            // تشغيل الجلب فوراً
-            await fetchAndUpdateActiveUsers();
+            await fetchAndUpdateActiveUsers(false);
 
-            // ضبط التحديث التلقائي كل 15 ثانية لتحديث الجدول حياً أمام الأدمن
-            activeUsersRefreshInterval = setInterval(fetchAndUpdateActiveUsers, 15000);
+            activeUsersRefreshInterval = setInterval(() => fetchAndUpdateActiveUsers(false), 15000);
         }
 
         async function renderLoginHistoryScreen() {
@@ -382,7 +389,7 @@
             }
 
             if (!response || response.success === false) {
-                alert(`⛔ تم رفض صلاحية عرض سجل الدخول بواسطة قاعدة البيانات!\n🆔 الـ ID المُرسل: ${currentUserId}\n⚠️ رسالة الخادم: ${response?.message || 'غير مسموح لك بالاطلاع على هذه البيانات'}`);
+                alert(`⛔ تم رفض صلاحية عرض سجل الدخول بواسطة قاعدة البيانات!\n🆔 الـ ID المُرسل: ${currentUserId}\n⚠️️ رسالة الخادم: ${response?.message || 'غير مسموح لك بالاطلاع على هذه البيانات'}`);
                 renderMainDashboard();
                 return;
             }
@@ -470,7 +477,7 @@
             }
 
             if (!response || response.success === false) {
-                alert(`⛔ تم رفض الصلاحية من قاعدة البيانات أثناء جلب بيانات المستخدمين!\n🆔 الـ ID المُرسل: ${currentUserId}\n⚠️ السبب من الخادم: ${response?.message || 'غير مسموح لك بالاطلاع على هذه البيانات'}`);
+                alert(`⛔ تم رفض الصلاحية من قاعدة البيانات أثناء جلب بيانات المستخدمين!\n🆔 الـ ID المُرسل: ${currentUserId}\n⚠️️ السبب من الخادم: ${response?.message || 'غير مسموح لك بالاطلاع على هذه البيانات'}`);
                 renderMainDashboard();
                 return;
             }
@@ -882,7 +889,6 @@
             currentUserType = resObj.user_type || resObj.user_role || "ادمن"; 
             currentUserId = resObj.user?.id || resObj.user_id || resObj.id || resObj.ID || resObj.uuid || null; 
             
-            // تفعيل نظام النبضات النشطة (Heartbeat) فور نجاح تسجيل الدخول
             if (currentUserId) {
                 startActiveHeartbeat(currentUserId);
             }
@@ -927,7 +933,6 @@
             currentUserType = "ادمن"; 
             currentUserId = resObj?.user?.id || resObj?.id || resObj?.user_id || resObj?.ID || resObj?.uuid || null;
             
-            // تفعيل نظام النبضات النشطة (Heartbeat) فور نجاح إنشاء الحساب
             if (currentUserId) {
                 startActiveHeartbeat(currentUserId);
             }
