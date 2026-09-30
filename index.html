@@ -59,12 +59,66 @@
         let currentBatteryModel = "";
         let currentUserDataGlobal = null; 
 
+        // متغيرات للتحكم بالـ Intervals الخلفية
+        let activeHeartbeatInterval = null;
+        let activeUsersRefreshInterval = null;
+
         // قطع الغيار المطلوبة
         const sparePartsList = [
             "شاشة", "بطارية", "ضهرية", "فلاتة ربط", "فلاتة باور", 
             "فلاتة شحن", "فريم", "ميدل", "سماعة داخلية مكالمات", 
             "سماعة خارجية مكبر الصوت", "سوكيت", "ايسيهات"
         ];
+
+        // ================= 2. دوال النبضات (Heartbeat & Activity) =================
+        function startActiveHeartbeat(userId) {
+            if (!userId) return;
+            // إرسال النبضة فوراً
+            sendHeartbeat(userId);
+
+            // مسح أي مؤتمر سابق تفادياً للتكرار
+            if (activeHeartbeatInterval) clearInterval(activeHeartbeatInterval);
+
+            // إرسال النبضة كل 15 ثانية
+            activeHeartbeatInterval = setInterval(() => {
+                sendHeartbeat(userId);
+            }, 15000);
+        }
+
+        async function sendHeartbeat(userId) {
+            if (!userId) return;
+            try {
+                const { error } = await supabaseClient.rpc('update_user_activity', {
+                    target_user_id: userId
+                });
+                if (error) {
+                    console.error("خطأ في تحديث النشاط:", error.message);
+                }
+            } catch (err) {
+                console.error("حدث استثناء في النبضة:", err);
+            }
+        }
+
+        // مستمعات الأحداث لخفاء/إغلاق أو مغادرة الصفحة
+        window.addEventListener('beforeunload', () => {
+            if (currentUserId) {
+                sendHeartbeat(currentUserId);
+            }
+        });
+
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible' && currentUserId) {
+                sendHeartbeat(currentUserId);
+            }
+        });
+
+        // دوال مساعدة عامة لتنظيف الـ Intervals عند مغادرة الشاشات الحساسة
+        function clearActiveScreenIntervals() {
+            if (activeUsersRefreshInterval) {
+                clearInterval(activeUsersRefreshInterval);
+                activeUsersRefreshInterval = null;
+            }
+        }
 
         // ================= نظام التنبيهات المخصص للأعطال والحالة =================
         function showSystemAlert(title, idStatus, menuStatus, errorDetails = "") {
@@ -80,7 +134,6 @@
             alert(message);
         }
 
-        // ================= 2. دوال مساعدة عامة =================
         function toggleSidebar() {
             const sidebar = document.getElementById('sideMenu');
             const overlay = document.getElementById('sidebarOverlay');
@@ -139,25 +192,15 @@
         }
 
         async function loadDynamicMenuIntoSidebar() {
-            let idStatusDesc = "";
-            let menuStatusDesc = "";
-            let errorReason = "";
-
             try {
                 let menuItems = [];
                 
                 if (!currentUserId) {
-                    idStatusDesc = "❌ لم يتم جلب الـ ID (المستخدم زائر أو غير مسجل دخول)";
-                    menuStatusDesc = "❌ فشل جلب محتويات المنيو";
-                    errorReason = "لا يوجد مستخدم مسجل دخول حالياً لجلب الصلاحيات.";
-                    
                     const sidebarContainer = document.getElementById('sidebarContent');
                     if (sidebarContainer) {
                         sidebarContainer.innerHTML = `<div class="text-center text-gray-400 text-xs py-4">الرجاء تسجيل الدخول أولاً</div>`;
                     }
                     return;
-                } else {
-                    idStatusDesc = `✅ تم جلب الـ ID بنجاح (القيمة: ${currentUserId})`;
                 }
 
                 const { data, error } = await supabaseClient.rpc('get_menu_items', {
@@ -170,11 +213,6 @@
                     } else if (typeof data === 'object') {
                         menuItems = Array.isArray(data.data) ? data.data : [data];
                     }
-                    menuStatusDesc = "✅ تم جلب محتويات المنيو بنجاح";
-                } else {
-                    menuStatusDesc = "❌ فشل جلب محتويات المنيو";
-                    errorReason = error ? error.message : "دالة جلب المنيو أرجعت بيانات فارغة.";
-                    showSystemAlert("تحذير جلب قائمة المنيو", idStatusDesc, menuStatusDesc, errorReason);
                 }
 
                 const sidebarContainer = document.getElementById('sidebarContent');
@@ -199,7 +237,7 @@
                 }
 
             } catch (err) {
-                showSystemAlert("عطل برمجي خطير أثناء تحميل القائمة الجانبية", "⚠️ تعذر التحقق", "❌ خطأ استثنائي", err.message);
+                console.error("خطأ في القائمة الجانبية:", err);
             }
         }
 
@@ -207,10 +245,14 @@
             const cleanAction = (actionName || "").trim();
             const cleanTitle = (title || "").trim();
 
+            clearActiveScreenIntervals(); // تفريغ أي تحديث حي سابق عند التنقل
+
             if (cleanAction.includes('البيانات الشخصية') || cleanTitle.includes('البيانات الشخصية') || cleanAction === 'renderUserProfile' || cleanAction === 'profile') {
                 renderUserProfileScreen();
             } else if (cleanAction.includes('بيانات المستخدمين') || cleanTitle.includes('بيانات المستخدمين') || cleanAction === 'renderAllUsersScreen') {
                 renderAllUsersScreen();
+            } else if (cleanAction.includes('المستخدمون النشطون') || cleanTitle.includes('المستخدمون النشطون') || cleanAction === 'renderActiveUsersScreen') {
+                renderActiveUsersScreen();
             } else if (cleanAction.includes('سجل تسجيل الدخول') || cleanTitle.includes('سجل تسجيل الدخول') || cleanAction === 'renderLoginHistoryScreen' || cleanAction.includes('سجل دخول المستخدمين')) {
                 renderLoginHistoryScreen();
             } else if (typeof window[cleanAction] === 'function') {
@@ -220,7 +262,95 @@
             }
         }
 
+        // ================= شاشة المستخدمين النشطين (Live Auto-Refresh) =================
+        async function renderActiveUsersScreen() {
+            if (!currentUserId) {
+                alert("يجب تسجيل الدخول أولاً!");
+                return;
+            }
+
+            clearActiveScreenIntervals();
+
+            // رسم الهيكل الأولي لشاشة المتصلين
+            document.getElementById('appContainer').innerHTML = `
+                ${getHeaderTemplate()}
+                <div class="flex items-center justify-between mb-4 flex-shrink-0">
+                    <button onclick="clearActiveScreenIntervals(); renderMainDashboard();" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center gap-1.5">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                        <span>رجوع</span>
+                    </button>
+                    <div class="flex items-center gap-2">
+                        <span class="w-3 h-3 bg-emerald-500 rounded-full animate-pulse"></span>
+                        <h2 id="activeUsersTitle" class="text-sm sm:text-base font-bold text-gray-800">المستخدمون النشطون حالياً (...)</h2>
+                    </div>
+                </div>
+                <div id="activeUsersTableContainer" class="flex-1 overflow-auto border border-gray-200 rounded-2xl shadow-sm">
+                    <div class="flex items-center justify-center h-full">
+                        <p class="text-gray-500 text-sm">جاري جلب المتصلين الآن...</p>
+                    </div>
+                </div>
+            `;
+            loadDynamicMenuIntoSidebar();
+
+            // دالة جلب البيانات وتحديث الجدول حياً
+            const fetchAndUpdateActiveUsers = async () => {
+                const { data: users, error } = await supabaseClient.rpc('get_active_users');
+
+                if (error) {
+                    console.error("خطأ في جلب المستخدمين النشطين:", error.message);
+                    return;
+                }
+
+                let rowsHtml = "";
+                if (users && users.length > 0) {
+                    rowsHtml = users.map((user, index) => `
+                        <tr class="${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'} hover:bg-blue-50/50 transition-colors">
+                            <td class="px-4 py-3 text-xs sm:text-sm text-indigo-600 font-bold whitespace-nowrap">${user.user_role || 'مستخدم'}</td>
+                            <td class="px-4 py-3 text-xs sm:text-sm text-gray-800 font-bold whitespace-nowrap">${user.user_name || 'بدون اسم'}</td>
+                            <td class="px-4 py-3 text-xs sm:text-sm text-gray-700 whitespace-nowrap">${user.shop_name || 'غير متوفر'}</td>
+                            <td class="px-4 py-3 text-xs sm:text-sm text-gray-600">${user.shop_address || 'غير متوفر'}</td>
+                            <td class="px-4 py-3 text-xs sm:text-sm text-blue-600 font-semibold whitespace-nowrap" dir="ltr">${user.phone_number || ''}</td>
+                        </tr>
+                    `).join('');
+                } else {
+                    rowsHtml = `<tr><td colspan="5" class="text-center text-gray-400 py-6 text-sm">لا يوجد مستخدمين نشطين في آخر 15-30 ثانية</td></tr>`;
+                }
+
+                const titleEl = document.getElementById('activeUsersTitle');
+                if (titleEl) {
+                    titleEl.innerText = `المستخدمون النشطون حالياً (${users ? users.length : 0})`;
+                }
+
+                const tableContainerEl = document.getElementById('activeUsersTableContainer');
+                if (tableContainerEl) {
+                    tableContainerEl.innerHTML = `
+                        <table class="w-full text-right border-collapse">
+                            <thead class="bg-gray-100 sticky top-0 z-10 border-b border-gray-200">
+                                <tr>
+                                    <th class="px-4 py-3 text-xs sm:text-sm font-bold text-gray-700 whitespace-nowrap">الرتبة</th>
+                                    <th class="px-4 py-3 text-xs sm:text-sm font-bold text-gray-700 whitespace-nowrap">الاسم</th>
+                                    <th class="px-4 py-3 text-xs sm:text-sm font-bold text-gray-700 whitespace-nowrap">اسم المحل</th>
+                                    <th class="px-4 py-3 text-xs sm:text-sm font-bold text-gray-700 whitespace-nowrap">عنوان المحل</th>
+                                    <th class="px-4 py-3 text-xs sm:text-sm font-bold text-gray-700 whitespace-nowrap">رقم الهاتف</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200">
+                                ${rowsHtml}
+                            </tbody>
+                        </table>
+                    `;
+                }
+            };
+
+            // تشغيل الجلب فوراً
+            await fetchAndUpdateActiveUsers();
+
+            // ضبط التحديث التلقائي كل 15 ثانية لتحديث الجدول حياً أمام الأدمن
+            activeUsersRefreshInterval = setInterval(fetchAndUpdateActiveUsers, 15000);
+        }
+
         async function renderLoginHistoryScreen() {
+            clearActiveScreenIntervals();
             if (!currentUserId) {
                 alert("❌ خطأ: لم يتم جلب الـ ID (المستخدم زائر أو غير مسجل دخول).\n⚠ تفاصيل العطل: يجب تسجيل الدخول أولاً للاطلاع على سجل تسجيل الدخول!");
                 return;
@@ -308,6 +438,7 @@
         }
 
         async function renderAllUsersScreen() {
+            clearActiveScreenIntervals();
             if (!currentUserId) {
                 alert(`❌ خطأ: لم يتم جلب الـ ID!\n📌 الحدث: الضغط على زر بيانات المستخدمين\n🆔 حالة الـ ID: غير موجود (المستخدم زائر أو لم يسجل دخوله)\n⚠️ السبب: الدالة تحتاج إلى مُعرف مستخدم صالح لتنفيذ الاستعلام.`);
                 return;
@@ -395,6 +526,7 @@
         }
 
         async function renderUserProfileScreen() {
+            clearActiveScreenIntervals();
             if (!currentUserId && currentUserRole === "زائر") {
                 alert("❌ خطأ: الحساب الحالي زائر.\n⚠️ السبب: يجب تسجيل الدخول أولاً لعرض البيانات الشخصية!");
                 return;
@@ -501,6 +633,7 @@
         }
 
         function renderEditProfileScreen() {
+            clearActiveScreenIntervals();
             if (!currentUserId) {
                 alert("❌ خطأ: يجب تسجيل الدخول أولاً لتعديل بياناتك!");
                 return;
@@ -544,7 +677,6 @@
                         </button>
                     </form>
 
-                    <!-- زر حذف الحساب -->
                     <button type="button" onclick="handleDeleteAccount()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl shadow-lg transition-all text-sm mt-4">
                         حذف الحساب نهائياً
                     </button>
@@ -621,6 +753,7 @@
         }
 
         function renderLoginScreen() {
+            clearActiveScreenIntervals();
             const html = `
                 <div class="flex-1 overflow-y-auto px-2">
                     <div class="max-w-xl mx-auto w-full py-4">
@@ -731,7 +864,7 @@
             });
 
             if (error) {
-                alert(`❌ خطأ في دالة تسجيل الدخول (login_user):\n📱 الهاتف المدخل: ${phone}\n⚠️️ السبب: ${error.message}`);
+                alert(`❌ خطأ في دالة تسجيل الدخول (login_user):\n📱 الهاتف المدخل: ${phone}\n⚠ السبب: ${error.message}`);
                 return;
             }
 
@@ -741,7 +874,7 @@
             }
 
             if (!resObj || resObj.success === false) {
-                alert(`⚠️ بيانات الدخول غير صحيحة أو لم يتم إرجاع نتيجة!\n📱 الهاتف: ${phone}\nملاحظة: ${resObj?.message || 'تأكد من صحة رقم الهاتف وكلمة المرور'}`);
+                alert(`⚠ بيانات الدخول غير صحيحة أو لم يتم إرجاع نتيجة!\n📱 الهاتف: ${phone}\nملاحظة: ${resObj?.message || 'تأكد من صحة رقم الهاتف وكلمة المرور'}`);
                 return;
             }
 
@@ -749,6 +882,11 @@
             currentUserType = resObj.user_type || resObj.user_role || "ادمن"; 
             currentUserId = resObj.user?.id || resObj.user_id || resObj.id || resObj.ID || resObj.uuid || null; 
             
+            // تفعيل نظام النبضات النشطة (Heartbeat) فور نجاح تسجيل الدخول
+            if (currentUserId) {
+                startActiveHeartbeat(currentUserId);
+            }
+
             renderMainDashboard();
             loadDynamicMenuIntoSidebar(); 
         }
@@ -789,11 +927,17 @@
             currentUserType = "ادمن"; 
             currentUserId = resObj?.user?.id || resObj?.id || resObj?.user_id || resObj?.ID || resObj?.uuid || null;
             
+            // تفعيل نظام النبضات النشطة (Heartbeat) فور نجاح إنشاء الحساب
+            if (currentUserId) {
+                startActiveHeartbeat(currentUserId);
+            }
+
             renderMainDashboard();
             loadDynamicMenuIntoSidebar();
         }
 
         function loginAsVisitor() {
+            clearActiveScreenIntervals();
             currentUserRole = "زائر";
             currentUserType = "زائر";
             currentUserId = null;
@@ -802,6 +946,7 @@
         }
 
         function renderMainDashboard() {
+            clearActiveScreenIntervals();
             const html = `
                 ${getHeaderTemplate()}
 
@@ -838,6 +983,7 @@
         }
 
         async function renderBrandsScreen() {
+            clearActiveScreenIntervals();
             let brands = [];
             const { data, error } = await supabaseClient.from('brands').select('*');
             
@@ -880,6 +1026,7 @@
         }
 
         async function renderModelsScreen(brand) {
+            clearActiveScreenIntervals();
             selectedBrand = brand;
             let tableName = "";
             let nameColumn = "device_name";
@@ -929,8 +1076,6 @@
                 } else if (error) {
                     alert(`❌ خطأ في جلب موديلات جدول (${tableName}):\n⚠️ السبب: ${error.message}`);
                 }
-            } else {
-                alert(`⚠️ تنبيه: لم يتم العثور على اسم جدول مطابق للماركة (${brand}) في قاعدة البيانات.`);
             }
 
             let modelsHtml = "";
@@ -974,6 +1119,7 @@
         }
 
         function renderPartsScreen(modelName, modelCode, screenCompat, batteryModel) {
+            clearActiveScreenIntervals();
             selectedModel = modelName;
             selectedModelCode = modelCode ? decodeURIComponent(modelCode) : '';
             currentScreenCompatibility = screenCompat ? decodeURIComponent(screenCompat) : '';
@@ -1007,6 +1153,7 @@
         }
 
         async function renderPartDetails(part) {
+            clearActiveScreenIntervals();
             selectedPart = part;
             
             let extraInfoHtml = "";
@@ -1066,14 +1213,10 @@
                             <p class="text-gray-600 text-sm leading-relaxed">${post.content || post.description || ''}</p>
                         </div>
                     `).join('');
-                } else if (error) {
-                    alert(`❌ خطأ في جلب جدول المنشورات (posts):\n⚠️️ السبب: ${error.message}`);
-                    postsHtml = `<div class="text-center text-red-400 text-sm py-4">حدث خطأ أثناء جلب المنشورات</div>`;
                 } else {
                     postsHtml = `<div class="text-center text-gray-400 text-sm py-4">لا توجد ملاحظات صيانة إضافية مسجلة لهذه القطعة حالياً</div>`;
                 }
             } catch (err) {
-                alert(`❌ خطأ استثنائي في جدول المنشورات:\n⚠️ السبب: ${err.message}`);
                 postsHtml = `<div class="text-center text-red-400 text-sm py-4">حدث خطأ أثناء الاتصال</div>`;
             }
 
