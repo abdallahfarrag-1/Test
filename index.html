@@ -69,7 +69,7 @@
             "سماعة خارجية مكبر الصوت", "سوكيت", "ايسيهات"
         ];
 
-        // بدء الهارت بيت التلقائي في الخلفية كل 3 دقائق
+        // بدء الهارت بيت التلقائي في الخلفية كل 10 ثوانٍ
         function startUserHeartbeat(userId) {
             if (!userId) return;
             stopUserHeartbeat(); // إيقاف أي نبضات سابقة
@@ -77,12 +77,12 @@
             // إرسال نبضة فورية
             sendHeartbeat(userId);
 
-            // إرسال نبضة كل 3 دقائق بصمت طالما المتصفح مرئي
+            // إرسال نبضة كل 10 ثوانٍ بصمت طالما المتصفح مرئي
             heartbeatInterval = setInterval(() => {
                 if (document.visibilityState === 'visible') {
                     sendHeartbeat(userId);
                 }
-            }, 3 * 60 * 1000);
+            }, 10 * 1000); // كل 10 ثوانٍ
         }
 
         async function sendHeartbeat(userId) {
@@ -884,7 +884,7 @@
             currentUserId = resObj.user?.id || resObj.user_id || resObj.id || resObj.ID || resObj.uuid || null; 
             
             if (currentUserId) {
-                startUserHeartbeat(currentUserId); // تفعيل الـ Heartbeat التلقائي في الخلفية
+                startUserHeartbeat(currentUserId); // تفعيل الـ Heartbeat التلقائي كل 10 ثوانٍ
             }
 
             renderMainDashboard();
@@ -928,7 +928,7 @@
             currentUserId = resObj?.user?.id || resObj?.id || resObj?.user_id || resObj?.ID || resObj?.uuid || null;
             
             if (currentUserId) {
-                startUserHeartbeat(currentUserId); // تفعيل الـ Heartbeat التلقائي في الخلفية
+                startUserHeartbeat(currentUserId); // تفعيل الـ Heartbeat التلقائي كل 10 ثوانٍ
             }
 
             renderMainDashboard();
