@@ -41,7 +41,7 @@
 
     </div>
 
-    <!-- كود الجافاسكريبت لإدارة النظام والصفحات والتنقل الأفقي (بنظام الريل تايم) -->
+    <!-- كود الجافاسكريبت لإدارة النظام والصفحات (بنظام الهارت بيت والتحديث اليدوي) -->
     <script>
         // ================= 1. المتغيرات وإعدادات الاتصال =================
         const SUPABASE_URL = 'https://byiayomtcwqlgrknvgcz.supabase.co';
@@ -59,8 +59,8 @@
         let currentBatteryModel = "";
         let currentUserDataGlobal = null; 
 
-        // متغيرات للتحكم بالاشتراك الحي (Realtime Channel)
-        let activeUsersSubscription = null;
+        // متغير مؤقت للـ Heartbeat في الخلفية
+        let heartbeatInterval = null;
 
         // قطع الغيار المطلوبة
         const sparePartsList = [
@@ -69,30 +69,44 @@
             "سماعة خارجية مكبر الصوت", "سوكيت", "ايسيهات"
         ];
 
-        // تحديث نشاط المستخدم عند الأحداث الهامة (بدون نبضات خلفية متكررة)
-        async function updateMyActivity(userId) {
+        // بدء الهارت بيت التلقائي في الخلفية كل 3 دقائق
+        function startUserHeartbeat(userId) {
             if (!userId) return;
+            stopUserHeartbeat(); // إيقاف أي نبضات سابقة
+
+            // إرسال نبضة فورية
+            sendHeartbeat(userId);
+
+            // إرسال نبضة كل 3 دقائق بصمت طالما المتصفح مرئي
+            heartbeatInterval = setInterval(() => {
+                if (document.visibilityState === 'visible') {
+                    sendHeartbeat(userId);
+                }
+            }, 3 * 60 * 1000);
+        }
+
+        async function sendHeartbeat(userId) {
             try {
                 await supabaseClient.rpc('update_user_activity', {
                     target_user_id: userId
                 });
             } catch (err) {
-                console.error("خطأ في تحديث النشاط:", err);
+                console.error("خطأ في إرسال نبضة النشاط:", err);
+            }
+        }
+
+        function stopUserHeartbeat() {
+            if (heartbeatInterval) {
+                clearInterval(heartbeatInterval);
+                heartbeatInterval = null;
             }
         }
 
         window.addEventListener('beforeunload', () => {
             if (currentUserId) {
-                updateMyActivity(currentUserId);
+                sendHeartbeat(currentUserId);
             }
         });
-
-        function clearActiveScreenIntervals() {
-            if (activeUsersSubscription) {
-                supabaseClient.removeChannel(activeUsersSubscription);
-                activeUsersSubscription = null;
-            }
-        }
 
         function showSystemAlert(title, idStatus, menuStatus, errorDetails = "") {
             let message = `--- 🔍 تقرير حالة النظام والتنبيهات ---\n\n`;
@@ -218,8 +232,6 @@
             const cleanAction = (actionName || "").trim();
             const cleanTitle = (title || "").trim();
 
-            clearActiveScreenIntervals();
-
             if (cleanAction.includes('البيانات الشخصية') || cleanTitle.includes('البيانات الشخصية') || cleanAction === 'renderUserProfile' || cleanAction === 'profile') {
                 renderUserProfileScreen();
             } else if (cleanAction.includes('بيانات المستخدمين') || cleanTitle.includes('بيانات المستخدمين') || cleanAction === 'renderAllUsersScreen') {
@@ -235,19 +247,17 @@
             }
         }
 
-        // ================= شاشة المستخدمين النشطين (مع Realtime حقيقي وتحديث فوري) =================
+        // ================= شاشة المستخدمين النشطين (تحديث يدوي كامل) =================
         async function renderActiveUsersScreen() {
             if (!currentUserId) {
                 alert("يجب تسجيل الدخول أولاً!");
                 return;
             }
 
-            clearActiveScreenIntervals();
-
             document.getElementById('appContainer').innerHTML = `
                 ${getHeaderTemplate()}
                 <div class="flex items-center justify-between mb-4 flex-shrink-0">
-                    <button onclick="clearActiveScreenIntervals(); renderMainDashboard();" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center gap-1.5">
+                    <button onclick="renderMainDashboard();" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center gap-1.5">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
                         <span>رجوع</span>
                     </button>
@@ -255,11 +265,11 @@
                     <div class="flex items-center gap-2">
                         <button onclick="fetchAndUpdateActiveUsers(true)" id="manualRefreshBtn" class="bg-blue-50 hover:bg-blue-100 text-blue-600 border border-blue-200 px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center gap-1.5 shadow-sm" title="تحديث القائمة">
                             <svg id="refreshIcon" class="w-4 h-4 transition-transform duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-                            <span>تحديث</span>
+                            <span>تحديث يدوي</span>
                         </button>
                         
                         <div class="flex items-center gap-1.5 bg-gray-50 border border-gray-200 px-3 py-2 rounded-xl">
-                            <span class="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-pulse"></span>
+                            <span class="w-2.5 h-2.5 bg-blue-500 rounded-full"></span>
                             <h2 id="activeUsersTitle" class="text-xs sm:text-sm font-bold text-gray-800">المستخدمون (...)</h2>
                         </div>
                     </div>
@@ -330,20 +340,11 @@
             };
 
             await fetchAndUpdateActiveUsers(false);
-
-            // تفعيل نظام الـ Realtime عبر Supabase Channels لمراقبة جدول المستخدمين مباشرةً
-            activeUsersSubscription = supabaseClient
-                .channel('public:users')
-                .on('postgres_changes', { event: '*', schema: 'public', table: 'users' }, () => {
-                    fetchAndUpdateActiveUsers(false);
-                })
-                .subscribe();
         }
 
         async function renderLoginHistoryScreen() {
-            clearActiveScreenIntervals();
             if (!currentUserId) {
-                alert("❌ خطأ: لم يتم جلب الـ ID (المستخدم زائر أو غير مسجل دخول).\n⚠ تفاصيل العطل: يجب تسجيل الدخول أولاً للاطلاع على سجل تسجيل الدخول!");
+                alert("❌ خطأ: لم يتم جلب الـ ID (المستخدم زائر أو غير مسجل دخول).");
                 return;
             }
 
@@ -367,13 +368,13 @@
             });
 
             if (error) {
-                alert(`❌ خطأ في الاتصال بقاعدة البيانات (get_login_history_data):\n🆔 الـ ID المُرسل: ${currentUserId}\n⚠️ السبب: ${error.message}`);
+                alert(`❌ خطأ في الاتصال بقاعدة البيانات: ${error.message}`);
                 renderMainDashboard();
                 return;
             }
 
             if (!response || response.success === false) {
-                alert(`⛔ تم رفض صلاحية عرض سجل الدخول بواسطة قاعدة البيانات!\n🆔 الـ ID المُرسل: ${currentUserId}\n⚠ رسالة الخادم: ${response?.message || 'غير مسموح لك بالاطلاع على هذه البيانات'}`);
+                alert(`⛔ تم رفض صلاحية عرض سجل الدخول بواسطة قاعدة البيانات!`);
                 renderMainDashboard();
                 return;
             }
@@ -465,7 +466,6 @@
         }
 
         async function renderAllUsersScreen() {
-            clearActiveScreenIntervals();
             if (!currentUserId) {
                 alert(`❌ خطأ: لم يتم جلب الـ ID!`);
                 return;
@@ -553,7 +553,6 @@
         }
 
         async function renderUserProfileScreen() {
-            clearActiveScreenIntervals();
             if (!currentUserId && currentUserRole === "زائر") {
                 alert("❌ خطأ: الحساب الحالي زائر.");
                 return;
@@ -644,7 +643,6 @@
         }
 
         function renderEditProfileScreen() {
-            clearActiveScreenIntervals();
             if (!currentUserId) {
                 alert("يجب تسجيل الدخول أولاً!");
                 return;
@@ -756,7 +754,7 @@
         }
 
         function renderLoginScreen() {
-            clearActiveScreenIntervals();
+            stopUserHeartbeat();
             const html = `
                 <div class="flex-1 overflow-y-auto px-2">
                     <div class="max-w-xl mx-auto w-full py-4">
@@ -886,7 +884,7 @@
             currentUserId = resObj.user?.id || resObj.user_id || resObj.id || resObj.ID || resObj.uuid || null; 
             
             if (currentUserId) {
-                updateMyActivity(currentUserId);
+                startUserHeartbeat(currentUserId); // تفعيل الـ Heartbeat التلقائي في الخلفية
             }
 
             renderMainDashboard();
@@ -930,7 +928,7 @@
             currentUserId = resObj?.user?.id || resObj?.id || resObj?.user_id || resObj?.ID || resObj?.uuid || null;
             
             if (currentUserId) {
-                updateMyActivity(currentUserId);
+                startUserHeartbeat(currentUserId); // تفعيل الـ Heartbeat التلقائي في الخلفية
             }
 
             renderMainDashboard();
@@ -938,7 +936,7 @@
         }
 
         function loginAsVisitor() {
-            clearActiveScreenIntervals();
+            stopUserHeartbeat();
             currentUserRole = "زائر";
             currentUserType = "زائر";
             currentUserId = null;
@@ -947,7 +945,6 @@
         }
 
         function renderMainDashboard() {
-            clearActiveScreenIntervals();
             const html = `
                 ${getHeaderTemplate()}
 
@@ -984,7 +981,6 @@
         }
 
         async function renderBrandsScreen() {
-            clearActiveScreenIntervals();
             let brands = [];
             const { data, error } = await supabaseClient.from('brands').select('*');
             
@@ -1027,7 +1023,6 @@
         }
 
         async function renderModelsScreen(brand) {
-            clearActiveScreenIntervals();
             selectedBrand = brand;
             let tableName = "";
             let nameColumn = "device_name";
@@ -1118,7 +1113,6 @@
         }
 
         function renderPartsScreen(modelName, modelCode, screenCompat, batteryModel) {
-            clearActiveScreenIntervals();
             selectedModel = modelName;
             selectedModelCode = modelCode ? decodeURIComponent(modelCode) : '';
             currentScreenCompatibility = screenCompat ? decodeURIComponent(screenCompat) : '';
@@ -1152,7 +1146,6 @@
         }
 
         async function renderPartDetails(part) {
-            clearActiveScreenIntervals();
             selectedPart = part;
             
             let extraInfoHtml = "";
