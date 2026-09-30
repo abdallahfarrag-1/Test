@@ -389,7 +389,7 @@
             }
 
             if (!response || response.success === false) {
-                alert(`⛔ تم رفض صلاحية عرض سجل الدخول بواسطة قاعدة البيانات!\n🆔 الـ ID المُرسل: ${currentUserId}\n⚠️️ رسالة الخادم: ${response?.message || 'غير مسموح لك بالاطلاع على هذه البيانات'}`);
+                alert(`⛔ تم رفض صلاحية عرض سجل الدخول بواسطة قاعدة البيانات!\n🆔 الـ ID المُرسل: ${currentUserId}\n⚠ رسالة الخادم: ${response?.message || 'غير مسموح لك بالاطلاع على هذه البيانات'}`);
                 renderMainDashboard();
                 return;
             }
@@ -415,10 +415,17 @@
             const html = `
                 ${getHeaderTemplate()}
                 <div class="flex items-center justify-between mb-4 flex-shrink-0">
-                    <button onclick="renderMainDashboard()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center gap-1.5">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
-                        <span>رجوع</span>
-                    </button>
+                    <div class="flex items-center gap-2">
+                        <button onclick="renderMainDashboard()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center gap-1.5">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                            <span>رجوع</span>
+                        </button>
+                        <!-- زر حذف سجل الدخول -->
+                        <button onclick="handleDeleteLoginHistory()" class="bg-red-600 hover:bg-red-700 text-white px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all shadow-sm flex items-center gap-1.5">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                            <span>حذف السجل</span>
+                        </button>
+                    </div>
                     <h2 class="text-sm sm:text-base font-bold text-gray-800">سجل تسجيل الدخول</h2>
                 </div>
                 <div class="flex-1 overflow-auto border border-gray-200 rounded-2xl shadow-sm">
@@ -442,6 +449,39 @@
             
             document.getElementById('appContainer').innerHTML = html;
             loadDynamicMenuIntoSidebar();
+        }
+
+        // دالة تنفيذ حذف سجل الدخول عبر RPC أو رسالة تنبيهية في حال لم تكن الدالة منشأة بقاعدة البيانات بعد
+        async function handleDeleteLoginHistory() {
+            if (!currentUserId) {
+                alert("يجب تسجيل الدخول أولاً!");
+                return;
+            }
+
+            const confirmDel = confirm("هل أنت متأكد من رغبتك في حذف سجل تسجيل الدخول بالكامل؟");
+            if (!confirmDel) return;
+
+            try {
+                // محاولة استدعاء دالة الحذف المفترضة في Supabase، وإن لم تكن موجودة سيتم التعامل مع الخطأ
+                const { data, error } = await supabaseClient.rpc('delete_login_history', {
+                    p_user_id: currentUserId
+                });
+
+                if (error) {
+                    // إذا لم تكن الدالة موجودة في قاعدة البيانات، نعرض رسالة واضحة للمستخدم
+                    alert("⚠ يرجى التأكد من توفر دالة الحذف (delete_login_history) في قاعدة بيانات Supabase الخاصة بك.\nتفاصيل الخطأ: " + error.message);
+                    return;
+                }
+
+                if (data && data.success === false) {
+                    alert(data.message || "تعذر حذف السجل");
+                } else {
+                    alert("✅ تم حذف سجل تسجيل الدخول بنجاح!");
+                    renderLoginHistoryScreen(); // إعادة تحميل الشاشة لتحديث الجدول
+                }
+            } catch (err) {
+                alert("حدث خطأ استثنائي أثناء محطة الحذف: " + err.message);
+            }
         }
 
         async function renderAllUsersScreen() {
@@ -477,7 +517,7 @@
             }
 
             if (!response || response.success === false) {
-                alert(`⛔ تم رفض الصلاحية من قاعدة البيانات أثناء جلب بيانات المستخدمين!\n🆔 الـ ID المُرسل: ${currentUserId}\n⚠️️ السبب من الخادم: ${response?.message || 'غير مسموح لك بالاطلاع على هذه البيانات'}`);
+                alert(`⛔ تم رفض الصلاحية من قاعدة البيانات أثناء جلب بيانات المستخدمين!\n🆔 الـ ID المُرسل: ${currentUserId}\n⚠ السبب من الخادم: ${response?.message || 'غير مسموح لك بالاطلاع على هذه البيانات'}`);
                 renderMainDashboard();
                 return;
             }
