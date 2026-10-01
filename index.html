@@ -522,10 +522,11 @@
                     <tr class="${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'} hover:bg-blue-50/50 transition-colors">
                         <td class="px-4 py-3 text-xs sm:text-sm whitespace-nowrap">
                             <select onchange="changeUserRole('${user.id}', this.value)" class="bg-gray-50 border border-gray-200 text-indigo-600 font-bold rounded-lg px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                <option value="admin" ${user.user_role === 'admin' || user.user_role === 'ادمن' ? 'selected' : ''}>admin</option>
                                 <option value="head" ${user.user_role === 'head' || user.user_role === 'مدير' ? 'selected' : ''}>head</option>
                                 <option value="rep" ${user.user_role === 'rep' ? 'selected' : ''}>rep</option>
+                                <option value="seller" ${user.user_role === 'seller' ? 'selected' : ''}>seller</option>
                                 <option value="tech" ${user.user_role === 'tech' ? 'selected' : ''}>tech</option>
+                                <option value="person" ${user.user_role === 'person' ? 'selected' : ''}>person</option>
                                 <option value="user" ${user.user_role === 'user' ? 'selected' : ''}>user</option>
                             </select>
                         </td>
@@ -900,7 +901,7 @@
             }
 
             currentUserRole = resObj.phone_number || phone;
-            currentUserType = resObj.user_type || resObj.user_role || "ادمن"; 
+            currentUserType = resObj.user_type || resObj.user_role || "head"; 
             currentUserId = resObj.user?.id || resObj.user_id || resObj.id || resObj.ID || resObj.uuid || null; 
             
             if (currentUserId) {
@@ -944,7 +945,7 @@
 
             alert('✅ تم إنشاء الحساب بنجاح!');
             currentUserRole = phone_number;
-            currentUserType = "ادمن"; 
+            currentUserType = "head"; 
             currentUserId = resObj?.user?.id || resObj?.id || resObj?.user_id || resObj?.ID || resObj?.uuid || null;
             
             if (currentUserId) {
