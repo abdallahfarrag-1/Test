@@ -125,14 +125,9 @@
             }
         }
 
-        // الألوان والتصميم المتناسق الموحد (مثل الماركات والواجهة الرئيسية)
+        // توحيد لون الخانات لتكون متناسقة وثابتة (بدون ألوان عشوائية صفراء أو حمراء)
         function getRotatingCardStyle(index) {
-            const styles = [
-                { bg: "bg-blue-50/80 hover:bg-blue-100", border: "border-blue-200", text: "text-blue-800", icon: "text-blue-500" },
-                { bg: "bg-emerald-50/80 hover:bg-emerald-100", border: "border-emerald-200", text: "text-emerald-800", icon: "text-emerald-500" },
-                { bg: "bg-amber-50/80 hover:bg-amber-100", border: "border-amber-200", text: "text-amber-800", icon: "text-amber-500" }
-            ];
-            return styles[index % 3];
+            return { bg: "bg-gray-50 hover:bg-blue-50/60", border: "border-gray-200 hover:border-blue-200", text: "text-gray-800", icon: "text-gray-400 group-hover:text-blue-500" };
         }
 
         function getHeaderTemplate() {
@@ -711,7 +706,7 @@
                 alert('✅ ' + data.message);
                 renderUserProfileScreen(); 
             } else {
-                alert('⚠️️ ' + (data?.message || 'تعذر حفظ التعديلات'));
+                alert('⚠ ' + (data?.message || 'تعذر حفظ التعديلات'));
             }
         }
 
@@ -984,9 +979,9 @@
                 brandsHtml = brands.map((brand, index) => {
                     const style = getRotatingCardStyle(index);
                     return `
-                        <div onclick="renderModelsScreen('${brand}')" class="w-full ${style.bg} border ${style.border} p-4 rounded-2xl shadow-sm flex items-center justify-between cursor-pointer transition-all text-sm sm:text-base">
+                        <div onclick="renderModelsScreen('${brand}')" class="w-full ${style.bg} border ${style.border} p-4 rounded-2xl shadow-sm flex items-center justify-between cursor-pointer transition-all text-sm sm:text-base group">
                             <span class="font-bold text-gray-800">${brand}</span>
-                            <svg class="w-5 h-5 ${style.icon} flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                            <svg class="w-5 h-5 ${style.icon} flex-shrink-0 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
                         </div>
                     `;
                 }).join('');
@@ -1069,8 +1064,8 @@
                     const escapedBattery = m.battery_model ? encodeURIComponent(m.battery_model) : '';
                     const escapedCode = m.model_code ? encodeURIComponent(m.model_code) : '';
                     return `
-                        <div onclick="renderPartsScreen('${m.device_name}', '${escapedCode}', '${escapedCompat}', '${escapedBattery}')" class="w-full ${style.bg} border ${style.border} p-4 rounded-2xl shadow-sm flex items-center justify-between cursor-pointer transition-all text-sm sm:text-base">
-                            <svg class="w-5 h-5 ${style.icon} flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                        <div onclick="renderPartsScreen('${m.device_name}', '${escapedCode}', '${escapedCompat}', '${escapedBattery}')" class="w-full ${style.bg} border ${style.border} p-4 rounded-2xl shadow-sm flex items-center justify-between cursor-pointer transition-all text-sm sm:text-base group">
+                            <svg class="w-5 h-5 ${style.icon} flex-shrink-0 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
                             <div class="text-left">
                                 <span class="font-bold text-gray-800 block">${m.device_name}</span>
                                 ${m.model_code ? `<span class="text-xs text-gray-500 block mt-0.5">الكود: ${m.model_code}</span>` : ''}
@@ -1133,9 +1128,9 @@
                 partsHtml = sparePartsList.map((part, index) => {
                     const style = getRotatingCardStyle(index);
                     return `
-                        <div onclick="renderPartDetails('${part}')" class="w-full ${style.bg} border ${style.border} p-4 rounded-2xl shadow-sm flex items-center justify-between cursor-pointer transition-all text-sm sm:text-base">
+                        <div onclick="renderPartDetails('${part}')" class="w-full ${style.bg} border ${style.border} p-4 rounded-2xl shadow-sm flex items-center justify-between cursor-pointer transition-all text-sm sm:text-base group">
                             <span class="font-bold text-gray-800">${part}</span>
-                            <svg class="w-5 h-5 ${style.icon} flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                            <svg class="w-5 h-5 ${style.icon} flex-shrink-0 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
                         </div>
                     `;
                 }).join('');
@@ -1182,11 +1177,11 @@
                 dynamicSectionsHtml = menuItems.map((item, index) => {
                     const itemName = item.spare_part_menu_items || item.title || item.name || Object.values(item)[1];
                     const itemValue = item.value || item.content || item.description || "";
-                    const style = getRotatingCardStyle(index); // تطبيق الألوان الدورية المتناسقة هنا أيضاً
+                    const style = getRotatingCardStyle(index); // توحيد اللون هنا أيضاً
                     
                     return `
-                        <div class="w-full ${style.bg} border ${style.border} p-4 rounded-2xl shadow-sm flex items-center justify-between cursor-pointer transition-all text-sm sm:text-base mb-3">
-                            <svg class="w-5 h-5 ${style.icon} flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                        <div class="w-full ${style.bg} border ${style.border} p-4 rounded-2xl shadow-sm flex items-center justify-between cursor-pointer transition-all text-sm sm:text-base mb-3 group">
+                            <svg class="w-5 h-5 ${style.icon} flex-shrink-0 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
                             <div class="text-left w-full mr-3">
                                 <span class="font-bold text-gray-800 block">${itemName}</span>
                                 ${itemValue ? `<span class="text-xs text-gray-600 block mt-0.5">${itemValue}</span>` : ''}
