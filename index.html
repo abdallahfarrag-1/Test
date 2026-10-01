@@ -448,7 +448,7 @@
             }
         }
 
-        // دالة تحديث دور المستخدم عبر الـ RPC مباشرة من جدول البيانات
+        // دالة تحديث دور المستخدم عبر الـ RPC مع تمرير الـ id بدلاً من undefined
         async function changeUserRole(targetUserId, newRole) {
             if (!currentUserId) {
                 alert("يجب تسجيل الدخول أولاً!");
