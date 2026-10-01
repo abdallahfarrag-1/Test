@@ -125,6 +125,7 @@
             }
         }
 
+        // الألوان والتصميم المتناسق الموحد (مثل الماركات والواجهة الرئيسية)
         function getRotatingCardStyle(index) {
             const styles = [
                 { bg: "bg-blue-50/80 hover:bg-blue-100", border: "border-blue-200", text: "text-blue-800", icon: "text-blue-500" },
@@ -710,7 +711,7 @@
                 alert('✅ ' + data.message);
                 renderUserProfileScreen(); 
             } else {
-                alert('⚠️ ' + (data?.message || 'تعذر حفظ التعديلات'));
+                alert('⚠️️ ' + (data?.message || 'تعذر حفظ التعديلات'));
             }
         }
 
@@ -929,7 +930,7 @@
             currentUserType = "زائر";
             currentUserId = null;
             renderMainDashboard();
-            loadDynamicMenuIntoSidebar();
+            loadDynamicMenuInteriorSidebar();
         }
 
         function renderMainDashboard() {
@@ -1069,9 +1070,7 @@
                     const escapedCode = m.model_code ? encodeURIComponent(m.model_code) : '';
                     return `
                         <div onclick="renderPartsScreen('${m.device_name}', '${escapedCode}', '${escapedCompat}', '${escapedBattery}')" class="w-full ${style.bg} border ${style.border} p-4 rounded-2xl shadow-sm flex items-center justify-between cursor-pointer transition-all text-sm sm:text-base">
-                            <div class="flex items-center gap-2 text-gray-400">
-                                <svg class="w-5 h-5 ${style.icon} flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
-                            </div>
+                            <svg class="w-5 h-5 ${style.icon} flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
                             <div class="text-left">
                                 <span class="font-bold text-gray-800 block">${m.device_name}</span>
                                 ${m.model_code ? `<span class="text-xs text-gray-500 block mt-0.5">الكود: ${m.model_code}</span>` : ''}
@@ -1178,17 +1177,20 @@
                 console.error("خطأ استثنائي:", err);
             }
 
-            // عرض البيانات الواردة من قاعدة البيانات فقط دون أي إضافات ثابتة من الكود
             let dynamicSectionsHtml = "";
             if (menuItems.length > 0) {
-                dynamicSectionsHtml = menuItems.map(item => {
+                dynamicSectionsHtml = menuItems.map((item, index) => {
                     const itemName = item.spare_part_menu_items || item.title || item.name || Object.values(item)[1];
                     const itemValue = item.value || item.content || item.description || "";
+                    const style = getRotatingCardStyle(index); // تطبيق الألوان الدورية المتناسقة هنا أيضاً
                     
                     return `
-                        <div class="bg-white border border-gray-200 p-4 rounded-2xl mb-3 shadow-sm">
-                            <h4 class="font-bold text-gray-800 text-sm mb-1">${itemName}</h4>
-                            ${itemValue ? `<p class="text-gray-600 text-sm">${itemValue}</p>` : ''}
+                        <div class="w-full ${style.bg} border ${style.border} p-4 rounded-2xl shadow-sm flex items-center justify-between cursor-pointer transition-all text-sm sm:text-base mb-3">
+                            <svg class="w-5 h-5 ${style.icon} flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                            <div class="text-left w-full mr-3">
+                                <span class="font-bold text-gray-800 block">${itemName}</span>
+                                ${itemValue ? `<span class="text-xs text-gray-600 block mt-0.5">${itemValue}</span>` : ''}
+                            </div>
                         </div>
                     `;
                 }).join('');
@@ -1227,7 +1229,7 @@
                     </button>
                     <h2 class="text-sm sm:text-base font-bold text-gray-800">${selectedModel} - ${part}</h2>
                 </div>
-                <div class="flex-1 overflow-y-auto space-y-4 p-1">
+                <div class="flex-1 overflow-y-auto space-y-3 p-1">
                     ${dynamicSectionsHtml}
                     <div class="space-y-3">
                         ${postsHtml}
