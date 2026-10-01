@@ -1102,14 +1102,12 @@
             loadDynamicMenuIntoSidebar();
         }
 
-        // ================= دالة جلب قطع الغيار من جدول spare_parts ديناميكياً =================
         async function renderPartsScreen(modelName, modelCode, screenCompat, batteryModel) {
             selectedModel = modelName;
             selectedModelCode = modelCode ? decodeURIComponent(modelCode) : '';
             currentScreenCompatibility = screenCompat ? decodeURIComponent(screenCompat) : '';
             currentBatteryModel = batteryModel ? decodeURIComponent(batteryModel) : '';
 
-            // 1. عرض رسالة تحميل مؤقتة
             document.getElementById('appContainer').innerHTML = `
                 ${getHeaderTemplate()}
                 <div class="flex items-center justify-between mb-4 flex-shrink-0">
@@ -1124,7 +1122,6 @@
                 </div>
             `;
 
-            // 2. جلب البيانات من جدول spare_parts سحابياً
             let sparePartsList = [];
             const { data, error } = await supabaseClient.from('spare_parts').select('*').order('id', { ascending: true });
 
@@ -1166,9 +1163,24 @@
             loadDynamicMenuIntoSidebar();
         }
 
+        // ================= الدالة المحدثة: جلب القوائم حسب اسم القطعة وترتيبها عبر get_menu_items_by_part_name =================
         async function renderPartDetails(part) {
             selectedPart = part;
             
+            let menuItems = [];
+            try {
+                const { data, error } = await supabaseClient.rpc('get_menu_items_by_part_name', {
+                    p_part_name: part
+                });
+                if (!error && data) {
+                    menuItems = data;
+                } else {
+                    console.error("خطأ في جلب عناصر القائمة لقطعة الغيار:", error?.message);
+                }
+            } catch (err) {
+                console.error("خطأ استثنائي:", err);
+            }
+
             let extraInfoHtml = "";
             if (part === "شاشة" && currentScreenCompatibility) {
                 extraInfoHtml = `
@@ -1192,26 +1204,49 @@
                 `;
             }
 
-            let purchaseSectionHtml = `
-                <div class="bg-gradient-to-r from-indigo-500 to-blue-600 p-4 rounded-2xl shadow-md text-white flex items-center justify-between mb-4">
-                    <div>
-                        <span class="block font-bold text-base">قسم شراء المنتج</span>
-                        <span class="text-xs text-indigo-100">اطلب قطعة الغيار المتوفرة لهذه الشاشة الآن</span>
-                    </div>
-                    <button onclick="alert('تم إرسال طلب شراء قطعة: ${part} لجهاز ${selectedModel} بنجاح!')" class="bg-white text-blue-700 hover:bg-blue-50 font-bold px-4 py-2 rounded-xl text-xs sm:text-sm shadow transition-all">
-                        طلب الشراء
-                    </button>
-                </div>
-            `;
+            let dynamicSectionsHtml = "";
+            if (menuItems.length > 0) {
+                dynamicSectionsHtml = menuItems.map(item => {
+                    const itemName = item.spare_part_menu_items;
+                    
+                    if (itemName === 'شراء المنتج') {
+                        return `
+                            <div class="bg-gradient-to-r from-indigo-500 to-blue-600 p-4 rounded-2xl shadow-md text-white flex items-center justify-between mb-4">
+                                <div>
+                                    <span class="block font-bold text-base">قسم شراء المنتج</span>
+                                    <span class="text-xs text-indigo-100">اطلب قطعة الغيار المتوفرة لهذه الشاشة الآن</span>
+                                </div>
+                                <button onclick="alert('تم إرسال طلب شراء قطعة: ${part} لجهاز ${selectedModel} بنجاح!')" class="bg-white text-blue-700 hover:bg-blue-50 font-bold px-4 py-2 rounded-xl text-xs sm:text-sm shadow transition-all">
+                                    طلب الشراء
+                                </button>
+                            </div>
+                        `;
+                    } else if (itemName === 'تنبيهات الصيانة') {
+                        return `
+                            <div class="bg-amber-50 border border-amber-200 p-3 rounded-xl mb-3 flex items-center gap-2">
+                                <svg class="w-5 h-5 text-amber-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                                <span class="text-amber-900 text-xs sm:text-sm font-semibold">تنبيهات الصيانة: يرجى التأكد من التجربة قبل الفك والتركيب نهائياً.</span>
+                            </div>
+                        `;
+                    } else if (itemName === 'طراز المنتج') {
+                        return `
+                            <div class="bg-gray-50 border border-gray-200 p-4 rounded-2xl mb-3 shadow-sm">
+                                <h4 class="font-bold text-gray-800 text-sm mb-1">طراز المنتج:</h4>
+                                <p class="text-gray-700 text-sm">${selectedModelCode || selectedModel}</p>
+                            </div>
+                        `;
+                    } else {
+                        return `
+                            <div class="bg-white border border-gray-200 p-4 rounded-2xl mb-3 shadow-sm">
+                                <h4 class="font-bold text-gray-800 text-sm mb-1">${itemName}</h4>
+                                <p class="text-gray-600 text-sm">تفاصيل خاصة بـ ${itemName} للقطعة ${part}</p>
+                            </div>
+                        `;
+                    }
+                }).join('');
+            }
 
             let postsHtml = "";
-            let maintenanceAlertsHtml = `
-                <div class="bg-amber-50 border border-amber-200 p-3 rounded-xl mb-3 flex items-center gap-2">
-                    <svg class="w-5 h-5 text-amber-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
-                    <span class="text-amber-900 text-xs sm:text-sm font-semibold">تنبيهات الصيانة: يرجى التأكد من التجربة قبل الفك والتركيب نهائياً.</span>
-                </div>
-            `;
-
             try {
                 const { data, error } = await supabaseClient
                     .from('posts')
@@ -1244,8 +1279,7 @@
                 </div>
                 <div class="flex-1 overflow-y-auto space-y-4 p-1">
                     ${extraInfoHtml}
-                    ${purchaseSectionHtml}
-                    ${maintenanceAlertsHtml}
+                    ${dynamicSectionsHtml}
                     <div class="space-y-3">
                         ${postsHtml}
                     </div>
