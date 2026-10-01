@@ -59,10 +59,8 @@
         let currentBatteryModel = "";
         let currentUserDataGlobal = null; 
 
-        // متغير مؤقت للـ Heartbeat في الخلفية
         let heartbeatInterval = null;
 
-        // بدء الهارت بيت التلقائي في الخلفية كل 10 ثوانٍ
         function startUserHeartbeat(userId) {
             if (!userId) return;
             stopUserHeartbeat();
@@ -1163,7 +1161,6 @@
             loadDynamicMenuIntoSidebar();
         }
 
-        // ================= الدالة المحدثة: جلب القوائم حسب اسم القطعة وترتيبها عبر get_menu_items_by_part_name =================
         async function renderPartDetails(part) {
             selectedPart = part;
             
@@ -1187,7 +1184,7 @@
                     <div class="bg-blue-50 border border-blue-200 p-4 rounded-2xl mb-4 shadow-sm">
                         <div class="flex items-center gap-2 mb-1">
                             <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                            <h4 class="font-bold text-blue-900 text-sm">قسم توافق الشاشات:</h4>
+                            <h4 class="font-bold text-blue-900 text-sm">توافقات الشاشة:</h4>
                         </div>
                         <p class="text-blue-800 text-sm leading-relaxed">${currentScreenCompatibility}</p>
                     </div>
@@ -1197,7 +1194,7 @@
                     <div class="bg-emerald-50 border border-emerald-200 p-4 rounded-2xl mb-4 shadow-sm">
                         <div class="flex items-center gap-2 mb-1">
                             <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                            <h4 class="font-bold text-emerald-900 text-sm">موديل البطارية / التوافق:</h4>
+                            <h4 class="font-bold text-emerald-900 text-sm">طراز البطارية:</h4>
                         </div>
                         <p class="text-emerald-800 text-sm leading-relaxed">${currentBatteryModel}</p>
                     </div>
@@ -1213,7 +1210,7 @@
                         return `
                             <div class="bg-gradient-to-r from-indigo-500 to-blue-600 p-4 rounded-2xl shadow-md text-white flex items-center justify-between mb-4">
                                 <div>
-                                    <span class="block font-bold text-base">قسم شراء المنتج</span>
+                                    <span class="block font-bold text-base">شراء المنتج</span>
                                     <span class="text-xs text-indigo-100">اطلب قطعة الغيار المتوفرة لهذه الشاشة الآن</span>
                                 </div>
                                 <button onclick="alert('تم إرسال طلب شراء قطعة: ${part} لجهاز ${selectedModel} بنجاح!')" class="bg-white text-blue-700 hover:bg-blue-50 font-bold px-4 py-2 rounded-xl text-xs sm:text-sm shadow transition-all">
