@@ -1178,56 +1178,22 @@
                 console.error("خطأ استثنائي:", err);
             }
 
+            // عرض البيانات الواردة من قاعدة البيانات فقط دون أي إضافات ثابتة من الكود
             let dynamicSectionsHtml = "";
             if (menuItems.length > 0) {
                 dynamicSectionsHtml = menuItems.map(item => {
-                    const itemName = item.spare_part_menu_items;
+                    const itemName = item.spare_part_menu_items || item.title || item.name || Object.values(item)[1];
+                    const itemValue = item.value || item.content || item.description || "";
                     
-                    if (itemName === 'شراء المنتج') {
-                        return `
-                            <div class="bg-gradient-to-r from-indigo-500 to-blue-600 p-4 rounded-2xl shadow-md text-white flex items-center justify-between mb-4">
-                                <div>
-                                    <span class="block font-bold text-base">شراء المنتج</span>
-                                    <span class="text-xs text-indigo-100">اطلب قطعة الغيار المتوفرة لهذه الشاشة الآن</span>
-                                </div>
-                                <button onclick="alert('تم إرسال طلب شراء قطعة: ${part} لجهاز ${selectedModel} بنجاح!')" class="bg-white text-blue-700 hover:bg-blue-50 font-bold px-4 py-2 rounded-xl text-xs sm:text-sm shadow transition-all">
-                                    طلب الشراء
-                                </button>
-                            </div>
-                        `;
-                    } else if (itemName === 'تنبيهات الصيانة') {
-                        return `
-                            <div class="bg-amber-50 border border-amber-200 p-3 rounded-xl mb-3 flex items-center gap-2">
-                                <svg class="w-5 h-5 text-amber-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
-                                <span class="text-amber-900 text-xs sm:text-sm font-semibold">تنبيهات الصيانة: يرجى التأكد من التجربة قبل الفك والتركيب نهائياً.</span>
-                            </div>
-                        `;
-                    } else if (itemName === 'طراز المنتج') {
-                        return `
-                            <div class="bg-gray-50 border border-gray-200 p-4 rounded-2xl mb-3 shadow-sm">
-                                <p class="text-gray-700 text-sm font-semibold">${selectedModelCode || selectedModel}</p>
-                            </div>
-                        `;
-                    } else if (itemName === 'توافقات الشاشة' && part === 'شاشة') {
-                        return `
-                            <div class="bg-blue-50 border border-blue-200 p-4 rounded-2xl mb-4 shadow-sm">
-                                <p class="text-blue-800 text-sm leading-relaxed font-semibold">${currentScreenCompatibility || 'لا توجد توافقات مسجلة'}</p>
-                            </div>
-                        `;
-                    } else if (itemName === 'طراز البطارية' && part === 'بطارية') {
-                        return `
-                            <div class="bg-emerald-50 border border-emerald-200 p-4 rounded-2xl mb-4 shadow-sm">
-                                <p class="text-emerald-800 text-sm leading-relaxed font-semibold">${currentBatteryModel || 'لا توجد بيانات مسجلة'}</p>
-                            </div>
-                        `;
-                    } else {
-                        return `
-                            <div class="bg-white border border-gray-200 p-4 rounded-2xl mb-3 shadow-sm">
-                                <p class="text-gray-700 text-sm font-semibold">${itemName}</p>
-                            </div>
-                        `;
-                    }
+                    return `
+                        <div class="bg-white border border-gray-200 p-4 rounded-2xl mb-3 shadow-sm">
+                            <h4 class="font-bold text-gray-800 text-sm mb-1">${itemName}</h4>
+                            ${itemValue ? `<p class="text-gray-600 text-sm">${itemValue}</p>` : ''}
+                        </div>
+                    `;
                 }).join('');
+            } else {
+                dynamicSectionsHtml = `<div class="text-center text-gray-400 text-sm py-4">لا توجد بيانات مسجلة في قاعدة البيانات لهذه القطعة حالياً</div>`;
             }
 
             let postsHtml = "";
