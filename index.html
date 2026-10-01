@@ -41,7 +41,7 @@
 
     </div>
 
-    <!-- كود الجافاسكريبت لإدارة النظام والصفحات (بنظام الهارت بيت والتحديث اليدوي) -->
+    <!-- كود الجافاسكريبت لإدارة النظام والصفحات -->
     <script>
         // ================= 1. المتغيرات وإعدادات الاتصال =================
         const SUPABASE_URL = 'https://byiayomtcwqlgrknvgcz.supabase.co';
@@ -62,27 +62,18 @@
         // متغير مؤقت للـ Heartbeat في الخلفية
         let heartbeatInterval = null;
 
-        // قطع الغيار المطلوبة
-        const sparePartsList = [
-            "شاشة", "بطارية", "ضهرية", "فلاتة ربط", "فلاتة باور", 
-            "فلاتة شحن", "فريم", "ميدل", "سماعة داخلية مكالمات", 
-            "سماعة خارجية مكبر الصوت", "سوكيت", "ايسيهات"
-        ];
-
-        // بدء الهارت بيت التلقائي في الخلفية كل 10 ثوانٍ بناءً على الطلب
+        // بدء الهارت بيت التلقائي في الخلفية كل 10 ثوانٍ
         function startUserHeartbeat(userId) {
             if (!userId) return;
-            stopUserHeartbeat(); // إيقاف أي نبضات سابقة
+            stopUserHeartbeat();
 
-            // إرسال نبضة فورية
             sendHeartbeat(userId);
 
-            // إرسال نبضة كل 10 ثانية بصمت طالما المتصفح مرئي
             heartbeatInterval = setInterval(() => {
                 if (document.visibilityState === 'visible') {
                     sendHeartbeat(userId);
                 }
-            }, 10 * 1000); // كل 10 ثوانٍ
+            }, 10 * 1000);
         }
 
         async function sendHeartbeat(userId) {
@@ -247,7 +238,6 @@
             }
         }
 
-        // ================= شاشة المستخدمين النشطين (تحديث يدوي كامل) =================
         async function renderActiveUsersScreen() {
             if (!currentUserId) {
                 alert("يجب تسجيل الدخول أولاً!");
@@ -344,7 +334,7 @@
 
         async function renderLoginHistoryScreen() {
             if (!currentUserId) {
-                alert("❌ خطأ: لم يتم جلب الـ ID (المستخدم زائر أو غير مسجل دخول).");
+                alert("❌ خطأ: لم يتم جلب الـ ID.");
                 return;
             }
 
@@ -884,7 +874,7 @@
             currentUserId = resObj.user?.id || resObj.user_id || resObj.id || resObj.ID || resObj.uuid || null; 
             
             if (currentUserId) {
-                startUserHeartbeat(currentUserId); // تفعيل الـ Heartbeat التلقائي كل 10 ثوانٍ
+                startUserHeartbeat(currentUserId);
             }
 
             renderMainDashboard();
@@ -928,7 +918,7 @@
             currentUserId = resObj?.user?.id || resObj?.id || resObj?.user_id || resObj?.ID || resObj?.uuid || null;
             
             if (currentUserId) {
-                startUserHeartbeat(currentUserId); // تفعيل الـ Heartbeat التلقائي كل 10 ثوانٍ
+                startUserHeartbeat(currentUserId);
             }
 
             renderMainDashboard();
@@ -1112,21 +1102,52 @@
             loadDynamicMenuIntoSidebar();
         }
 
-        function renderPartsScreen(modelName, modelCode, screenCompat, batteryModel) {
+        // ================= دالة جلب قطع الغيار من جدول spare_parts ديناميكياً =================
+        async function renderPartsScreen(modelName, modelCode, screenCompat, batteryModel) {
             selectedModel = modelName;
             selectedModelCode = modelCode ? decodeURIComponent(modelCode) : '';
             currentScreenCompatibility = screenCompat ? decodeURIComponent(screenCompat) : '';
             currentBatteryModel = batteryModel ? decodeURIComponent(batteryModel) : '';
 
-            let partsHtml = sparePartsList.map((part, index) => {
-                const style = getRotatingCardStyle(index);
-                return `
-                    <div onclick="renderPartDetails('${part}')" class="w-full ${style.bg} border ${style.border} p-4 rounded-2xl shadow-sm flex items-center justify-between cursor-pointer transition-all text-sm sm:text-base">
-                        <span class="font-bold text-gray-800">${part}</span>
-                        <svg class="w-5 h-5 ${style.icon} flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
-                    </div>
-                `;
-            }).join('');
+            // 1. عرض رسالة تحميل مؤقتة
+            document.getElementById('appContainer').innerHTML = `
+                ${getHeaderTemplate()}
+                <div class="flex items-center justify-between mb-4 flex-shrink-0">
+                    <button onclick="renderModelsScreen('${selectedBrand}')" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center gap-1.5">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                        <span>رجوع</span>
+                    </button>
+                    <h2 class="text-sm sm:text-base font-bold text-gray-800">اختر قطعة الغيار (${selectedModel})</h2>
+                </div>
+                <div class="flex-1 flex items-center justify-center">
+                    <p class="text-gray-500 text-sm">جاري جلب قطع الغيار من قاعدة البيانات...</p>
+                </div>
+            `;
+
+            // 2. جلب البيانات من جدول spare_parts سحابياً
+            let sparePartsList = [];
+            const { data, error } = await supabaseClient.from('spare_parts').select('*').order('id', { ascending: true });
+
+            if (!error && data) {
+                sparePartsList = data.map(item => item.part_name || item.name || Object.values(item)[1]);
+            } else {
+                console.error("خطأ في جلب قطع الغيار:", error?.message);
+            }
+
+            let partsHtml = "";
+            if (sparePartsList.length > 0) {
+                partsHtml = sparePartsList.map((part, index) => {
+                    const style = getRotatingCardStyle(index);
+                    return `
+                        <div onclick="renderPartDetails('${part}')" class="w-full ${style.bg} border ${style.border} p-4 rounded-2xl shadow-sm flex items-center justify-between cursor-pointer transition-all text-sm sm:text-base">
+                            <span class="font-bold text-gray-800">${part}</span>
+                            <svg class="w-5 h-5 ${style.icon} flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                        </div>
+                    `;
+                }).join('');
+            } else {
+                partsHtml = `<div class="text-center text-gray-500 py-6">لا توجد قطع غيار متاحة في الجدول حالياً</div>`;
+            }
 
             const html = `
                 ${getHeaderTemplate()}
