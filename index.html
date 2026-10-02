@@ -448,7 +448,6 @@
             }
         }
 
-        // دالة تحديث دور المستخدم
         async function changeUserRole(targetUserId, newRole) {
             if (!currentUserId) {
                 alert("يجب تسجيل الدخول أولاً!");
@@ -517,7 +516,6 @@
 
             const allUsers = response.data || [];
             
-            // التحقق مما إذا كان المستخدم الحالي هو الـ admin أو head (له صلاحية تعديل الأدوار)
             const isCurrentAdmin = (currentUserType && currentUserType.toLowerCase() === 'admin') || (currentUserRole && currentUserRole.toLowerCase() === 'admin');
             const isCurrentHead = (currentUserType && (currentUserType.toLowerCase() === 'head' || currentUserType.toLowerCase() === 'مدير')) || (currentUserRole && (currentUserRole.toLowerCase() === 'head' || currentUserRole.toLowerCase() === 'مدير'));
             const canModifyRoles = isCurrentAdmin || isCurrentHead;
@@ -527,7 +525,6 @@
                 rowsHtml = allUsers.map((user, index) => {
                     let role = (user.user_role || '').toLowerCase();
                     
-                    // خلية الرتبة: لو الإدارة مسموحة تظهر قائمة منسدلة، لو rep أو غيره يظهر نص عادي فقط
                     let roleCellHtml = "";
                     if (canModifyRoles) {
                         roleCellHtml = `
@@ -821,12 +818,19 @@
                             <form onsubmit="handleLoginSubmit(event)" class="space-y-4">
                                 <div>
                                     <label class="block text-xs font-semibold text-gray-600 mb-1">رقم الهاتف</label>
-                                    <input type="text" id="loginPhone" required class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-gray-50">
+                                    <input type="text" id="loginPhone" required class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-gray-50" dir="ltr">
                                 </div>
                                 <div>
                                     <label class="block text-xs font-semibold text-gray-600 mb-1">رمز المرور</label>
-                                    <input type="password" id="loginPassword" required class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-gray-50">
+                                    <input type="password" id="loginPassword" required class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-gray-50" dir="ltr">
                                 </div>
+                                
+                                <!-- خانة "تذكرني" الجديدة -->
+                                <div class="flex items-center gap-2">
+                                    <input type="checkbox" id="rememberMe" class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 cursor-pointer">
+                                    <label for="rememberMe" class="text-xs font-semibold text-gray-600 cursor-pointer">تذكرني</label>
+                                </div>
+
                                 <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl shadow-lg transition-all text-sm">
                                     تسجيل الدخول
                                 </button>
@@ -849,11 +853,11 @@
                                 </div>
                                 <div>
                                     <label class="block text-xs font-semibold text-gray-600 mb-1">رقم الهاتف</label>
-                                    <input type="text" id="regPhone" required class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-gray-50">
+                                    <input type="text" id="regPhone" required class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-gray-50" dir="ltr">
                                 </div>
                                 <div>
                                     <label class="block text-xs font-semibold text-gray-600 mb-1">رمز المرور</label>
-                                    <input type="password" id="regPassword" required class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-gray-50">
+                                    <input type="password" id="regPassword" required class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-gray-50" dir="ltr">
                                 </div>
                                 <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl shadow-lg transition-all text-sm mt-2">
                                     إنشاء الحساب
@@ -875,6 +879,17 @@
                 </div>
             `;
             document.getElementById('appContainer').innerHTML = html;
+            
+            // استرجاع البيانات المحفوظة إن وجدت بعد عرض شاشة تسجيل الدخول
+            if (localStorage.getItem('saved_phone')) {
+                const phoneInput = document.getElementById('loginPhone');
+                const passInput = document.getElementById('loginPassword');
+                const rememberCheckbox = document.getElementById('rememberMe');
+                
+                if (phoneInput) phoneInput.value = localStorage.getItem('saved_phone');
+                if (passInput) passInput.value = localStorage.getItem('saved_password');
+                if (rememberCheckbox) rememberCheckbox.checked = true;
+            }
         }
 
         function switchTab(tab) {
@@ -888,6 +903,17 @@
                 registerForm.classList.add('hidden');
                 loginTabBtn.className = "py-2.5 text-sm font-semibold rounded-xl transition-all duration-200 bg-white text-blue-600 shadow-sm";
                 registerTabBtn.className = "py-2.5 text-sm font-semibold rounded-xl transition-all duration-200 text-gray-500 hover:text-gray-700";
+                
+                // إعادة تعبئة الحقول إذا كان هناك بيانات محفوظة
+                if (localStorage.getItem('saved_phone')) {
+                    const phoneInput = document.getElementById('loginPhone');
+                    const passInput = document.getElementById('loginPassword');
+                    const rememberCheckbox = document.getElementById('rememberMe');
+                    
+                    if (phoneInput) phoneInput.value = localStorage.getItem('saved_phone');
+                    if (passInput) passInput.value = localStorage.getItem('saved_password');
+                    if (rememberCheckbox) rememberCheckbox.checked = true;
+                }
             } else {
                 loginForm.classList.add('hidden');
                 registerForm.classList.remove('hidden');
@@ -900,6 +926,16 @@
             e.preventDefault();
             const phone = document.getElementById('loginPhone').value.trim();
             const password = document.getElementById('loginPassword').value.trim();
+            const rememberMe = document.getElementById('rememberMe')?.checked;
+
+            // حفظ أو مسح بيانات الـ localStorage بناءً على حالة تفعيل "تذكرني"
+            if (rememberMe) {
+                localStorage.setItem('saved_phone', phone);
+                localStorage.setItem('saved_password', password);
+            } else {
+                localStorage.removeItem('saved_phone');
+                localStorage.removeItem('saved_password');
+            }
 
             const { data, error } = await supabaseClient.rpc('login_user', { 
                 p_phone_number: phone, 
