@@ -718,7 +718,8 @@
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-gray-500 mb-1">رمز المرور</label>
-                            <input type="text" id="editPassword" value="${uData.password || uData.pass || ''}" required class="w-full bg-gray-50 border border-gray-200 text-gray-800 font-semibold px-4 py-3 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" dir="ltr">
+                            <!-- حقل تعديل كلمة المرور المحدث لمنع التنبيهات -->
+                            <input type="password" id="editPassword" name="password" autocomplete="current-password" data-lpignore="true" value="${uData.password || uData.pass || ''}" required class="w-full bg-gray-50 border border-gray-200 text-gray-800 font-semibold px-4 py-3 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" dir="ltr">
                         </div>
                         <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl shadow-lg transition-all text-sm">
                             حفظ التعديلات
@@ -818,11 +819,12 @@
                             <form onsubmit="handleLoginSubmit(event)" class="space-y-4">
                                 <div>
                                     <label class="block text-xs font-semibold text-gray-600 mb-1">رقم الهاتف</label>
-                                    <input type="text" id="loginPhone" required class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-gray-50" dir="ltr">
+                                    <input type="text" id="loginPhone" name="username" autocomplete="username" required class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-gray-50" dir="ltr">
                                 </div>
                                 <div>
                                     <label class="block text-xs font-semibold text-gray-600 mb-1">رمز المرور</label>
-                                    <input type="password" id="loginPassword" required class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-gray-50" dir="ltr">
+                                    <!-- حقل كلمة المرور الرئيسي المحدث لمنع التنبيهات -->
+                                    <input type="password" id="loginPassword" name="password" autocomplete="current-password" data-lpignore="true" required class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-gray-50" dir="ltr">
                                 </div>
                                 
                                 <!-- خانة "تذكرني" الجديدة -->
@@ -857,7 +859,8 @@
                                 </div>
                                 <div>
                                     <label class="block text-xs font-semibold text-gray-600 mb-1">رمز المرور</label>
-                                    <input type="password" id="regPassword" required class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-gray-50" dir="ltr">
+                                    <!-- حقل تسجيل حساب جديد كلمة المرور المحدث لمنع التنبيهات -->
+                                    <input type="password" id="regPassword" name="new-password" autocomplete="new-password" data-lpignore="true" required class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-gray-50" dir="ltr">
                                 </div>
                                 <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl shadow-lg transition-all text-sm mt-2">
                                     إنشاء الحساب
