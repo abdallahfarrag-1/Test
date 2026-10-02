@@ -448,7 +448,7 @@
             }
         }
 
-        // دالة تحديث دور المستخدم (تم تحديثها لإرسال p_caller_id مع الـ RPC)
+        // دالة تحديث دور المستخدم
         async function changeUserRole(targetUserId, newRole) {
             if (!currentUserId) {
                 alert("يجب تسجيل الدخول أولاً!");
@@ -516,28 +516,35 @@
             }
 
             const allUsers = response.data || [];
+            
+            // التحقق مما إذا كان المستخدم الحالي أدمن لتحديد إمكانية رؤية واختيار خيار الـ admin
+            const isCurrentAdmin = (currentUserType && (currentUserType.toLowerCase() === 'admin' || currentUserType.toLowerCase() === 'head')) || currentUserRole.toLowerCase().includes('admin');
 
             let rowsHtml = "";
             if (allUsers.length > 0) {
-                rowsHtml = allUsers.map((user, index) => `
-                    <tr class="${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'} hover:bg-blue-50/50 transition-colors">
-                        <td class="px-4 py-3 text-xs sm:text-sm whitespace-nowrap">
-                            <select onchange="changeUserRole('${user.id}', this.value)" class="bg-gray-50 border border-gray-200 text-indigo-600 font-bold rounded-lg px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                <option value="head" ${user.user_role === 'head' || user.user_role === 'مدير' ? 'selected' : ''}>head</option>
-                                <option value="rep" ${user.user_role === 'rep' ? 'selected' : ''}>rep</option>
-                                <option value="seller" ${user.user_role === 'seller' ? 'selected' : ''}>seller</option>
-                                <option value="tech" ${user.user_role === 'tech' ? 'selected' : ''}>tech</option>
-                                <option value="person" ${user.user_role === 'person' ? 'selected' : ''}>person</option>
-                                <option value="user" ${user.user_role === 'user' ? 'selected' : ''}>user</option>
-                            </select>
-                        </td>
-                        <td class="px-4 py-3 text-xs sm:text-sm text-gray-800 font-bold whitespace-nowrap">${user.user_name || 'بدون اسم'}</td>
-                        <td class="px-4 py-3 text-xs sm:text-sm text-gray-700 whitespace-nowrap">${user.shop_name || 'غير متوفر'}</td>
-                        <td class="px-4 py-3 text-xs sm:text-sm text-gray-600">${user.shop_address || 'غير متوفر'}</td>
-                        <td class="px-4 py-3 text-xs sm:text-sm text-blue-600 font-semibold whitespace-nowrap" dir="ltr">${user.phone_number || ''}</td>
-                        <td class="px-4 py-3 text-xs sm:text-sm text-gray-700 font-semibold whitespace-nowrap" dir="ltr">${user.password || user.pass || 'غير مسموح'}</td>
-                    </tr>
-                `).join('');
+                rowsHtml = allUsers.map((user, index) => {
+                    const role = (user.user_role || '').toLowerCase();
+                    return `
+                        <tr class="${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'} hover:bg-blue-50/50 transition-colors">
+                            <td class="px-4 py-3 text-xs sm:text-sm whitespace-nowrap">
+                                <select onchange="changeUserRole('${user.id}', this.value)" class="bg-gray-50 border border-gray-200 text-indigo-600 font-bold rounded-lg px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <option value="head" ${role === 'head' || role === 'مدير' ? 'selected' : ''}>head</option>
+                                    <option value="rep" ${role === 'rep' ? 'selected' : ''}>rep</option>
+                                    <option value="seller" ${role === 'seller' ? 'selected' : ''}>seller</option>
+                                    <option value="tech" ${role === 'tech' ? 'selected' : ''}>tech</option>
+                                    <option value="person" ${role === 'person' ? 'selected' : ''}>person</option>
+                                    <option value="user" ${role === 'user' ? 'selected' : ''}>user</option>
+                                    <option value="admin" ${role === 'admin' ? 'selected' : ''}>admin</option>
+                                </select>
+                            </td>
+                            <td class="px-4 py-3 text-xs sm:text-sm text-gray-800 font-bold whitespace-nowrap">${user.user_name || 'بدون اسم'}</td>
+                            <td class="px-4 py-3 text-xs sm:text-sm text-gray-700 whitespace-nowrap">${user.shop_name || 'غير متوفر'}</td>
+                            <td class="px-4 py-3 text-xs sm:text-sm text-gray-600">${user.shop_address || 'غير متوفر'}</td>
+                            <td class="px-4 py-3 text-xs sm:text-sm text-blue-600 font-semibold whitespace-nowrap" dir="ltr">${user.phone_number || ''}</td>
+                            <td class="px-4 py-3 text-xs sm:text-sm text-gray-700 font-semibold whitespace-nowrap" dir="ltr">${user.password || user.pass || 'غير مسموح'}</td>
+                        </tr>
+                    `;
+                }).join('');
             } else {
                 rowsHtml = `<tr><td colspan="6" class="text-center text-gray-400 py-6 text-sm">لا يوجد مستخدمين مسجلين حالياً</td></tr>`;
             }
