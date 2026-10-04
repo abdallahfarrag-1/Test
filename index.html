@@ -174,7 +174,6 @@
                     return;
                 }
 
-                // استدعاء دالة RPC لجلب عناصر القائمة
                 const { data, error } = await supabaseClient.rpc('get_menu_items', {
                     user_id: currentUserId
                 });
@@ -275,8 +274,10 @@
                     }, 500);
                 }
 
-                // استدعاء RPC للـ المستخدمين النشطين
-                const { data: users, error } = await supabaseClient.rpc('get_active_users');
+                // تم تعديلها لتمرير p_user_id للدالة التي تم اعتمادها
+                const { data: users, error } = await supabaseClient.rpc('get_active_users', {
+                    p_user_id: currentUserId
+                });
 
                 if (error) {
                     console.error("خطأ في جلب المستخدمين النشطين:", error.message);
@@ -348,7 +349,6 @@
             `;
             loadDynamicMenuIntoSidebar();
 
-            // استدعاء RPC لجلب سجل الدخول
             const { data: response, error } = await supabaseClient.rpc('get_login_history_data', {
                 p_user_id: currentUserId
             });
@@ -431,7 +431,6 @@
             if (!confirmDel) return;
 
             try {
-                // استدعاء دالة RPC لحذف السجل
                 const { data, error } = await supabaseClient.rpc('delete_login_history', {
                     p_user_id: currentUserId
                 });
@@ -459,7 +458,6 @@
             }
 
             try {
-                // استدعاء دالة RPC لتعديل رتبة المستخدم
                 const { data, error } = await supabaseClient.rpc('update_user_role', {
                     p_caller_id: currentUserId,
                     target_user_id: targetUserId,
@@ -503,7 +501,6 @@
             `;
             loadDynamicMenuIntoSidebar();
 
-            // استدعاء RPC لجلب كل المستخدمين
             const { data: response, error } = await supabaseClient.rpc('get_all_users_data', {
                 p_user_id: currentUserId
             });
@@ -623,7 +620,6 @@
                 let userData = null;
 
                 if (currentUserId) {
-                    // استدعاء RPC لجلب بروفايل المستخدم
                     const { data: rpcData, error: rpcError } = await supabaseClient.rpc('get_user_profile', { 
                         user_id: currentUserId 
                     });
@@ -750,7 +746,6 @@
             const newPhone = document.getElementById('editPhone').value.trim();
             const newPassword = document.getElementById('editPassword').value.trim();
 
-            // استدعاء RPC لتحديث البروفايل
             const { data, error } = await supabaseClient.rpc('update_user_profile', {
                 p_user_id: currentUserId,
                 p_user_name: newName,
@@ -779,7 +774,6 @@
             if (!confirmDelete) return;
 
             try {
-                // استدعاء RPC لحذف الحساب
                 const { data, error } = await supabaseClient.rpc('delete_user_profile', {
                     p_user_id: currentUserId
                 });
@@ -834,7 +828,6 @@
                                     <input type="password" id="loginPassword" required class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-gray-50" dir="ltr">
                                 </div>
                                 
-                                <!-- خانة "تذكرني" الجديدة -->
                                 <div class="flex items-center gap-2">
                                     <input type="checkbox" id="rememberMe" class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 cursor-pointer">
                                     <label for="rememberMe" class="text-xs font-semibold text-gray-600 cursor-pointer">تذكرني</label>
@@ -889,7 +882,6 @@
             `;
             document.getElementById('appContainer').innerHTML = html;
             
-            // استرجاع البيانات المحفوظة إن وجدت بعد عرض شاشة تسجيل الدخول
             if (localStorage.getItem('saved_phone')) {
                 const phoneInput = document.getElementById('loginPhone');
                 const passInput = document.getElementById('loginPassword');
@@ -944,7 +936,6 @@
                 localStorage.removeItem('saved_password');
             }
 
-            // استدعاء RPC لتسجيل الدخول
             const { data, error } = await supabaseClient.rpc('login_user', { 
                 p_phone_number: phone, 
                 p_password: password 
@@ -985,7 +976,6 @@
             const phone_number = document.getElementById('regPhone').value.trim();
             const password = document.getElementById('regPassword').value.trim();
 
-            // استدعاء RPC لإنشاء حساب جديد
             const { data, error } = await supabaseClient.rpc('register_user', { 
                 p_user_name: user_name, 
                 p_shop_name: shop_name, 
@@ -1263,7 +1253,6 @@
             
             let menuItems = [];
             try {
-                // استدعاء RPC لجلب عناصر المنيو الخاصة بقطعة الغيار
                 const { data, error } = await supabaseClient.rpc('get_menu_items_by_part_name', {
                     p_part_name: part
                 });
