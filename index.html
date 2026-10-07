@@ -291,11 +291,13 @@
                             <td class="px-4 py-3 text-xs sm:text-sm text-gray-800 font-bold whitespace-nowrap">${user.user_name || 'بدون اسم'}</td>
                             <td class="px-4 py-3 text-xs sm:text-sm text-gray-700 whitespace-nowrap">${user.shop_name || 'غير متوفر'}</td>
                             <td class="px-4 py-3 text-xs sm:text-sm text-gray-600">${user.shop_address || 'غير متوفر'}</td>
+                            <td class="px-4 py-3 text-xs sm:text-sm text-gray-600 whitespace-nowrap">${user.shop_scope || 'غير متوفر'}</td>
+                            <td class="px-4 py-3 text-xs sm:text-sm text-gray-600 whitespace-nowrap">${user.shop_city || 'غير متوفر'}</td>
                             <td class="px-4 py-3 text-xs sm:text-sm text-blue-600 font-semibold whitespace-nowrap" dir="ltr">${user.phone_number || ''}</td>
                         </tr>
                     `).join('');
                 } else {
-                    rowsHtml = `<tr><td colspan="5" class="text-center text-gray-400 py-6 text-sm">لا توجد نشاطات حالية</td></tr>`;
+                    rowsHtml = `<tr><td colspan="7" class="text-center text-gray-400 py-6 text-sm">لا توجد نشاطات حالية</td></tr>`;
                 }
 
                 const titleEl = document.getElementById('activeUsersTitle');
@@ -313,6 +315,8 @@
                                     <th class="px-4 py-3 text-xs sm:text-sm font-bold text-gray-700 whitespace-nowrap">الاسم</th>
                                     <th class="px-4 py-3 text-xs sm:text-sm font-bold text-gray-700 whitespace-nowrap">اسم المحل</th>
                                     <th class="px-4 py-3 text-xs sm:text-sm font-bold text-gray-700 whitespace-nowrap">عنوان المحل</th>
+                                    <th class="px-4 py-3 text-xs sm:text-sm font-bold text-gray-700 whitespace-nowrap">نطاق المحل</th>
+                                    <th class="px-4 py-3 text-xs sm:text-sm font-bold text-gray-700 whitespace-nowrap">المحافظة</th>
                                     <th class="px-4 py-3 text-xs sm:text-sm font-bold text-gray-700 whitespace-nowrap">رقم الهاتف</th>
                                 </tr>
                             </thead>
@@ -379,12 +383,14 @@
                             <td class="px-4 py-3 text-xs sm:text-sm text-gray-800 font-bold whitespace-nowrap">${item.user_name || item.name || 'بدون اسم'}</td>
                             <td class="px-4 py-3 text-xs sm:text-sm text-gray-700 whitespace-nowrap">${item.shop_name || 'غير متوفر'}</td>
                             <td class="px-4 py-3 text-xs sm:text-sm text-gray-600 whitespace-nowrap">${item.shop_address || item.address || 'غير متوفر'}</td>
+                            <td class="px-4 py-3 text-xs sm:text-sm text-gray-600 whitespace-nowrap">${item.shop_scope || 'غير متوفر'}</td>
+                            <td class="px-4 py-3 text-xs sm:text-sm text-gray-600 whitespace-nowrap">${item.shop_city || 'غير متوفر'}</td>
                             <td class="px-4 py-3 text-xs sm:text-sm text-blue-600 font-semibold whitespace-nowrap" dir="ltr">${item.phone_number || ''}</td>
                         </tr>
                     `;
                 }).join('');
             } else {
-                rowsHtml = `<tr><td colspan="6" class="text-center text-gray-400 py-6 text-sm">لا توجد سجلات متاحة حالياً</td></tr>`;
+                rowsHtml = `<tr><td colspan="8" class="text-center text-gray-400 py-6 text-sm">لا توجد سجلات متاحة حالياً</td></tr>`;
             }
 
             const html = `
@@ -411,6 +417,8 @@
                                 <th class="px-4 py-3 text-xs sm:text-sm font-bold text-gray-700 whitespace-nowrap">الاسم</th>
                                 <th class="px-4 py-3 text-xs sm:text-sm font-bold text-gray-700 whitespace-nowrap">اسم المحل</th>
                                 <th class="px-4 py-3 text-xs sm:text-sm font-bold text-gray-700 whitespace-nowrap">عنوان المحل</th>
+                                <th class="px-4 py-3 text-xs sm:text-sm font-bold text-gray-700 whitespace-nowrap">نطاق المحل</th>
+                                <th class="px-4 py-3 text-xs sm:text-sm font-bold text-gray-700 whitespace-nowrap">المحافظة</th>
                                 <th class="px-4 py-3 text-xs sm:text-sm font-bold text-gray-700 whitespace-nowrap">رقم الهاتف</th>
                             </tr>
                         </thead>
@@ -557,13 +565,15 @@
                             <td class="px-4 py-3 text-xs sm:text-sm text-gray-800 font-bold whitespace-nowrap">${user.user_name || 'بدون اسم'}</td>
                             <td class="px-4 py-3 text-xs sm:text-sm text-gray-700 whitespace-nowrap">${user.shop_name || 'غير متوفر'}</td>
                             <td class="px-4 py-3 text-xs sm:text-sm text-gray-600">${user.shop_address || 'غير متوفر'}</td>
+                            <td class="px-4 py-3 text-xs sm:text-sm text-gray-600 whitespace-nowrap">${user.shop_scope || 'غير متوفر'}</td>
+                            <td class="px-4 py-3 text-xs sm:text-sm text-gray-600 whitespace-nowrap">${user.shop_city || 'غير متوفر'}</td>
                             <td class="px-4 py-3 text-xs sm:text-sm text-blue-600 font-semibold whitespace-nowrap" dir="ltr">${user.phone_number || ''}</td>
                             <td class="px-4 py-3 text-xs sm:text-sm text-gray-700 font-semibold whitespace-nowrap" dir="ltr">${user.password || user.pass || 'غير مسموح'}</td>
                         </tr>
                     `;
                 }).join('');
             } else {
-                rowsHtml = `<tr><td colspan="6" class="text-center text-gray-400 py-6 text-sm">لا يوجد مستخدمين مسجلين حالياً</td></tr>`;
+                rowsHtml = `<tr><td colspan="8" class="text-center text-gray-400 py-6 text-sm">لا يوجد مستخدمين مسجلين حالياً</td></tr>`;
             }
 
             const html = `
@@ -583,6 +593,8 @@
                                 <th class="px-4 py-3 text-xs sm:text-sm font-bold text-gray-700 whitespace-nowrap">الاسم</th>
                                 <th class="px-4 py-3 text-xs sm:text-sm font-bold text-gray-700 whitespace-nowrap">اسم المحل</th>
                                 <th class="px-4 py-3 text-xs sm:text-sm font-bold text-gray-700 whitespace-nowrap">عنوان المحل</th>
+                                <th class="px-4 py-3 text-xs sm:text-sm font-bold text-gray-700 whitespace-nowrap">نطاق المحل</th>
+                                <th class="px-4 py-3 text-xs sm:text-sm font-bold text-gray-700 whitespace-nowrap">المحافظة</th>
                                 <th class="px-4 py-3 text-xs sm:text-sm font-bold text-gray-700 whitespace-nowrap">رقم الهاتف</th>
                                 <th class="px-4 py-3 text-xs sm:text-sm font-bold text-gray-700 whitespace-nowrap">رمز المرور</th>
                             </tr>
@@ -635,14 +647,13 @@
 
                 currentUserDataGlobal = userData; 
 
-                const role = userData?.user_role || currentUserRole;
-                const name = userData?.user_name || "غير متوفر";
+                const name = userData?.user_name || userData?.name || "غير متوفر";
                 const shopName = userData?.shop_name || "غير متوفر";
                 const shopAddress = userData?.shop_address || "غير متوفر";
-                const shopArea = userData?.shop_area || "غير متوفر";
+                const shopScope = userData?.shop_scope || "غير متوفر";
                 const shopCity = userData?.shop_city || "غير متوفر";
-                const phone = userData?.phone_number || "غير متوفر";
-                const password = userData?.password || "********";
+                const phone = userData?.phone_number || currentUserRole;
+                const password = userData?.password || userData?.pass || "********";
 
                 const htmlContent = `
                     ${getHeaderTemplate()}
@@ -659,40 +670,34 @@
                         <h2 class="text-sm sm:text-base font-bold text-gray-800">البيانات الشخصية</h2>
                     </div>
                     <div class="flex-1 overflow-y-auto space-y-4 p-2 max-w-xl mx-auto w-full">
-                        <div class="bg-white border border-gray-200 p-5 rounded-2xl shadow-sm space-y-3">
-                            <div>
-                                <label class="block text-xs font-semibold text-gray-500 mb-1">الرتبة (User Role)</label>
-                                <div class="w-full bg-gray-50 border border-gray-200 text-indigo-600 font-bold px-4 py-2.5 rounded-xl text-sm">${role}</div>
-                            </div>
+                        <div class="bg-white border border-gray-200 p-5 rounded-2xl shadow-sm space-y-4">
                             <div>
                                 <label class="block text-xs font-semibold text-gray-500 mb-1">الاسم</label>
-                                <div class="w-full bg-gray-50 border border-gray-200 text-gray-800 font-semibold px-4 py-2.5 rounded-xl text-sm">${name}</div>
+                                <div class="w-full bg-gray-50 border border-gray-200 text-gray-800 font-semibold px-4 py-3 rounded-xl text-sm">${name}</div>
                             </div>
                             <div>
                                 <label class="block text-xs font-semibold text-gray-500 mb-1">اسم المحل</label>
-                                <div class="w-full bg-gray-50 border border-gray-200 text-gray-800 font-semibold px-4 py-2.5 rounded-xl text-sm">${shopName}</div>
+                                <div class="w-full bg-gray-50 border border-gray-200 text-gray-800 font-semibold px-4 py-3 rounded-xl text-sm">${shopName}</div>
                             </div>
                             <div>
-                                <label class="block text-xs font-semibold text-gray-500 mb-1">العنوان</label>
-                                <div class="w-full bg-gray-50 border border-gray-200 text-gray-800 font-semibold px-4 py-2.5 rounded-xl text-sm">${shopAddress}</div>
-                            </div>
-                            <div class="grid grid-cols-2 gap-2">
-                                <div>
-                                    <label class="block text-xs font-semibold text-gray-500 mb-1">نطاق المحل</label>
-                                    <div class="w-full bg-gray-50 border border-gray-200 text-gray-800 font-semibold px-4 py-2.5 rounded-xl text-sm">${shopArea}</div>
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-semibold text-gray-500 mb-1">المدينة</label>
-                                    <div class="w-full bg-gray-50 border border-gray-200 text-gray-800 font-semibold px-4 py-2.5 rounded-xl text-sm">${shopCity}</div>
-                                </div>
+                                <label class="block text-xs font-semibold text-gray-500 mb-1">عنوان المحل</label>
+                                <div class="w-full bg-gray-50 border border-gray-200 text-gray-800 font-semibold px-4 py-3 rounded-xl text-sm">${shopAddress}</div>
                             </div>
                             <div>
-                                <label class="block text-xs font-semibold text-gray-500 mb-1">رقم التليفون</label>
-                                <div class="w-full bg-gray-50 border border-gray-200 text-gray-800 font-semibold px-4 py-2.5 rounded-xl text-sm" dir="ltr">${phone}</div>
+                                <label class="block text-xs font-semibold text-gray-500 mb-1">نطاق المحل</label>
+                                <div class="w-full bg-gray-50 border border-gray-200 text-gray-800 font-semibold px-4 py-3 rounded-xl text-sm">${shopScope}</div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-500 mb-1">المحافظة</label>
+                                <div class="w-full bg-gray-50 border border-gray-200 text-gray-800 font-semibold px-4 py-3 rounded-xl text-sm">${shopCity}</div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-500 mb-1">رقم الهاتف</label>
+                                <div class="w-full bg-gray-50 border border-gray-200 text-gray-800 font-semibold px-4 py-3 rounded-xl text-sm" dir="ltr">${phone}</div>
                             </div>
                             <div>
                                 <label class="block text-xs font-semibold text-gray-500 mb-1">رمز المرور</label>
-                                <div class="w-full bg-gray-50 border border-gray-200 text-gray-800 font-semibold px-4 py-2.5 rounded-xl text-sm" dir="ltr">${password}</div>
+                                <div class="w-full bg-gray-50 border border-gray-200 text-gray-800 font-semibold px-4 py-3 rounded-xl text-sm" dir="ltr">${password}</div>
                             </div>
                         </div>
                     </div>
@@ -712,6 +717,7 @@
             }
 
             const uData = currentUserDataGlobal || {};
+            const currentCity = uData.shop_city || '';
 
             const html = `
                 ${getHeaderTemplate()}
@@ -723,38 +729,43 @@
                     <h2 class="text-sm sm:text-base font-bold text-gray-800">تعديل البيانات الشخصية</h2>
                 </div>
                 <div class="flex-1 overflow-y-auto space-y-4 p-2 max-w-xl mx-auto w-full">
-                    <form onsubmit="handleUpdateProfile(event)" class="bg-white border border-gray-200 p-5 rounded-2xl shadow-sm space-y-3">
+                    <form onsubmit="handleUpdateProfile(event)" class="bg-white border border-gray-200 p-5 rounded-2xl shadow-sm space-y-4">
                         <div>
                             <label class="block text-xs font-semibold text-gray-500 mb-1">الاسم</label>
-                            <input type="text" id="editUserName" value="${uData.user_name || ''}" required class="w-full bg-gray-50 border border-gray-200 text-gray-800 font-semibold px-4 py-2.5 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <input type="text" id="editUserName" value="${uData.user_name || uData.name || ''}" required class="w-full bg-gray-50 border border-gray-200 text-gray-800 font-semibold px-4 py-3 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-gray-500 mb-1">اسم المحل</label>
-                            <input type="text" id="editShopName" value="${uData.shop_name || ''}" required class="w-full bg-gray-50 border border-gray-200 text-gray-800 font-semibold px-4 py-2.5 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <input type="text" id="editShopName" value="${uData.shop_name || ''}" required class="w-full bg-gray-50 border border-gray-200 text-gray-800 font-semibold px-4 py-3 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                         </div>
                         <div>
-                            <label class="block text-xs font-semibold text-gray-500 mb-1">العنوان</label>
-                            <input type="text" id="editShopAddress" value="${uData.shop_address || ''}" required class="w-full bg-gray-50 border border-gray-200 text-gray-800 font-semibold px-4 py-2.5 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        </div>
-                        <div class="grid grid-cols-2 gap-2">
-                            <div>
-                                <label class="block text-xs font-semibold text-gray-500 mb-1">نطاق المحل</label>
-                                <input type="text" id="editShopArea" value="${uData.shop_area || ''}" class="w-full bg-gray-50 border border-gray-200 text-gray-800 font-semibold px-4 py-2.5 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold text-gray-500 mb-1">المدينة</label>
-                                <input type="text" id="editShopCity" value="${uData.shop_city || ''}" class="w-full bg-gray-50 border border-gray-200 text-gray-800 font-semibold px-4 py-2.5 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            </div>
+                            <label class="block text-xs font-semibold text-gray-500 mb-1">عنوان المحل</label>
+                            <input type="text" id="editShopAddress" value="${uData.shop_address || ''}" required class="w-full bg-gray-50 border border-gray-200 text-gray-800 font-semibold px-4 py-3 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                         </div>
                         <div>
-                            <label class="block text-xs font-semibold text-gray-500 mb-1">رقم التليفون</label>
-                            <input type="text" id="editPhone" value="${uData.phone_number || ''}" required class="w-full bg-gray-50 border border-gray-200 text-gray-800 font-semibold px-4 py-2.5 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" dir="ltr">
+                            <label class="block text-xs font-semibold text-gray-500 mb-1">نطاق المحل</label>
+                            <input type="text" id="editShopScope" value="${uData.shop_scope || ''}" class="w-full bg-gray-50 border border-gray-200 text-gray-800 font-semibold px-4 py-3 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-500 mb-1">المحافظة</label>
+                            <select id="editShopCity" required class="w-full bg-gray-50 border border-gray-200 text-gray-800 font-semibold px-4 py-3 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="" disabled ${!currentCity ? 'selected' : ''}>اختر المحافظة</option>
+                                <option value="أسوان" ${currentCity === 'أسوان' ? 'selected' : ''}>أسوان</option>
+                                <option value="الأقصر" ${currentCity === 'الأقصر' ? 'selected' : ''}>الأقصر</option>
+                                <option value="قنا" ${currentCity === 'قنا' ? 'selected' : ''}>قنا</option>
+                                <option value="سوهاج" ${currentCity === 'سوهاج' ? 'selected' : ''}>سوهاج</option>
+                                <option value="أسيوط" ${currentCity === 'أسيوط' ? 'selected' : ''}>أسيوط</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-500 mb-1">رقم الهاتف</label>
+                            <input type="text" id="editPhone" value="${uData.phone_number || ''}" required class="w-full bg-gray-50 border border-gray-200 text-gray-800 font-semibold px-4 py-3 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" dir="ltr">
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-gray-500 mb-1">رمز المرور</label>
-                            <input type="text" id="editPassword" value="${uData.password || ''}" required class="w-full bg-gray-50 border border-gray-200 text-gray-800 font-semibold px-4 py-2.5 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" dir="ltr">
+                            <input type="text" id="editPassword" value="${uData.password || uData.pass || ''}" required class="w-full bg-gray-50 border border-gray-200 text-gray-800 font-semibold px-4 py-3 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" dir="ltr">
                         </div>
-                        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl shadow-lg transition-all text-sm mt-2">
+                        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl shadow-lg transition-all text-sm">
                             حفظ التعديلات
                         </button>
                     </form>
@@ -774,8 +785,8 @@
             const newName = document.getElementById('editUserName').value.trim();
             const newShopName = document.getElementById('editShopName').value.trim();
             const newAddress = document.getElementById('editShopAddress').value.trim();
-            const newArea = document.getElementById('editShopArea').value.trim();
-            const newCity = document.getElementById('editShopCity').value.trim();
+            const newShopScope = document.getElementById('editShopScope').value.trim();
+            const newShopCity = document.getElementById('editShopCity').value.trim();
             const newPhone = document.getElementById('editPhone').value.trim();
             const newPassword = document.getElementById('editPassword').value.trim();
 
@@ -784,8 +795,8 @@
                 p_user_name: newName,
                 p_shop_name: newShopName,
                 p_shop_address: newAddress,
-                p_shop_area: newArea,
-                p_shop_city: newCity,
+                p_shop_scope: newShopScope,
+                p_shop_city: newShopCity,
                 p_phone_number: newPhone,
                 p_password: newPassword
             });
@@ -888,15 +899,16 @@
                                     <label class="block text-xs font-semibold text-gray-600 mb-1">عنوان المحل</label>
                                     <input type="text" id="regShopAddress" required class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-gray-50">
                                 </div>
-                                <div class="grid grid-cols-2 gap-2">
-                                    <div>
-                                        <label class="block text-xs font-semibold text-gray-600 mb-1">نطاق المحل</label>
-                                        <input type="text" id="regShopArea" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-gray-50">
-                                    </div>
-                                    <div>
-                                        <label class="block text-xs font-semibold text-gray-600 mb-1">المدينة</label>
-                                        <input type="text" id="regShopCity" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-gray-50">
-                                    </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-600 mb-1">المحافظة</label>
+                                    <select id="regShopCity" required class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-gray-50 text-gray-700">
+                                        <option value="" disabled selected>اختر المحافظة</option>
+                                        <option value="أسوان">أسوان</option>
+                                        <option value="الأقصر">الأقصر</option>
+                                        <option value="قنا">قنا</option>
+                                        <option value="سوهاج">سوهاج</option>
+                                        <option value="أسيوط">أسيوط</option>
+                                    </select>
                                 </div>
                                 <div>
                                     <label class="block text-xs font-semibold text-gray-600 mb-1">رقم الهاتف</label>
@@ -1018,8 +1030,7 @@
             const user_name = document.getElementById('regUserName').value.trim();
             const shop_name = document.getElementById('regShopName').value.trim();
             const shop_address = document.getElementById('regShopAddress').value.trim();
-            const shop_area = document.getElementById('regShopArea')?.value.trim() || '';
-            const shop_city = document.getElementById('regShopCity')?.value.trim() || '';
+            const shop_city = document.getElementById('regShopCity').value.trim();
             const phone_number = document.getElementById('regPhone').value.trim();
             const password = document.getElementById('regPassword').value.trim();
 
@@ -1027,6 +1038,7 @@
                 p_user_name: user_name, 
                 p_shop_name: shop_name, 
                 p_shop_address: shop_address, 
+                p_shop_city: shop_city,
                 p_phone_number: phone_number, 
                 p_password: password 
             });
@@ -1042,7 +1054,7 @@
             }
 
             if (resObj && resObj.success === false) {
-                alert(`⚠ رفض إنشاء الحساب`);
+                alert(`⚠ ${resObj.message || 'رفض إنشاء الحساب'}`);
                 return;
             }
 
