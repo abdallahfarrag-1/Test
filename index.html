@@ -624,7 +624,6 @@
                 let userData = null;
 
                 if (currentUserId) {
-                    // استدعاء الدالة get_user_profile(user_id) المطابقة تماماً لدالة الـ SQL الخاصة بك
                     const { data: rpcData, error: rpcError } = await supabaseClient.rpc('get_user_profile', { 
                         user_id: currentUserId 
                     });
