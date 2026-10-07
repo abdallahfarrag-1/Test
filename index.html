@@ -782,23 +782,23 @@
         async function handleUpdateProfile(e) {
             e.preventDefault();
             
-            const newName = document.getElementById('editUserName').value.trim();
-            const newShopName = document.getElementById('editShopName').value.trim();
-            const newAddress = document.getElementById('editShopAddress').value.trim();
-            const newShopScope = document.getElementById('editShopScope').value.trim();
-            const newShopCity = document.getElementById('editShopCity').value.trim();
-            const newPhone = document.getElementById('editPhone').value.trim();
-            const newPassword = document.getElementById('editPassword').value.trim();
+            const userNameValue = document.getElementById('editUserName').value.trim();
+            const shopNameValue = document.getElementById('editShopName').value.trim();
+            const addressValue = document.getElementById('editShopAddress').value.trim();
+            const areaValue = document.getElementById('editShopScope').value.trim();
+            const cityValue = document.getElementById('editShopCity').value.trim();
+            const phoneValue = document.getElementById('editPhone').value.trim();
+            const passwordValue = document.getElementById('editPassword').value.trim();
 
             const { data, error } = await supabaseClient.rpc('update_user_profile', {
+                p_password: passwordValue,
+                p_phone_number: phoneValue,
+                p_shop_address: addressValue,
+                p_shop_area: areaValue,
+                p_shop_city: cityValue,
+                p_shop_name: shopNameValue,
                 p_user_id: currentUserId,
-                p_user_name: newName,
-                p_shop_name: newShopName,
-                p_shop_address: newAddress,
-                p_shop_scope: newShopScope,
-                p_shop_city: newShopCity,
-                p_phone_number: newPhone,
-                p_password: newPassword
+                p_user_name: userNameValue
             });
 
             if (error) {
@@ -1067,7 +1067,6 @@
                 startUserHeartbeat(currentUserId);
             }
 
-            // الانتقال للوحة الرئيسية وتفعيل جلب القائمة الجانبية تماماً مثل تسجيل الدخول
             renderMainDashboard();
             loadDynamicMenuIntoSidebar();
         }
