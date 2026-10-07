@@ -624,22 +624,27 @@
                 let userData = null;
 
                 if (currentUserId) {
+                    // تم تحديث جلب البيانات الشخصية للتعامل السليم مع استجابة دالة الـ RPC
                     const { data: rpcData, error: rpcError } = await supabaseClient.rpc('get_user_profile', { 
                         user_id: currentUserId 
                     });
 
                     if (!rpcError && rpcData) {
-                        userData = Array.isArray(rpcData) ? rpcData[0] : rpcData;
+                        if (Array.isArray(rpcData)) {
+                            userData = rpcData[0];
+                        } else if (typeof rpcData === 'object') {
+                            userData = rpcData.data || rpcData;
+                        }
                     }
                 }
 
-                currentUserDataGlobal = userData; 
+                currentUserDataGlobal = userData || {}; 
 
-                const name = userData?.user_name || userData?.name || "غير متوفر";
-                const shopName = userData?.shop_name || "غير متوفر";
-                const shopAddress = userData?.shop_address || "غير متوفر";
-                const phone = userData?.phone_number || currentUserRole;
-                const password = userData?.password || userData?.pass || "********";
+                const name = currentUserDataGlobal?.user_name || currentUserDataGlobal?.name || "غير متوفر";
+                const shopName = currentUserDataGlobal?.shop_name || "غير متوفر";
+                const shopAddress = currentUserDataGlobal?.shop_address || "غير متوفر";
+                const phone = currentUserDataGlobal?.phone_number || currentUserRole;
+                const password = currentUserDataGlobal?.password || currentUserDataGlobal?.pass || "********";
 
                 const htmlContent = `
                     ${getHeaderTemplate()}
