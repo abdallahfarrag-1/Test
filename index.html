@@ -1058,7 +1058,7 @@
                 return;
             }
 
-            alert('✅ تم إنشاء الحساب بنجاح!');
+            alert('✅ تم إنشاء الحساب وتسجيل الدخول بنجاح!');
             currentUserRole = phone_number;
             currentUserType = "head"; 
             currentUserId = resObj?.user?.id || resObj?.id || resObj?.user_id || resObj?.ID || resObj?.uuid || null;
@@ -1067,6 +1067,7 @@
                 startUserHeartbeat(currentUserId);
             }
 
+            // الانتقال للوحة الرئيسية وتفعيل جلب القائمة الجانبية تماماً مثل تسجيل الدخول
             renderMainDashboard();
             loadDynamicMenuIntoSidebar();
         }
