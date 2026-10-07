@@ -785,7 +785,7 @@
             const userNameValue = document.getElementById('editUserName').value.trim();
             const shopNameValue = document.getElementById('editShopName').value.trim();
             const addressValue = document.getElementById('editShopAddress').value.trim();
-            const areaValue = document.getElementById('editShopScope').value.trim();
+            const areaValue = document.getElementById('editShopScope').value.trim(); // تم ربطه بـ editShopScope الصحيح
             const cityValue = document.getElementById('editShopCity').value.trim();
             const phoneValue = document.getElementById('editPhone').value.trim();
             const passwordValue = document.getElementById('editPassword').value.trim();
@@ -794,7 +794,7 @@
                 p_password: passwordValue,
                 p_phone_number: phoneValue,
                 p_shop_address: addressValue,
-                p_shop_area: areaValue,
+                p_shop_area: areaValue, // إرسال المتغير إلى p_shop_area في الـ SQL
                 p_shop_city: cityValue,
                 p_shop_name: shopNameValue,
                 p_user_id: currentUserId,
