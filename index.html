@@ -706,6 +706,7 @@
             }
 
             const uData = currentUserDataGlobal || {};
+            const currentCity = uData.shop_city || '';
 
             const html = `
                 ${getHeaderTemplate()}
@@ -732,7 +733,14 @@
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-gray-500 mb-1">المحافظة</label>
-                            <input type="text" id="editShopCity" value="${uData.shop_city || ''}" required class="w-full bg-gray-50 border border-gray-200 text-gray-800 font-semibold px-4 py-3 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <select id="editShopCity" required class="w-full bg-gray-50 border border-gray-200 text-gray-800 font-semibold px-4 py-3 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="" disabled ${!currentCity ? 'selected' : ''}>اختر المحافظة</option>
+                                <option value="أسوان" ${currentCity === 'أسوان' ? 'selected' : ''}>أسوان</option>
+                                <option value="الأقصر" ${currentCity === 'الأقصر' ? 'selected' : ''}>الأقصر</option>
+                                <option value="قنا" ${currentCity === 'قنا' ? 'selected' : ''}>قنا</option>
+                                <option value="سوهاج" ${currentCity === 'سوهاج' ? 'selected' : ''}>سوهاج</option>
+                                <option value="أسيوط" ${currentCity === 'أسيوط' ? 'selected' : ''}>أسيوط</option>
+                            </select>
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-gray-500 mb-1">رقم الهاتف</label>
@@ -875,8 +883,15 @@
                                     <input type="text" id="regShopAddress" required class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-gray-50">
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-semibold text-gray-600 mb-1">المحافظة (Shop City)</label>
-                                    <input type="text" id="regShopCity" required class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-gray-50">
+                                    <label class="block text-xs font-semibold text-gray-600 mb-1">المحافظة</label>
+                                    <select id="regShopCity" required class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-gray-50 text-gray-700">
+                                        <option value="" disabled selected>اختر المحافظة</option>
+                                        <option value="أسوان">أسوان</option>
+                                        <option value="الأقصر">الأقصر</option>
+                                        <option value="قنا">قنا</option>
+                                        <option value="سوهاج">سوهاج</option>
+                                        <option value="أسيوط">أسيوط</option>
+                                    </select>
                                 </div>
                                 <div>
                                     <label class="block text-xs font-semibold text-gray-600 mb-1">رقم الهاتف</label>
